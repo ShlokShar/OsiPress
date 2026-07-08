@@ -4,7 +4,33 @@
       "name": "Shargh",
       "url": "https://www.sharghdaily.com/feeds/",
       "rss": true
+    },
+    "center": {
+      "name": "Hamshahri",
+      "url": "https://www.hamshahrionline.ir/rss/pl/402",
+      "rss": true
+    },
+    "right": {
+      "name": "Kayhan",
+      "url": "https://kayhan.ir/fa/rss/allnews",
+      "rss": true
     }
   },
-  "Israel": []
+  "Israel": {
+    "left": {
+      "name": "Haaretz",
+      "url": "https://www.haaretz.com/srv/haaretz-latest-headlines",
+      "rss": true
+    },
+    "center": {
+      "name": "Yedioth Ahronoth",
+      "url": "https://www.ynet.co.il/Integration/StoryRss2.xml",
+      "rss": true
+    },
+    "right": {
+      "name": "Israel Hayom",
+      "url": "https://www.israelhayom.co.il/rss/rss.xml",
+      "rss": true
+    }
+  }
 }
