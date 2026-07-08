@@ -2,11 +2,19 @@
 import json
 
 import feedparser
-import requests
 
 from cron.util.ai_service import AIService
 from cron.util.article import get_article_text
-from cron.util.translation import translate
+from cron.util.translation import (
+    translate,
+    translate_references
+)
+from shared.models import (
+    Countries,
+    Sources,
+    Articles,
+)
+
 
 MAX_ARTICLES = 3
 
@@ -15,11 +23,20 @@ with open("sources.json", "r") as file:
     data = json.load(file)
 
 for country, sources in data.items():
-    press_information = {} # will contain 3 sources with MAX_ARTICLES objects
-    # each.
+    press_information = {} # for logging purposes
 
-    # iterate through major sources per country
+    # skip if country is not found in database
+    country_object = Countries.get_country(country)
+    if not country:
+        continue
+
+    # now iterate through the major sources for each country
     for source in sources:
+        # if source does not exist in database, skip it.
+        source_object = Sources.get_source(country_object.id)
+        if not source_object:
+            continue
+
         press_information[source] = {} # set the source
 
         url = data[country][source]["url"]
@@ -51,6 +68,22 @@ for country, sources in data.items():
             article_references = processed_article.references \
                 if processed_article else ["No references provided."]
 
-            press_information[source][headline] = {article_summary: article_references}
+            references_translated = translate_references(article_references)
+
+            press_information[source][headline] = {
+                article_summary: article_references
+            }
+
+            article = Articles(
+                source_id=source_object.id,
+                headline=headline,
+                translated_headline=translated_headline,
+                link=link,
+                summary=article_summary,
+                references_original=article_references,
+                references_translated=references_translated,
+            )
+            Articles.add_article(article)
+            print("added")
 
     print(press_information)
