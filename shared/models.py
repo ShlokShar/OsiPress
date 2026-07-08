@@ -1,5 +1,5 @@
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, ARRAY, String
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -44,8 +44,8 @@ class Articles(Base):
     translated_headline: Mapped[str] = mapped_column()
     link: Mapped[str] = mapped_column()
     summary: Mapped[str] = mapped_column()
-    references_original: Mapped[str] = mapped_column()
-    references_translated: Mapped[str] = mapped_column()
+    references_original: Mapped[list[str]] = mapped_column(ARRAY(String))
+    references_translated: Mapped[list[str]] = mapped_column(ARRAY(String))
 
 
     @staticmethod
