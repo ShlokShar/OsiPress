@@ -33,7 +33,8 @@ for country, sources in data.items():
     # now iterate through the major sources for each country
     for source in sources:
         # if source does not exist in database, skip it.
-        source_object = Sources.get_source(country_object.id)
+        source_name = sources[source]["name"]
+        source_object = Sources.get_source_by_name(country_object.id, source_name)
         if not source_object:
             continue
 
