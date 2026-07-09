@@ -1,15 +1,4 @@
-/* ------------------------------------------------------------------ *
- * OsiPress front-page board
- * Data source: <script id="osipress-data"> populated by Flask via
- *   {{ data | tojson }}. Shape:
- *   { "<Country>": { "<Outlet>": { political_leaning: string, articles: [ story, ... ] }, ... }, ... }
- *   story = { id, source_id, headline, translated_headline, link,
- *             summary, references_original[], references_translated[] }
- * ------------------------------------------------------------------ */
 
-/* Political leaning is read straight from each outlet's own `political_leaning`
-   value in the data (left = red, center = grey-purple, right = blue). Nothing
-   about an outlet's leaning is hardcoded here. */
 function normalizeLean(label){
   const s = (label || '').toLowerCase();
   if (s.includes('left')) return 'left';
@@ -18,13 +7,11 @@ function normalizeLean(label){
   return 'unknown';
 }
 
-/* Native-script label shown next to each country header. */
 const SCRIPT_LABEL = {
   'Iran':   { name: 'Persian', native: 'فارسی' },
   'Israel': { name: 'Hebrew',  native: 'עברית' },
 };
 
-/* ---------- load Flask-injected data ---------- */
 function loadData(){
   const node = document.getElementById('osipress-data');
   try {
@@ -35,7 +22,6 @@ function loadData(){
 }
 const DATA = loadData();
 
-/* ---------- state ---------- */
 const countries = Object.keys(DATA);
 const state = {
   selected: countries.slice(0, 2),                       // default: compare first two
@@ -285,7 +271,6 @@ function relayout(){
   }
 }
 
-/* ---------- country chips ---------- */
 const chipsWrap = document.getElementById('chips');
 function renderChips(){
   chipsWrap.innerHTML = '';
@@ -304,8 +289,6 @@ function renderChips(){
     chipsWrap.appendChild(b);
   });
 }
-
-/* ---------- edition summary ---------- */
 function editionCount(){
   const node = document.getElementById('edition-count');
   if (!node) return;
@@ -315,7 +298,6 @@ function editionCount(){
   node.textContent = stories + ' stories \u00b7 ' + outlets + ' outlets \u00b7 ' + countries.length + ' countries';
 }
 
-/* ---------- init ---------- */
 render();
 renderChips();
 editionCount();
