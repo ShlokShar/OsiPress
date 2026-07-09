@@ -1,1 +1,63 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OsiPress</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="{{ url_for('static', filename='css/osipress.css') }}"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="mk" viewBox="0 0 200 160"><g transform="translate(100,80) scale(.9) translate(-100,-80)"><path d="M68 20 36 20 36 140 68 140" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path d="M132 20 164 20 164 140 132 140" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(88,72) scale(.62)" d="M0,-16A16,16 0 1,0 0,16C-1.5,27 -7,35.5 -15,41L-11,45.5C3,37 14.5,23 16,2A16,16 0 0,0 0,-16Z" fill="currentColor"/><path transform="translate(115,72) scale(.62)" d="M0,-16A16,16 0 1,0 0,16C-1.5,27 -7,35.5 -15,41L-11,45.5C3,37 14.5,23 16,2A16,16 0 0,0 0,-16Z" fill="currentColor"/></g></symbol></svg><div class="wrap"><nav class="top"><div class="brand"><svg viewBox="0 0 200 160"><use href="#mk"></use></svg><span class="name">OsiPress</span></div><div class="navlinks"><a href="#" class="active">Today</a><a href="#">Archive</a><a href="#">Outlets</a><a href="#">Methodology</a></div></nav><div class="toolbar"><div class="picker"><span class="lbl">Countries</span><div class="chips" id="chips" role="group" aria-label="Pick one or two countries to compare"></div><span class="help"><span class="q" tabindex="0" aria-label="Pick one country, or two to compare">?</span><span class="tip" role="tooltip">Pick one country, or two to compare</span></span></div><div class="edition">Front pages &middot; <b id="edition-count">&mdash;</b></div></div><main><div id="board" data-mode="compare"></div><p id="empty" class="empty" hidden>No front pages captured for this edition.</p></main><footer><p>Selection is mechanical: whatever each outlet leads its own front page with is what appears here. Translations are literal &mdash; charged language is preserved, never softened. OsiPress does not rank, score, or summarize the coverage.</p><div class="foot-right"><span class="fm"><svg viewBox="0 0 200 160"><use href="#mk"></use></svg><span>OsiPress</span></span><a class="gh" href="https://github.com/osipress/osipress" target="_blank" rel="noopener">GitHub &#8599;</a></div></footer></div><script type="application/json" id="osipress-data">{{ data | tojson }}</script><script src="{{ url_for('static', filename='js/osipress.js') }}"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>OsiPress</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/osipress.css') }}">
+        <link rel="icon" type="image/x-icon"
+              href="{{ url_for('static', filename='img/favicon.ico') }}">
+    </head>
+    <body>
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+            <symbol id="mk" viewBox="0 0 200 160">
+                <g transform="translate(100,80) scale(.9) translate(-100,-80)">
+                    <path d="M68 20 36 20 36 140 68 140" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M132 20 164 20 164 140 132 140" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path transform="translate(88,72) scale(.62)" d="M0,-16A16,16 0 1,0 0,16C-1.5,27 -7,35.5 -15,41L-11,45.5C3,37 14.5,23 16,2A16,16 0 0,0 0,-16Z" fill="currentColor"/>
+                    <path transform="translate(115,72) scale(.62)" d="M0,-16A16,16 0 1,0 0,16C-1.5,27 -7,35.5 -15,41L-11,45.5C3,37 14.5,23 16,2A16,16 0 0,0 0,-16Z" fill="currentColor"/>
+                </g>
+            </symbol>
+        </svg>
+        <div class="wrap">
+            <nav class="top">
+                <div class="brand">
+                    <svg viewBox="0 0 200 160">
+                        <use href="#mk"></use>
+                    </svg>
+                    <span class="name">OsiPress</span>
+                </div>
+                <div class="navlinks"><a href="#" class="active">Today</a><a href="#">Archive</a><a href="#">Outlets</a><a href="#">Methodology</a></div>
+            </nav>
+            <div class="toolbar">
+                <div class="picker">
+                    <span class="lbl">Countries</span>
+                    <div class="chips" id="chips" role="group" aria-label="Pick one or two countries to compare"></div>
+                    <span class="help"><span class="q" tabindex="0" aria-label="Pick one country, or two to compare">?</span><span class="tip" role="tooltip">Pick one country, or two to compare</span></span>
+                </div>
+                <div class="edition">Front pages &middot; <b id="edition-count">&mdash;</b></div>
+            </div>
+            <main>
+                <div id="board" data-mode="compare"></div>
+                <p id="empty" class="empty" hidden>No front pages captured for this edition.</p>
+            </main>
+            <footer>
+                <p>Selection is mechanical: whatever each outlet leads its own front page with is what appears here. Translations are literal &mdash; charged language is preserved, never softened. OsiPress does not rank, score, or summarize the coverage.</p>
+                <div class="foot-right">
+                    <span class="fm">
+                        <svg viewBox="0 0 200 160">
+                            <use href="#mk"></use>
+                        </svg>
+                        <span>OsiPress</span>
+                    </span>
+                    <a class="gh"
+                       href="https://github.com/ShlokShar/osipress" target="_blank" rel="noopener">GitHub &#8599;</a>
+                </div>
+            </footer>
+        </div>
+        <script type="application/json" id="osipress-data">{{ data | tojson }}</script><script src="{{ url_for('static', filename='js/osipress.js') }}"></script>
+    </body>
+</html>
