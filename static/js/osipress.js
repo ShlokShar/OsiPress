@@ -2,21 +2,21 @@
  * OsiPress front-page board
  * Data source: <script id="osipress-data"> populated by Flask via
  *   {{ data | tojson }}. Shape:
- *   { "<Country>": { "<Outlet>": [ story, ... ], ... }, ... }
+ *   { "<Country>": { "<Outlet>": { political_leaning: string, articles: [ story, ... ] }, ... }, ... }
  *   story = { id, source_id, headline, translated_headline, link,
  *             summary, references_original[], references_translated[] }
  * ------------------------------------------------------------------ */
 
-/* Political-spectrum lookup by outlet name (left = red, center = grey-purple,
-   right = blue). Outlets not listed simply render without a tag. */
-const LEAN = {
-  'Kayhan':           { label: 'hardline',      lean: 'right'  },
-  'Hamshahri':        { label: 'centrist',      lean: 'center' },
-  'Shargh':           { label: 'reformist',     lean: 'left'   },
-  'Haaretz':          { label: 'left-leaning',  lean: 'left'   },
-  'Yedioth Ahronoth': { label: 'centrist',      lean: 'center' },
-  'Israel Hayom':     { label: 'right-leaning', lean: 'right'  },
-};
+/* Political leaning is read straight from each outlet's own `political_leaning`
+   value in the data (left = red, center = grey-purple, right = blue). Nothing
+   about an outlet's leaning is hardcoded here. */
+function normalizeLean(label){
+  const s = (label || '').toLowerCase();
+  if (s.includes('left')) return 'left';
+  if (s.includes('right')) return 'right';
+  if (s.includes('center') || s.includes('centre')) return 'center';
+  return 'unknown';
+}
 
 /* Native-script label shown next to each country header. */
 const SCRIPT_LABEL = {
@@ -165,12 +165,12 @@ function buildCard(country, outlet){
   handle.setAttribute('aria-label', 'Drag to reorder');
   head.appendChild(handle);
   head.appendChild(el('span', 'outlet-name', outlet));
-  const lean = LEAN[outlet];
-  if (lean) head.appendChild(el('span', 'tag ' + lean.lean, lean.label));
+  const leaning = (DATA[country][outlet] || {}).political_leaning;
+  if (leaning) head.appendChild(el('span', 'tag ' + normalizeLean(leaning), leaning));
   card.appendChild(head);
 
   const stories = el('div', 'stories');
-  (DATA[country][outlet] || []).forEach((s, i) => stories.appendChild(buildStory(country, outlet, s, i)));
+  ((DATA[country][outlet] || {}).articles || []).forEach((s, i) => stories.appendChild(buildStory(country, outlet, s, i)));
   card.appendChild(stories);
 
   wireDrag(card, handle, country);
@@ -311,7 +311,7 @@ function editionCount(){
   if (!node) return;
   if (!countries.length){ node.textContent = 'no data'; return; }
   let stories = 0, outlets = 0;
-  countries.forEach(c => Object.keys(DATA[c]).forEach(o => { outlets++; stories += (DATA[c][o] || []).length; }));
+  countries.forEach(c => Object.keys(DATA[c]).forEach(o => { outlets++; stories += ((DATA[c][o] || {}).articles || []).length; }));
   node.textContent = stories + ' stories \u00b7 ' + outlets + ' outlets \u00b7 ' + countries.length + ' countries';
 }
 
