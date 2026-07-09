@@ -1,4 +1,8 @@
 
+from datetime import (
+    datetime,
+    timezone
+)
 import json
 
 import feedparser
@@ -19,6 +23,7 @@ from shared.models import (
 MAX_ARTICLES = 3
 
 ai_service = AIService()
+run_time = datetime.now(timezone.utc)
 with open("sources.json", "r") as file:
     data = json.load(file)
 
@@ -83,6 +88,7 @@ for country, sources in data.items():
                 summary=article_summary,
                 references_original=article_references,
                 references_translated=references_translated,
+                captured_at=run_time,
             )
             Articles.add_article(article)
             print("added")
