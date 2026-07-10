@@ -3,13 +3,12 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>OsiPress</title>
+        <title>OsiPress &middot; Archive</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/osipress.css') }}">
-        <link rel="icon"
-              href="{{ url_for('static', filename='img/favicon.ico') }}">
+        <link rel="icon"href="{{ url_for('static', filename='img/favicon.ico') }}">
     </head>
     <body>
         <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -24,16 +23,13 @@
         </svg>
         <div class="wrap">
             <nav class="top">
-
                 <a href="/" class="brand">
                     <svg viewBox="0 0 200 160">
                         <use href="#mk"></use>
                     </svg>
                     <span class="name">OsiPress</span>
                 </a>
-                <div class="navlinks"><a href="/" class="active">Today</a><a
-                        href="/archive">Archive</a>
-                </div>
+                <div class="navlinks"><a href="/">Today</a><a href="#" class="active">Archive</a></div>
             </nav>
             <div class="toolbar">
                 <div class="picker">
@@ -41,7 +37,10 @@
                     <div class="chips" id="chips" role="group" aria-label="Pick one or two countries to compare"></div>
                     <span class="help"><span class="q" tabindex="0" aria-label="Pick one country, or two to compare">?</span><span class="tip" role="tooltip">Pick one country, or two to compare</span></span>
                 </div>
-                <div class="edition">Front pages &middot; <b id="edition-count">&mdash;</b></div>
+                <div class="date-toolbar">
+                    <label class="date-pick"><span class="date-ic" aria-hidden="true">&#128197;</span><span class="date-lbl" id="date-label">&mdash;</span><input type="date" id="date-input" class="date-input" min="{{ min_date if min_date else '2026-07-09' }}" value="{{ date if date else '' }}"></label>
+                    <div class="edition">Front pages &middot; <b id="edition-count">&mdash;</b></div>
+                </div>
             </div>
             <main>
                 <div id="board" data-mode="compare"></div>
@@ -60,6 +59,6 @@
                 </div>
             </footer>
         </div>
-        <script type="application/json" id="osipress-data">{{ data | tojson }}</script><script src="{{ url_for('static', filename='js/osipress.js') }}"></script>
+        <script type="application/json" id="osipress-data">{{ data | tojson }}</script><script src="{{ url_for('static', filename='js/osipress.js') }}"></script><script src="{{ url_for('static', filename='js/archive.js') }}"></script>
     </body>
 </html>
