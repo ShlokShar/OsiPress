@@ -39,7 +39,8 @@ for country, sources in data.items():
     for source in sources:
         # if source does not exist in database, skip it.
         source_name = sources[source]["name"]
-        source_object = Sources.get_source_by_name(country_object.id, source_name)
+        source_object = Sources.get_source_by_name(country_object.id,
+                                                   source_name)
         if not source_object:
             continue
 
@@ -80,6 +81,7 @@ for country, sources in data.items():
                 article_summary: article_references
             }
 
+            # save the article in the database with the timestamp
             article = Articles(
                 source_id=source_object.id,
                 headline=headline,
@@ -91,6 +93,3 @@ for country, sources in data.items():
                 captured_at=run_time,
             )
             Articles.add_article(article)
-            print("added")
-
-    print(press_information)

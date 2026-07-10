@@ -6,7 +6,7 @@ from datetime import (
     timedelta,
     timezone
 )
-from typing import Optional
+from typing import Optional, Any
 
 from sqlalchemy import (
     ForeignKey,
@@ -20,7 +20,10 @@ from sqlalchemy.orm import (
     mapped_column,
 )
 
-from shared.database import Base, SessionLocal
+from shared.database import (
+    Base,
+    SessionLocal
+)
 
 
 class Countries(Base):
@@ -31,6 +34,14 @@ class Countries(Base):
 
     @classmethod
     def get_country(cls, name: str = "", id: int = -1) -> Mapped[str]:
+        """
+        Receives a country object from either the name or its database id.
+
+        :param name: the country name
+        :param id: the country id as per Postgres
+        :return: the country object
+        """
+
         with SessionLocal() as session:
             if id > 0:
                 return session.query(cls).filter(cls.id == id).first()
@@ -48,13 +59,31 @@ class Sources(Base):
 
     @classmethod
     def get_source(cls, country_id: int, source_id: int) -> Mapped[int]:
+        """
+        Receives a source object from either the name or its database id.
+
+        :param country_id: the country id as per Postgres
+        :param source_id: the source id as per Postgres
+        :return: the source object
+        """
+
         with SessionLocal() as session:
             if source_id:
                 return session.query(cls).filter(cls.id == source_id).first()
-            return session.query(cls).filter(cls.country_id == country_id).first()
+            return session.query(cls).filter(
+                cls.country_id == country_id
+            ).first()
 
     @classmethod
     def get_source_by_name(cls, country_id: int, name: str):
+        """
+        Receives a source object from either the name or its database id.
+
+        :param country_id: the country id as per Postgres
+        :param name: the source's name
+        :return: the source object
+        """
+
         with SessionLocal() as session:
             return session.query(cls).filter(
                 cls.country_id == country_id, cls.name == name
@@ -72,9 +101,30 @@ class Articles(Base):
     summary: Mapped[str] = mapped_column()
     references_original: Mapped[list[str]] = mapped_column(ARRAY(String))
     references_translated: Mapped[list[str]] = mapped_column(ARRAY(String))
-    captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+                                                  server_default=func.now())
+
+
+    @staticmethod
+    def add_article(article):
+        """
+        adds an article to the Postgres database.
+
+        :param article: the article object (includes the foreign source key)
+        :return: the article object
+        """
+
+        with SessionLocal() as session:
+            session.add(article)
+            session.commit()
 
     def to_dict(self):
+        """
+        Returns a dictionary version of the data.
+
+        :return: a dictionary version of the data
+        """
+
         return {
             "id": self.id,
             "source_id": self.source_id,
@@ -86,18 +136,22 @@ class Articles(Base):
             "references_translated": self.references_translated,
         }
 
-    @staticmethod
-    def add_article(article):
-        with SessionLocal() as session:
-            session.add(article)
-            session.commit()
 
+def get_headlines_by_country(target_date: Optional[date] = None) -> defaultdict[
+    Any, dict[Any, Any]]:
+    """
+    Returns a dictionary version of the data based on the date the articles
+    were captured.
 
-def get_headlines_by_country(target_date: Optional[date] = None):
+    :param target_date: the target date to filter on
+    :return: a list of the original headlines in English
+    """
+
     if target_date is None:
         target_date = datetime.now(timezone.utc).date()
 
-    start = datetime.combine(target_date, datetime.min.time(), tzinfo=timezone.utc)
+    start = datetime.combine(target_date, datetime.min.time(),
+                             tzinfo=timezone.utc)
     end = start + timedelta(days=1)
 
     with SessionLocal() as session:
@@ -112,13 +166,15 @@ def get_headlines_by_country(target_date: Optional[date] = None):
         )
 
         results = (
-            session.query(Countries.name, Sources.name, Sources.political_leaning, Articles)
+            session.query(Countries.name, Sources.name,
+                          Sources.political_leaning, Articles)
             .join(Sources, Sources.country_id == Countries.id)
             .join(Articles, Articles.source_id == Sources.id)
             .join(
                 latest_per_source,
                 (Articles.source_id == latest_per_source.c.source_id)
-                & (Articles.captured_at == latest_per_source.c.latest_captured_at)
+                & (Articles.captured_at ==
+                   latest_per_source.c.latest_captured_at)
             )
             .all()
         )
@@ -130,6 +186,8 @@ def get_headlines_by_country(target_date: Optional[date] = None):
                     "political_leaning": political_leaning,
                     "articles": [],
                 }
-            output[country_name][source_name]["articles"].append(article.to_dict())
+            output[country_name][source_name]["articles"].append(
+                article.to_dict()
+            )
 
     return output

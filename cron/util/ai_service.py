@@ -1,11 +1,14 @@
 
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from pydantic import BaseModel, Field
+from pydantic import (
+    BaseModel,
+    Field
+)
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
@@ -28,6 +31,14 @@ class AIService:
 
 
     def classify(self, headline: str) -> bool:
+        """
+        Classifies if a headline is political at all. Used to filter out
+        non-geopolitical articles (e.g. sports, celebrities, lifestyle, etc.)
+
+        :param headline: the headline text which will be classified
+        :return: True if the headline is political, False otherwise
+        """
+
         response = self.client.responses.parse(
             model=self.model,
             instructions="""You classify RSS news headlines.
@@ -57,9 +68,17 @@ class AIService:
             input=f"Headline: {headline}",
             text_format=HeadlineClassifier
         )
+
         return response.output_parsed.political
 
     def summarize(self, text: str) -> Optional[Summarized]:
+        """
+        Summarizes the summary of the article into English. Saves quotes that
+        reference the article in its original language to back up the summary.
+
+        :param text: the content of the article
+        :return: the summary of the article and a list of references
+        """
         response = self.client.responses.parse(
             model=self.model,
             instructions="You summarize political news articles from foreign "
