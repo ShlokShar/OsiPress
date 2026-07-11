@@ -14,8 +14,13 @@ app = flask.Flask(__name__)
 
 MAX_FALLBACK_DAYS = 3
 
+
 @app.route("/")
-def home():
+def landing():
+    return flask.render_template("landing.html")
+
+@app.route("/today")
+def today():
     today = datetime.now(timezone.utc).date()
     shown_date = today
     data = get_headlines_by_country(shown_date)
