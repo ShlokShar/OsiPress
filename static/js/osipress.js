@@ -35,10 +35,16 @@ function loadData(){
 }
 const DATA = loadData();
 
+/* ---------- responsive helpers ---------- */
+const NARROW_QUERY = '(max-width:700px)';
+const isNarrowViewport = () => window.matchMedia(NARROW_QUERY).matches;
+const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
 /* ---------- state ---------- */
 const countries = Object.keys(DATA);
 const state = {
-  selected: countries.slice(0, 2),                       // default: compare first two
+  // Below ~700px, default to a single country; otherwise compare the first two.
+  selected: countries.slice(0, isNarrowViewport() ? 1 : 2),
   order: {},                                             // country -> [outlet names]
   expanded: {},                                          // key -> bool
   translated: {},                                        // key -> bool
@@ -166,13 +172,18 @@ function buildCard(country, outlet){
   const card = el('article', 'card');
   card.dataset.country = country;
   card.dataset.outlet = outlet;
-  card.setAttribute('draggable', 'true');
 
   const head = el('div', 'card-head');
-  const handle = el('span', 'handle', '\u2847');
-  handle.title = 'Drag to reorder';
-  handle.setAttribute('aria-label', 'Drag to reorder');
-  head.appendChild(handle);
+  // HTML5 drag-and-drop has no reliable touch equivalent, so reordering is
+  // desktop/mouse-only until real touch dragging is implemented.
+  let handle = null;
+  if (!isTouch){
+    card.setAttribute('draggable', 'true');
+    handle = el('span', 'handle', '\u2847');
+    handle.title = 'Drag to reorder';
+    handle.setAttribute('aria-label', 'Drag to reorder');
+    head.appendChild(handle);
+  }
   head.appendChild(el('span', 'outlet-name', outlet));
   const leaning = (DATA[country][outlet] || {}).political_leaning;
   if (leaning) head.appendChild(el('span', 'tag ' + normalizeLean(leaning), leaning));
@@ -182,7 +193,7 @@ function buildCard(country, outlet){
   ((DATA[country][outlet] || {}).articles || []).forEach((s, i) => stories.appendChild(buildStory(country, outlet, s, i)));
   card.appendChild(stories);
 
-  wireDrag(card, handle, country);
+  if (handle) wireDrag(card, handle, country);
   return card;
 }
 
@@ -202,11 +213,13 @@ function wireDrag(card, handle, country){
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     if (card === draggingEl) return;
-    const compare = board.dataset.mode === 'compare';
+    // "single" mode is a multi-column card grid (order by X position);
+    // "compare" and "stacked" are single-column vertical stacks (order by Y).
+    const singleColGrid = board.dataset.mode === 'single';
     const rect = card.getBoundingClientRect();
-    const before = compare
-      ? (e.clientY < rect.top + rect.height / 2)
-      : (e.clientX < rect.left + rect.width / 2);
+    const before = singleColGrid
+      ? (e.clientX < rect.left + rect.width / 2)
+      : (e.clientY < rect.top + rect.height / 2);
     const cur = state.order[country];
     const dragName = draggingEl.dataset.outlet;
     const targetName = card.dataset.outlet;
@@ -261,11 +274,15 @@ function render(){
   relayout();
 }
 
-/* ---------- layout: selected countries side by side, or one wide ---------- */
+/* ---------- layout: selected countries side by side, stacked, or one wide ---------- */
 function relayout(){
   const sel = state.selected.filter(c => countries.includes(c));
-  const compare = sel.length === 2;
-  board.dataset.mode = compare ? 'compare' : 'single';
+  const narrow = isNarrowViewport();
+  // On narrow viewports, a deliberate two-country selection stacks full-width
+  // instead of squeezing into two columns.
+  const compare = sel.length === 2 && !narrow;
+  const stacked = sel.length === 2 && narrow;
+  board.dataset.mode = compare ? 'compare' : (stacked ? 'stacked' : 'single');
 
   countries.forEach(country => {
     const shown = sel.includes(country);
@@ -283,6 +300,16 @@ function relayout(){
         c.style.gridColumn = String(col); c.style.gridRow = String(i + 2); c.style.order = '';
       });
     });
+  } else if (stacked){
+    let ord = 0;
+    sel.forEach(country => {
+      const h = headerEls[country];
+      h.style.gridColumn = '1 / -1'; h.style.gridRow = ''; h.style.order = String(ord++);
+      state.order[country].forEach(outlet => {
+        const c = cardEls[country][outlet];
+        c.style.gridColumn = ''; c.style.gridRow = ''; c.style.order = String(ord++);
+      });
+    });
   } else if (sel.length === 1){
     const country = sel[0];
     const h = headerEls[country];
@@ -293,6 +320,14 @@ function relayout(){
     });
   }
 }
+
+/* Re-run layout when crossing the mobile breakpoint (resize/rotate), without
+   touching the user's explicit country selection. */
+let resizeRAF = null;
+window.addEventListener('resize', () => {
+  if (resizeRAF) cancelAnimationFrame(resizeRAF);
+  resizeRAF = requestAnimationFrame(relayout);
+});
 
 /* ---------- country chips ---------- */
 const chipsWrap = document.getElementById('chips');

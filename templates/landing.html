@@ -21,6 +21,14 @@
   a { color: #b05f1a; text-decoration: none; }
   a:hover { color: #dd8338; }
   ::selection { background: #f3b078; }
+  @media (max-width: 700px) {
+    .lp-container { padding-left: 18px !important; padding-right: 18px !important; }
+    .lp-hero { padding-top: 56px !important; }
+    .lp-hero h1 { font-size: 34px !important; }
+    .lp-cta { flex-wrap: wrap; }
+    .lp-split { grid-template-columns: 1fr !important; gap: 28px !important; }
+    .lp-split-side { position: static !important; top: auto !important; }
+  }
 </style>
 </helmet>
 
@@ -28,7 +36,7 @@
 
   <!-- ============ NAV ============ -->
   <nav data-screen-label="Nav bar" style="position: sticky; top: 0; z-index: 50; background: rgba(253, 249, 246, 0.86); backdrop-filter: saturate(180%) blur(12px); -webkit-backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid #eeddc9;">
-    <div style="max-width: 1280px; margin: 0 auto; padding: 18px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+    <div class="lp-container" style="max-width: 1280px; margin: 0 auto; padding: 18px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
       <div style="display: flex; align-items: center; gap: 12px;">
         <img src="{{ url_for('static', filename='img/osipress-mark.svg') }}" alt="" aria-hidden="true" style="height: 30px; width: auto; display: block;">
         <span style="font-family: 'Rubik', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">OsiPress</span>
@@ -41,10 +49,10 @@
     </div>
   </nav>
 
-<div style="max-width: 1280px; margin: 0 auto; padding: 0 36px 64px;">
+<div class="lp-container" style="max-width: 1280px; margin: 0 auto; padding: 0 36px 64px;">
 
   <!-- ============ HERO ============ -->
-  <section data-reveal data-screen-label="Hero" style="padding: 84px 0 30px; max-width: 780px;">
+  <section data-reveal data-screen-label="Hero" class="lp-hero" style="padding: 84px 0 30px; max-width: 780px;">
     <h1 style="margin: 0 0 24px; font-family: 'Source Serif 4', serif; font-size: 54px; font-weight: 700; line-height: 1.08; letter-spacing: -0.6px; text-wrap: balance;">You've never read an Iranian newspaper.</h1>
     <p style="margin: 0 0 14px; font-size: 17px; line-height: 1.7; color: #3a322a; max-width: 60ch;">Probably not an Israeli one either. Everything you know about the Iran&ndash;Israel war was written by outlets from your own country, for you.</p>
     <p style="margin: 0 0 32px; font-size: 17px; line-height: 1.7; color:
@@ -52,7 +60,7 @@
       <em>Open Source Info Press</em>)</span> translates what Iranian and
       Israeli press tell their own readers each day, and puts the two
       side by side in English.</p>
-    <div style="display: flex; align-items: center; gap: 20px;">
+    <div class="lp-cta" style="display: flex; align-items: center; gap: 20px;">
       <a href="/today" style="display: inline-flex; align-items: center;
       font-size: 14px; font-weight: 600; color: #fdf9f6; background: #dd8338;
        padding: 12px 22px; border-radius: 8px;">Read today's articles</a>
@@ -63,8 +71,8 @@
 
   <!-- ============ EXAMPLE ============ -->
   <section data-reveal data-screen-label="Example" style="padding: 60px 0; border-top: 1px solid #eeddc9; margin-top: 40px;">
-    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 52px; align-items: start;">
-      <div style="position: sticky; top: 24px;">
+    <div class="lp-split" style="display: grid; grid-template-columns: 300px 1fr; gap: 52px; align-items: start;">
+      <div class="lp-split-side" style="position: sticky; top: 24px;">
         <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #cf9257;">Why it's worth reading</p>
         <h2 style="margin: 0 0 16px; font-family: 'Source Serif 4', serif;
         font-size: 30px; font-weight: 700; line-height: 1.25;">June 20. Iran
@@ -101,8 +109,8 @@
 
   <!-- ============ COVERAGE MAP ============ -->
   <section data-reveal data-screen-label="Coverage map" style="padding: 52px 0 12px; border-top: 1px solid #eeddc9;">
-    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 52px; align-items: start;">
-      <div style="position: sticky; top: 24px;">
+    <div class="lp-split" style="display: grid; grid-template-columns: 300px 1fr; gap: 52px; align-items: start;">
+      <div class="lp-split-side" style="position: sticky; top: 24px;">
         <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #cf9257;">Coverage</p>
         <h2 style="margin: 0 0 16px; font-family: 'Source Serif 4', serif;
         font-size: 30px; font-weight: 700; line-height: 1.25;">Two countries
