@@ -1,133 +1,182 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="{{ url_for('static', filename='js/osipress.js') }}"></script>
-        <title>Osipress</title>
-        <link rel="icon"
-              href="{{ url_for('static', filename='img/favicon.ico') }}">
-    </head>
-    <body>
-        <x-dc>
-            <helmet>
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <link rel="preconnect" href="https://fonts.googleapis.com">
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-                <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet">
-                <style>
-                    html, body { margin: 0; padding: 0; background: #fdf9f6; }
-                    body { font-family: 'Libre Franklin', system-ui, sans-serif; color: #0f0a05; -webkit-font-smoothing: antialiased; }
-                    a { color: #b05f1a; text-decoration: none; }
-                    a:hover { color: #dd8338; }
-                    ::selection { background: #f3b078; }
-                </style>
-            </helmet>
-            <div style="min-height: 100vh; background: #fdf9f6;">
-                <div style="max-width: 1280px; margin: 0 auto; padding: 0 36px 64px;">
-                    <!-- ============ NAV ============ -->
-                    <nav data-screen-label="Nav bar" style="display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px 0; border-bottom: 1px solid #eeddc9;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <img
-                                    src="{{ url_for('static', filename='img/osipress-mark.svg') }}"
-                                 alt="" aria-hidden="true" style="height: 30px; width: auto; display: block;">
-                            <span style="font-family: 'Rubik', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">OsiPress</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 26px;">
-                            <a href="/today" style="font-size: 13.5px;
-                            font-weight: 500; color: #7a6a56;">Today</a>
-                            <a href="/archive" style="font-size: 13.5px;
-                            font-weight: 500; color: #7a6a56;">Archive</a>
-                        </div>
-                    </nav>
-                    <!-- ============ HERO ============ -->
-                    <section data-screen-label="Hero" style="padding: 84px 0 30px; max-width: 780px;">
-                        <h1 style="margin: 0 0 24px; font-family: 'Source Serif 4', serif; font-size: 54px; font-weight: 700; line-height: 1.08; letter-spacing: -0.6px; text-wrap: balance;">You've never read an Iranian newspaper.</h1>
-                        <p style="margin: 0 0 14px; font-size: 17px;
-                        line-height: 1.7; color: #3a322a; max-width: 60ch;">Probably not an Israeli one either. Everything you know about the Iran&ndash;Israel war was written by outlets from your own country for you.</p>
-                        <p style="margin: 0 0 32px; font-size: 17px;
-                        line-height: 1.7; color: #3a322a; max-width: 60ch;">OsiPress <span style="color: #8b7c6c;"> (Open Source Information Press)</span> translates what Iranian and Israeli front pages tell their own readers each morning, and puts the two side by side in English.</p>
-                        <div style="display: flex; align-items: center; gap: 20px;">
-                            <a href="/" style="display: inline-flex;
-                            align-items: center; font-size: 14px; font-weight: 600; color: #fdf9f6; background: #dd8338; padding: 12px 22px; border-radius: 8px;">Read today's front pages</a>
-                            <a href="/archive" style="font-size: 13.5px;
-                            font-weight: 500; color: #7a6a56;">or start from the archive</a>
-                        </div>
-                    </section>
-                    <!-- ============ EXAMPLE ============ -->
-                    <section data-screen-label="Example" style="padding: 60px 0; border-top: 1px solid #eeddc9; margin-top: 40px;">
-                        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 52px; align-items: start;">
-                            <div style="position: sticky; top: 24px;">
-                                <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #cf9257;">Why it's worth reading</p>
-                                <h2 style="margin: 0 0 16px; font-family:
-                                'Source Serif 4', serif; font-size: 30px;
-                                font-weight: 700; line-height: 1.25;">June
-                                  20. Iran declares the Strait of Hormuz
-                                  closed, again.</h2>
-                                <p style="margin: 0; font-size: 14.5px; line-height: 1.7; color: #5c5044;">A fifth of the world's oil ships through that channel, so this was front-page news in both countries. Here is how each paper led it that morning.</p>
-                            </div>
-                            <div style="display: flex; flex-direction: column; gap: 14px;">
-                                <div style="background: #fffdfb; border: 1px solid #eeddc9; border-radius: 10px; padding: 20px 24px;">
-                                    <div style="display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #f3e6d4; margin-bottom: 14px;">
-                                        <span style="font-size: 13.5px; font-weight: 700; letter-spacing: 0.4px;">TASNIM</span>
-                                        <span style="font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.3px; background: #eee6da; color: #7a6a56;">IRGC-linked</span>
-                                        <span style="font-size: 12px; color: #8b7c6c;">Iran (Farsi) <span style="color: #d9c3a6;">|</span> <span dir="rtl" lang="fa" style="font-family: 'Vazirmatn', sans-serif;">ایران (فارسی)</span></span>
-                                    </div>
-                                    <p style="margin: 0; font-family: 'Source Serif 4', serif; font-size: 19px; font-weight: 600; line-height: 1.5; text-wrap: pretty;">In response to the ceaseless violations of the ceasefire by the Zionist regime in southern Lebanon&hellip; the Strait of Hormuz will be closed to vessel traffic.</p>
-                                </div>
-                                <div style="background: #fffdfb; border: 1px solid #eeddc9; border-radius: 10px; padding: 20px 24px;">
-                                    <div style="display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #f3e6d4; margin-bottom: 14px;">
-                                        <span style="font-size: 13.5px; font-weight: 700; letter-spacing: 0.4px;">ISRAEL HAYOM</span>
-                                        <span style="font-size: 10.5px;
-                                        font-weight: 600; padding: 3px 8px;
-                                        border-radius: 4px; letter-spacing:
-                                        0.3px; background: #d7e3f4; color:
-                                        #274d80;">Right Wing</span>
-                                        <span style="font-size: 12px; color: #8b7c6c;">Israel (Hebrew) <span style="color: #d9c3a6;">|</span> <span dir="rtl" lang="he">ישראל (עברית)</span></span>
-                                    </div>
-                                    <p style="margin: 0; font-family: 'Source Serif 4', serif; font-size: 19px; font-weight: 600; line-height: 1.5; text-wrap: pretty;">IDF encircles dozens of Hezbollah terrorists in southern Lebanon, Iran threatens to block the Strait of Hormuz.</p>
-                                </div>
-                                <div style="padding: 6px 24px 0;">
-                                    <p style="margin: 0 0 12px; font-size: 14.5px; line-height: 1.75; color: #3a322a;">Read them again. In the Iranian paper, Israel broke a ceasefire, so the strait <em>is now closed</em>. In the Israeli paper, the army is rounding up terrorists, and the closure is <em>just a threat</em>. Neither headline is technically lying. They start the story at different points, and each skips the part that complicates its own side.</p>
-                                    <p style="margin: 0; font-size: 14.5px; line-height: 1.75; color: #3a322a;">OsiPress won't tell you which telling is right. It puts them next to each other, so you can notice the difference on your own.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    <!-- ============ COVERAGE MAP ============ -->
-                    <section data-screen-label="Coverage map" style="padding: 52px 0 12px; border-top: 1px solid #eeddc9;">
-                        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 52px; align-items: start;">
-                            <div style="position: sticky; top: 24px;">
-                                <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #cf9257;">Coverage</p>
-                                <h2 style="margin: 0 0 16px; font-family:
-                                'Source Serif 4', serif; font-size: 30px;
-                                font-weight: 700; line-height: 1.25;">Two
-                                  Countries & Six Sources
-                                  .</h2>
-                                <p style="margin: 0 0 20px; font-size: 14.5px; line-height: 1.7; color: #5c5044;">The outlets are chosen to span each country's own political spectrum, from hardline to reformist, right to left. More countries will light up as OsiPress grows.</p>
-                                <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px; line-height: 1.6; color: #3a322a;">
-                                    <p style="margin: 0;"><b>Iran</b> (Persian editions): Kayhan, hardline &middot; Tasnim, IRGC-linked &middot; Etemad, reformist</p>
-                                    <p style="margin: 0;"><b>Israel</b> (Hebrew editions): Israel Hayom, right-leaning &middot; Ynet, centrist &middot; Haaretz, left-leaning</p>
-                                </div>
-                                <br>
-                                <p style="margin: 0 0 20px; font-size: 14.5px; line-height: 1.7; color: #5c5044;">Coming soon: Ukraine and Russia</p>
-                            </div>
-                            <div style="align-self: center; border: 1px solid #eeddc9; border-radius: 12px; overflow: hidden;">
-                                <img
-                                        src="{{ url_for('static', filename='img/coverage-region.svg') }}" alt="Map of the Middle East with Iran and Israel highlighted in red" style="width: 100%; display: block;">
-                            </div>
-                        </div>
-                    </section>
-                    <!-- ============ FOOTER ============ -->
-                    <footer style="margin-top: 56px; padding-top: 18px; border-top: 1px solid #eeddc9; display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap;">
-                        <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #8b7c6c; max-width: 72ch;">Selection is mechanical: whatever each outlet leads its own front page with, at 06:00 and 18:00 UTC, is what appears here.</p>
-                        <div style="display: flex; align-items: baseline; gap: 18px;">
-                            <a href="https://github.com/ShlokShar/Osipress" target="_blank" rel="noopener" style="font-size: 12px; font-weight: 500;">GitHub &#8599;</a>
-                            <span style="font-size: 12px; color: #c4b29c; font-weight: 500;">[&rdquo;] OsiPress</span>
-                        </div>
-                    </footer>
-                </div>
-            </div>
-        </x-dc>
-    </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OsiPress</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+<script src="{{ url_for('static', filename='js/osipress.js') }}"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fdf9f6; }
+  body { font-family: 'Libre Franklin', system-ui, sans-serif; color: #0f0a05; -webkit-font-smoothing: antialiased; }
+  a { color: #b05f1a; text-decoration: none; }
+  a:hover { color: #dd8338; }
+  ::selection { background: #f3b078; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; background: #fdf9f6;">
+
+  <!-- ============ NAV ============ -->
+  <nav data-screen-label="Nav bar" style="position: sticky; top: 0; z-index: 50; background: rgba(253, 249, 246, 0.86); backdrop-filter: saturate(180%) blur(12px); -webkit-backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid #eeddc9;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 18px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="{{ url_for('static', filename='img/osipress-mark.svg') }}" alt="" aria-hidden="true" style="height: 30px; width: auto; display: block;">
+        <span style="font-family: 'Rubik', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">OsiPress</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 26px;">
+        <a href="#" style="font-size: 13.5px; font-weight: 600; color: #0f0a05; border-bottom: 2px solid #dd8338; padding-bottom: 2px;">About</a>
+        <a href="/today" style="font-size: 13.5px; font-weight: 500; color: #7a6a56;">Today</a>
+        <a href="/archive" style="font-size: 13.5px; font-weight: 500; color: #7a6a56;">Archive</a>
+      </div>
+    </div>
+  </nav>
+
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 36px 64px;">
+
+  <!-- ============ HERO ============ -->
+  <section data-reveal data-screen-label="Hero" style="padding: 84px 0 30px; max-width: 780px;">
+    <h1 style="margin: 0 0 24px; font-family: 'Source Serif 4', serif; font-size: 54px; font-weight: 700; line-height: 1.08; letter-spacing: -0.6px; text-wrap: balance;">You've never read an Iranian newspaper.</h1>
+    <p style="margin: 0 0 14px; font-size: 17px; line-height: 1.7; color: #3a322a; max-width: 60ch;">Probably not an Israeli one either. Everything you know about the Iran&ndash;Israel war was written by outlets from your own country, for you.</p>
+    <p style="margin: 0 0 32px; font-size: 17px; line-height: 1.7; color:
+    #3a322a; max-width: 60ch;">OsiPress <span style="color: #8b7c6c;">(
+      <em>Open Source Info Press</em>)</span> translates what Iranian and
+      Israeli front pages tell their own readers each day, and puts the two
+      side by side in English.</p>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <a href="/today" style="display: inline-flex; align-items: center;
+      font-size: 14px; font-weight: 600; color: #fdf9f6; background: #dd8338;
+       padding: 12px 22px; border-radius: 8px;">Read today's articles</a>
+      <a href="/archive" style="font-size: 13.5px; font-weight: 500; color:
+      #7a6a56;">or check out the archive</a>
+    </div>
+  </section>
+
+  <!-- ============ EXAMPLE ============ -->
+  <section data-reveal data-screen-label="Example" style="padding: 60px 0; border-top: 1px solid #eeddc9; margin-top: 40px;">
+    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 52px; align-items: start;">
+      <div style="position: sticky; top: 24px;">
+        <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #cf9257;">Why it's worth reading</p>
+        <h2 style="margin: 0 0 16px; font-family: 'Source Serif 4', serif;
+        font-size: 30px; font-weight: 700; line-height: 1.25;">June 20. Iran
+          declares the Strait of Hormuz closed, again.</h2>
+        <p style="margin: 0; font-size: 14.5px; line-height: 1.7; color: #5c5044;">A fifth of the world's oil ships through that channel, so this was front-page news in both countries. Here is how each paper led it that morning.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: #fffdfb; border: 1px solid #eeddc9; border-radius: 10px; padding: 20px 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #f3e6d4; margin-bottom: 14px;">
+            <span style="font-size: 13.5px; font-weight: 700; letter-spacing: 0.4px;">TASNIM</span>
+            <span style="font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.3px; background: #eee6da; color: #7a6a56;">IRGC-linked</span>
+            <span style="font-size: 12px; color: #8b7c6c;">Iran (Farsi) <span style="color: #d9c3a6;">|</span> <span dir="rtl" lang="fa" style="font-family: 'Vazirmatn', sans-serif;">ایران (فارسی)</span></span>
+          </div>
+          <p style="margin: 0; font-family: 'Source Serif 4', serif; font-size: 19px; font-weight: 600; line-height: 1.5; text-wrap: pretty;">In response to the ceaseless violations of the ceasefire by the Zionist regime in southern Lebanon&hellip; the Strait of Hormuz will be closed to vessel traffic.</p>
+        </div>
+        <div style="background: #fffdfb; border: 1px solid #eeddc9; border-radius: 10px; padding: 20px 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #f3e6d4; margin-bottom: 14px;">
+            <span style="font-size: 13.5px; font-weight: 700; letter-spacing: 0.4px;">ISRAEL HAYOM</span>
+            <span style="font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.3px; background: #d7e3f4; color: #274d80;">Right</span>
+            <span style="font-size: 12px; color: #8b7c6c;">Israel (Hebrew) <span style="color: #d9c3a6;">|</span> <span dir="rtl" lang="he">ישראל (עברית)</span></span>
+          </div>
+          <p style="margin: 0; font-family: 'Source Serif 4', serif; font-size: 19px; font-weight: 600; line-height: 1.5; text-wrap: pretty;">IDF encircles dozens of Hezbollah terrorists in southern Lebanon, Iran threatens to block the Strait of Hormuz.</p>
+        </div>
+        <div style="padding: 6px 24px 0;">
+          <p style="margin: 0 0 12px; font-size: 14.5px; line-height: 1.75;
+          color: #3a322a;">Read between the lines. In the Iranian paper, Israel
+            broke
+            a ceasefire, so the strait <em>is now closed</em>. In the Israeli paper, the army is rounding up terrorists, and the closure is <em>just a threat</em>. Neither headline is technically lying. They start the story at different points, and each skips the part that complicates its own side.</p>
+          <p style="margin: 0; font-size: 14.5px; line-height: 1.75; color: #3a322a;">OsiPress won't tell you which telling is right. It puts them next to each other, so you can notice the difference on your own.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COVERAGE MAP ============ -->
+  <section data-reveal data-screen-label="Coverage map" style="padding: 52px 0 12px; border-top: 1px solid #eeddc9;">
+    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 52px; align-items: start;">
+      <div style="position: sticky; top: 24px;">
+        <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #cf9257;">Coverage</p>
+        <h2 style="margin: 0 0 16px; font-family: 'Source Serif 4', serif;
+        font-size: 30px; font-weight: 700; line-height: 1.25;">Two countries
+          & six outlets.</h2>
+        <p style="margin: 0 0 20px; font-size: 14.5px; line-height: 1.7; color: #5c5044;">The outlets are chosen to span each country's own political spectrum, from hardline to reformist, right to left. More countries will light up as OsiPress grows.</p>
+        <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px; line-height: 1.6; color: #3a322a;">
+          <p style="margin: 0;"><b>Iran</b> (Persian editions): Kayhan, hardline &middot; Tasnim, IRGC-linked &middot; Etemad, reformist</p>
+          <p style="margin: 0;"><b>Israel</b> (Hebrew editions): Israel Hayom, right-leaning &middot; Ynet, centrist &middot; Haaretz, left-leaning</p>
+        </div>
+        <br>
+        <p style="margin: 0 0 20px; font-size: 14.5px; line-height: 1.7;
+        color: #5c5044;">Next countries: Ukraine & Russia</p>
+      </div>
+      <div style="align-self: center; border: 1px solid #eeddc9; border-radius: 12px; overflow: hidden;">
+        <img src="{{ url_for('static', filename='img/coverage-region.svg') }}" alt="Map of the Middle East with Iran and Israel highlighted in red" style="width: 100%; display: block;">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer data-reveal style="margin-top: 56px; padding-top: 18px; border-top: 1px solid #eeddc9; display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap;">
+    <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #8b7c6c; max-width: 72ch;">Selection is mechanical: whatever each outlet leads its own front page with, at 06:00 and 18:00 UTC, is what appears here.</p>
+    <div style="display: flex; align-items: baseline; gap: 18px;">
+      <a href="https://github.com/ShlokShar/Osipress" target="_blank" rel="noopener" style="font-size: 12px; font-weight: 500;">GitHub &#8599;</a>
+      <span style="font-size: 12px; color: #c4b29c; font-weight: 500;">[&rdquo;] OsiPress</span>
+    </div>
+  </footer>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() {
+    const run = () => {
+      const els = Array.from(document.querySelectorAll('[data-reveal]'));
+      if (!els.length) return;
+      if (!('IntersectionObserver' in window)) return;
+      const reveal = (el) => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      };
+      const inView = (el) => {
+        const r = el.getBoundingClientRect();
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        return r.top < vh * 0.92 && r.bottom > 0;
+      };
+      els.forEach((el) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(26px)';
+        el.style.transition = 'opacity .7s cubic-bezier(.16,.84,.44,1), transform .7s cubic-bezier(.16,.84,.44,1)';
+        el.style.willChange = 'opacity, transform';
+      });
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          reveal(e.target);
+          io.unobserve(e.target);
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      requestAnimationFrame(() => {
+        els.forEach((el) => {
+          if (inView(el)) { reveal(el); io.unobserve(el); }
+          else io.observe(el);
+        });
+      });
+      // Safety net: never leave content invisible if the observer never fires.
+      setTimeout(() => els.forEach((el) => { if (getComputedStyle(el).opacity === '0') reveal(el); }), 1200);
+    };
+    requestAnimationFrame(run);
+  }
+}
+</script>
+</body>
 </html>

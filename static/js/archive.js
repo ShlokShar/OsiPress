@@ -51,6 +51,14 @@
   label.textContent = formatLabel(date);
   syncUrl(date);
 
+  // Native date inputs only open the calendar dropdown on clicks that land on
+  // specific internal sub-regions; force it open on any click within the label.
+  input.addEventListener('click', () => {
+    if (typeof input.showPicker === 'function') {
+      try { input.showPicker(); } catch (e) { /* ignore */ }
+    }
+  });
+
   input.addEventListener('change', () => {
     const next = input.value;
     if (!inRange(next)) { input.value = date; return; }
