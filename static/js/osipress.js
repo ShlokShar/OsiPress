@@ -6,7 +6,6 @@
  *   story = { id, source_id, headline, translated_headline, link,
  *             summary, references_original[], references_translated[] }
  * ------------------------------------------------------------------ */
-
 /* Political leaning is read straight from each outlet's own `political_leaning`
    value in the data (left = red, center = grey-purple, right = blue). Nothing
    about an outlet's leaning is hardcoded here. */
