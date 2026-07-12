@@ -39,6 +39,9 @@ class AIService:
         :return: True if the headline is political, False otherwise
         """
 
+        if not headline:
+            return False
+
         response = self.client.responses.parse(
             model=self.model,
             instructions="""You classify RSS news headlines.
@@ -79,13 +82,19 @@ class AIService:
         :param text: the content of the article
         :return: the summary of the article and a list of references
         """
+
+        if not text:
+            return None
+
         response = self.client.responses.parse(
             model=self.model,
             instructions="You summarize political news articles from foreign "
                          "languages into English. The actual summary of the "
                          "article must be short and within 3 sentences. It's "
                          "important for you to have excerpts from the "
-                         "original language that support your summary.",
+                         "original language that support your summary. If you "
+                         "cannot summarize this article, just say 'This "
+                         "article cannot be summarized.'",
             input=f"Article:\n {text}",
             text_format=Summarized
         )
