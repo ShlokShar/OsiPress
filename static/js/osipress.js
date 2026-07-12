@@ -60,6 +60,14 @@ function hostOf(url){
   try { return new URL(url).hostname.replace(/^www\./, ''); }
   catch (e) { return 'source'; }
 }
+function safeHttpUrl(url){
+  try {
+    const parsed = new URL(url);
+    return (parsed.protocol === 'http:' || parsed.protocol === 'https:')
+      ? parsed.href
+      : null;
+  } catch (e) { return null; }
+}
 
 /* ---------- story ---------- */
 function buildStory(country, outlet, story, i){
@@ -132,9 +140,10 @@ function buildStory(country, outlet, story, i){
     detail.appendChild(block);
   }
 
-  if (story.link){
-    const a = el('a', 'readlink', 'Read at ' + hostOf(story.link) + ' \u2197');
-    a.href = story.link; a.target = '_blank'; a.rel = 'noopener';
+  const safeLink = safeHttpUrl(story.link);
+  if (safeLink){
+    const a = el('a', 'readlink', 'Read at ' + hostOf(safeLink) + ' \u2197');
+    a.href = safeLink; a.target = '_blank'; a.rel = 'noopener';
     a.addEventListener('click', e => e.stopPropagation());
     detail.appendChild(a);
   }
