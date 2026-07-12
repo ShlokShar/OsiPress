@@ -10,7 +10,7 @@ from datetime import (
 import feedparser
 
 from cron.util.ai_service import AIService
-from cron.util.article import get_article_text
+from cron.util.article import get_article_text, is_safe_article_url
 from cron.util.translation import (
     translate,
     translate_references
@@ -52,7 +52,8 @@ for country, sources in data.items():
 
         url = data[country][source]["url"]
         feed = feedparser.parse(url) # parse the RSS
-        if feed.status != 200:
+        feed_status = getattr(feed, "status", None)
+        if feed_status != 200:
             continue
 
         # go through each object in the RSS
@@ -68,6 +69,9 @@ for country, sources in data.items():
                 headline = entry.title
                 relevant = ai_service.classify(headline)
                 link = entry.link
+
+                if not is_safe_article_url(link):
+                    continue
 
                 # if this headline is not political at all, then skip
                 if not relevant:

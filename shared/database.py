@@ -13,7 +13,9 @@ from sqlalchemy.orm import (
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 database_password = os.getenv("DATABASE_PASSWORD") or ""
 
-DATABASE_URL = f"postgresql://postgres:{database_password}@localhost:5432/osipress"
+DATABASE_URL = os.getenv("DATABASE_URL") or (
+    f"postgresql://postgres:{database_password}@localhost:5432/osipress"
+)
 engine = create_engine(DATABASE_URL, echo=False)
 
 
