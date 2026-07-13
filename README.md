@@ -1,38 +1,32 @@
-# Osipress
+# OsiPress
 
 Snapshots of what foreign press are telling their own people, 
 translated to English and shown side by side. Prototype pair: Iran and Israel.
 
 ## Problem
 
-When you read about a foreign conflict, who's writing it? Outlets from your 
-home country. If you've followed the Iran-Israel war at all, you've 
-probably read dozens of articles *about* Iran and probably zero *from* Iran.
+When you read about a foreign conflict, the reporting usually comes from 
+outlets in your own country. If you’ve followed the Iran–Israel war, you’ve 
+probably read dozens of articles *about* Iran and very few *from* Iran.
 
-Both countries have a domestic press that publishes every morning for its 
-own people, Iranian papers in Persian, Israeli papers in Hebrew. What they 
-tell their own readers is often different from what their English editions 
-tell the world, and unless you read the language, you never see any of it.
+Iranian and Israeli outlets publish for domestic audiences in Persian and 
+Hebrew, often framing events differently from their international editions. 
+Unless you read those languages, directly comparing that coverage is difficult.
 
-So if you want to know what Iranian papers told Iranians this morning, or 
-what Israeli papers told Israelis, there's no easy way to do it.
+## What is OsiPress?
 
-## What is Osipress?
-
-Osipress (_Open Source Info Press_) shows what different countries' presses 
+OsiPress (_Open Source Info Press_) shows what different countries' presses 
 are telling their own citizens. Right now it covers Iran and Israel through 
 six outlets:
 
-- **Iran** (Persian editions): Kayhan (hardline), Tasnim (IRGC-linked), 
-  Etemad (reformist)
-- **Israel** (Hebrew editions): Israel Hayom (right-leaning), Ynet (centrist)
-  , Haaretz (left-leaning)
+- **Iran** (Persian editions): Kayhan (right), Hamshahri (center), Shargh (left)
+- **Israel** (Hebrew editions): Israel Hayom (right-leaning), Yedioth 
+  Ahronoth (centrist), Haaretz (left-leaning)
 
-Two times a day, Osipress looks at each outlet's front page and takes 
-whatever story its editors put on top. For each article there is:
-- the headline is translated verbatim: when an Iranian paper writes 
-  "the Zionist regime," that renders, and when an Israeli paper writes "the 
-  Ayatollah regime," that renders too
+Twice a day, OsiPress checks each outlet’s most recent articles. Each 
+article includes:
+
+- a verbatim English translation of the headline
 - a two-sentence summary
 - quotes from the article in the original language to back up the summary
 - a link to the original article
@@ -55,7 +49,7 @@ In the Iranian telling, Israel broke a ceasefire, so the strait is now
 closed. In the Israeli telling, the army is rounding up terrorists, and the 
 closure is just a threat. Neither headline is technically lying. They start the 
 story at different points, and each skips the part that complicates its own 
-side. Osipress won't tell you which telling is right. It puts them next to 
+side. OsiPress won't tell you which telling is right. It puts them next to 
 each other, so you can notice the difference on your own.
 
 [Iranian statement](https://www.iribnews.ir/fa/news/5831029/) · [Israel 
