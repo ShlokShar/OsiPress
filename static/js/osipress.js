@@ -23,6 +23,12 @@ const SCRIPT_LABEL = {
   'Israel': { name: 'Hebrew',  native: 'עברית' },
 };
 
+/* Canonical topic-tag vocabulary + display order. Kept in sync with the cron
+   pipeline's ALLOWED_TAGS (cron/util/ai_service.py). Any value not in this list
+   (e.g. the "No tags provided." sentinel from older articles) is ignored. */
+const TAG_ORDER = ['Conflict', 'Diplomacy', 'Sanctions', 'Domestic', 'Economy', 'International'];
+const articleTags = story => (Array.isArray(story.tags) ? story.tags : []);
+
 /* ---------- load Flask-injected data ---------- */
 function loadData(){
   const node = document.getElementById('osipress-data');
@@ -47,8 +53,27 @@ const state = {
   order: {},                                             // country -> [outlet names]
   expanded: {},                                          // key -> bool
   translated: {},                                        // key -> bool
+  selectedTags: new Set(),                               // active topic filter
 };
 countries.forEach(c => { state.order[c] = Object.keys(DATA[c]); });
+
+/* Topics actually present in this edition, in canonical order. Drives the
+   filter chips; empty (e.g. pre-tag archive editions) hides the picker. */
+const presentTags = (() => {
+  const seen = new Set();
+  countries.forEach(c => Object.keys(DATA[c]).forEach(o =>
+    ((DATA[c][o] || {}).articles || []).forEach(s =>
+      articleTags(s).forEach(t => seen.add(t)))));
+  return TAG_ORDER.filter(t => seen.has(t));
+})();
+
+/* AND semantics: with tags active, a story must carry every selected tag. */
+function passesTagFilter(story){
+  if (!state.selectedTags.size) return true;
+  const tags = articleTags(story);
+  for (const t of state.selectedTags){ if (!tags.includes(t)) return false; }
+  return true;
+}
 
 const keyOf = (country, outlet, i) => country + '|' + outlet + '|' + i;
 const APOLOGY = /^(i can'?t|no content|the provided article content is empty)/i;
@@ -95,6 +120,22 @@ function buildStory(country, outlet, story, i){
     ol.appendChild(o);
     main.appendChild(ol);
   }
+
+  // Topic pills (canonical order); clicking one toggles the toolbar filter.
+  const storyTags = TAG_ORDER.filter(t => articleTags(story).includes(t));
+  if (storyTags.length){
+    const topics = el('div', 'topics');
+    storyTags.forEach(t => {
+      const pill = el('button', 'topic', t);
+      pill.dataset.tag = t;
+      pill.classList.toggle('active', state.selectedTags.has(t));
+      pill.setAttribute('aria-label', 'Filter by ' + t);
+      pill.addEventListener('click', e => { e.stopPropagation(); toggleTag(t); });
+      topics.appendChild(pill);
+    });
+    main.appendChild(topics);
+  }
+
   const chev = el('span', 'chev');
   row.appendChild(num); row.appendChild(main); row.appendChild(chev);
 
@@ -163,7 +204,7 @@ function buildStory(country, outlet, story, i){
 
   wrap.appendChild(row);
   wrap.appendChild(detail);
-  return wrap;
+  return { wrap, tags: articleTags(story) };
 }
 
 /* ---------- outlet card ---------- */
@@ -189,7 +230,12 @@ function buildCard(country, outlet){
   card.appendChild(head);
 
   const stories = el('div', 'stories');
-  ((DATA[country][outlet] || {}).articles || []).forEach((s, i) => stories.appendChild(buildStory(country, outlet, s, i)));
+  card._stories = [];
+  ((DATA[country][outlet] || {}).articles || []).forEach((s, i) => {
+    const { wrap, tags } = buildStory(country, outlet, s, i);
+    stories.appendChild(wrap);
+    card._stories.push({ el: wrap, tags });
+  });
   card.appendChild(stories);
 
   if (handle) wireDrag(card, handle, country);
@@ -273,6 +319,18 @@ function render(){
   relayout();
 }
 
+/* Toggle each story in a card by the active topic filter; return whether any
+   story remains visible. With no filter active every story shows. */
+function applyStoryFilter(card){
+  let anyVisible = false;
+  (card._stories || []).forEach(({ el, tags }) => {
+    const show = passesTagFilter({ tags });
+    el.style.display = show ? 'flex' : 'none';
+    if (show) anyVisible = true;
+  });
+  return anyVisible;
+}
+
 /* ---------- layout: selected countries side by side, stacked, or one wide ---------- */
 function relayout(){
   const sel = state.selected.filter(c => countries.includes(c));
@@ -283,10 +341,25 @@ function relayout(){
   const stacked = sel.length === 2 && narrow;
   board.dataset.mode = compare ? 'compare' : (stacked ? 'stacked' : 'single');
 
+  const filtering = state.selectedTags.size > 0;
+  // Per country, the ordered outlets whose card still has a matching story.
+  // Filtered cards/headers are removed from flow so explicit grid rows stay gapless.
+  const visibleOutlets = {};
+  let totalVisibleCards = 0;
   countries.forEach(country => {
     const shown = sel.includes(country);
-    if (headerEls[country]) headerEls[country].style.display = shown ? 'flex' : 'none';
-    Object.values(cardEls[country] || {}).forEach(c => { c.style.display = shown ? 'flex' : 'none'; });
+    visibleOutlets[country] = [];
+    state.order[country].forEach(outlet => {
+      const c = cardEls[country][outlet];
+      if (!c) return;
+      if (!shown){ c.style.display = 'none'; return; }
+      const anyVisible = applyStoryFilter(c);
+      const cardShown = filtering ? anyVisible : true;
+      c.style.display = cardShown ? 'flex' : 'none';
+      if (cardShown){ visibleOutlets[country].push(outlet); totalVisibleCards++; }
+    });
+    const headerShown = shown && (!filtering || visibleOutlets[country].length > 0);
+    if (headerEls[country]) headerEls[country].style.display = headerShown ? 'flex' : 'none';
   });
 
   if (compare){
@@ -294,7 +367,7 @@ function relayout(){
       const col = colIdx + 1;
       const h = headerEls[country];
       h.style.gridColumn = String(col); h.style.gridRow = '1'; h.style.order = '';
-      state.order[country].forEach((outlet, i) => {
+      visibleOutlets[country].forEach((outlet, i) => {
         const c = cardEls[country][outlet];
         c.style.gridColumn = String(col); c.style.gridRow = String(i + 2); c.style.order = '';
       });
@@ -304,7 +377,7 @@ function relayout(){
     sel.forEach(country => {
       const h = headerEls[country];
       h.style.gridColumn = '1 / -1'; h.style.gridRow = ''; h.style.order = String(ord++);
-      state.order[country].forEach(outlet => {
+      visibleOutlets[country].forEach(outlet => {
         const c = cardEls[country][outlet];
         c.style.gridColumn = ''; c.style.gridRow = ''; c.style.order = String(ord++);
       });
@@ -313,10 +386,19 @@ function relayout(){
     const country = sel[0];
     const h = headerEls[country];
     h.style.gridColumn = '1 / -1'; h.style.gridRow = ''; h.style.order = '0';
-    state.order[country].forEach((outlet, i) => {
+    visibleOutlets[country].forEach((outlet, i) => {
       const c = cardEls[country][outlet];
       c.style.gridColumn = ''; c.style.gridRow = ''; c.style.order = String(i + 1);
     });
+  }
+
+  if (emptyNote){
+    if (filtering && totalVisibleCards === 0){
+      emptyNote.textContent = 'No articles match the selected topics.';
+      emptyNote.hidden = false;
+    } else {
+      emptyNote.hidden = true;
+    }
   }
 }
 
@@ -348,6 +430,79 @@ function renderChips(){
   });
 }
 
+/* ---------- topic filter (foldable multi-select) ---------- */
+const topicsPicker = document.getElementById('topics-picker');
+const topicsToggle = document.getElementById('topics-toggle');
+const topicsPanel  = document.getElementById('topics-panel');
+const topicsCount  = document.getElementById('topics-count');
+
+/* Build the checkbox options once; each carries its tag for sync/toggle. */
+function renderTopicOptions(){
+  if (!topicsPanel) return;
+  if (!presentTags.length){                        // pre-tag editions: no filter
+    if (topicsPicker) topicsPicker.style.display = 'none';
+    return;
+  }
+  topicsPanel.innerHTML = '';
+  presentTags.forEach(tag => {
+    const opt = el('button', 'dd-opt');
+    opt.type = 'button';
+    opt.dataset.tag = tag;
+    opt.setAttribute('role', 'menuitemcheckbox');
+    opt.setAttribute('aria-checked', state.selectedTags.has(tag) ? 'true' : 'false');
+    opt.appendChild(el('span', 'dd-box'));
+    opt.appendChild(el('span', 'dd-opt-lbl', tag));
+    opt.addEventListener('click', () => toggleTag(tag));
+    topicsPanel.appendChild(opt);
+  });
+}
+
+/* Reflect the active filter in option checkmarks + the toggle's count badge. */
+function syncTopicControl(){
+  if (topicsPanel){
+    Array.from(topicsPanel.children).forEach(opt => {
+      opt.setAttribute('aria-checked', state.selectedTags.has(opt.dataset.tag) ? 'true' : 'false');
+    });
+  }
+  const n = state.selectedTags.size;
+  if (topicsCount) topicsCount.textContent = n === 0 ? 'All' : n + ' selected';
+  if (topicsToggle) topicsToggle.classList.toggle('has-selection', n > 0);
+}
+
+function openTopics(open){
+  if (!topicsPanel || !topicsToggle) return;
+  topicsPanel.hidden = !open;
+  topicsToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+if (topicsToggle){
+  topicsToggle.addEventListener('click', e => {
+    e.stopPropagation();
+    openTopics(topicsPanel.hidden);
+  });
+}
+// Click anywhere outside the open panel closes it.
+document.addEventListener('click', e => {
+  if (topicsPicker && topicsPanel && !topicsPanel.hidden && !topicsPicker.contains(e.target)){
+    openTopics(false);
+  }
+});
+
+function toggleTag(tag){
+  if (state.selectedTags.has(tag)) state.selectedTags.delete(tag);
+  else state.selectedTags.add(tag);
+  syncTopicControl();                              // panel stays open (multi-select)
+  syncTagPills();
+  relayout();
+}
+
+/* Keep the on-card topic pills' active state in sync with the filter. */
+function syncTagPills(){
+  document.querySelectorAll('.topic').forEach(pill => {
+    pill.classList.toggle('active', state.selectedTags.has(pill.dataset.tag));
+  });
+}
+
 /* ---------- edition summary ---------- */
 function editionCount(){
   const node = document.getElementById('edition-count');
@@ -361,4 +516,6 @@ function editionCount(){
 /* ---------- init ---------- */
 render();
 renderChips();
+renderTopicOptions();
+syncTopicControl();
 editionCount();
