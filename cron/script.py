@@ -82,11 +82,13 @@ for country, sources in data.items():
                 article_text = get_article_text(link)
                 processed_article = ai_service.summarize(article_text)
 
-                # save the summary and references
+                # save the summary, references, and tags
                 article_summary = processed_article.summary if (
                     processed_article) else "No summary provided."
                 article_references = processed_article.references \
                     if processed_article else ["No references provided."]
+                article_tags = processed_article.tags if processed_article \
+                    else ["No tags provided."]
 
                 references_translated = translate_references(article_references)
 
@@ -103,8 +105,11 @@ for country, sources in data.items():
                     summary=article_summary,
                     references_original=article_references,
                     references_translated=references_translated,
+                    tags=article_tags,
                     captured_at=run_time,
                 )
                 Articles.add_article(article)
-            except Exception:
-                print(f"{headline}: {article}")
+                print("tag:", article_tags)
+            except Exception as e:
+                print(e)
+                print(f"exception: {headline}: {article}")

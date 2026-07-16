@@ -101,6 +101,7 @@ class Articles(Base):
     summary: Mapped[str] = mapped_column()
     references_original: Mapped[list[str]] = mapped_column(ARRAY(String))
     references_translated: Mapped[list[str]] = mapped_column(ARRAY(String))
+    tags: Mapped[list[str]] = mapped_column(ARRAY(String))
     captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                   server_default=func.now())
 
@@ -134,6 +135,7 @@ class Articles(Base):
             "summary": self.summary,
             "references_original": self.references_original,
             "references_translated": self.references_translated,
+            "tags": self.tags,
         }
 
 

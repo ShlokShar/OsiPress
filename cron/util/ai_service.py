@@ -1,7 +1,11 @@
 
 import os
 from pathlib import Path
-from typing import Optional
+from typing import (
+    Optional,
+    Literal,
+    get_args
+)
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -13,6 +17,15 @@ from pydantic import (
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
+ALLOWED_TAGS = Literal[
+    "Conflict",
+    "Diplomacy",
+    "Sanctions",
+    "Domestic",
+    "Economy",
+    "International",
+]
+
 class HeadlineClassifier(BaseModel):
     political: bool = Field(description="whether a headline is political")
 
@@ -20,6 +33,8 @@ class Summarized(BaseModel):
     references: list[str] = Field(description="a list of quotes from the "
                                               "article that are used for the "
                                               "summary")
+    tags: list[ALLOWED_TAGS] = Field(description="a list of tags from the "
+                                                 "article")
     summary: str = Field(description="Summary of the article")
 
 class AIService:
@@ -94,7 +109,11 @@ class AIService:
                          "important for you to have excerpts from the "
                          "original language that support your summary. If you "
                          "cannot summarize this article, just say 'This "
-                         "article cannot be summarized.'",
+                         "article cannot be summarized.' "
+                         ""
+                         "Finally, add the relevant tags that relate to the "
+                         "article. The article can have more than one tag. "
+                         "Tag topics: " + ", ".join(get_args(ALLOWED_TAGS)),
             input=f"Article:\n {text}",
             text_format=Summarized
         )
