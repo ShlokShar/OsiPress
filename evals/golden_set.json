@@ -1,0 +1,439 @@
+{
+  "classifications": [
+    {
+      "id": "fa-classification-01",
+      "language": "Persian",
+      "headline": "سپاه اعلام کرد: انهدام یک فروند پهپاد MQ9 آمریکایی در آسمان اندیمشک",
+      "political": true
+    },
+    {
+      "id": "fa-classification-02",
+      "language": "Persian",
+      "headline": "توضیح عراقچی درباره سفر به عمان",
+      "political": true
+    },
+    {
+      "id": "fa-classification-03",
+      "language": "Persian",
+      "headline": "بن‌بست در بررسی بودجه پنتاگون",
+      "political": true
+    },
+    {
+      "id": "fa-classification-04",
+      "language": "Persian",
+      "headline": "ارسال ۱۵۰ قبضه لوله توپ انگلیسی به اوکراین آغاز شد",
+      "political": true
+    },
+    {
+      "id": "fa-classification-05",
+      "language": "Persian",
+      "headline": "اتحادیه اروپا تحریم‌های تازه‌ای علیه مقام‌های ایرانی تصویب کرد",
+      "political": true
+    },
+    {
+      "id": "fa-classification-06",
+      "language": "Persian",
+      "headline": "نتایج نهایی انتخابات پارلمانی اعلام شد",
+      "political": true
+    },
+    {
+      "id": "fa-classification-07",
+      "language": "Persian",
+      "headline": "بانک مرکزی نرخ بهره را برای مهار تورم افزایش داد",
+      "political": true
+    },
+    {
+      "id": "fa-classification-08",
+      "language": "Persian",
+      "headline": "شکایت دولت یمن از ایران به شورای امنیت سازمان ملل",
+      "political": true
+    },
+    {
+      "id": "fa-classification-09",
+      "language": "Persian",
+      "headline": "قیمت سکه و طلا امروز پنجشنبه ۲۵ تیر ۱۴۰۵",
+      "political": false
+    },
+    {
+      "id": "fa-classification-10",
+      "language": "Persian",
+      "headline": "پرسپولیس با دو گل حریف خود را شکست داد",
+      "political": false
+    },
+    {
+      "id": "fa-classification-11",
+      "language": "Persian",
+      "headline": "بازیگر جوان برنده جایزه بهترین بازیگر جشنواره شد",
+      "political": false
+    },
+    {
+      "id": "fa-classification-12",
+      "language": "Persian",
+      "headline": "هواشناسی از بارش شدید باران در شمال کشور خبر داد",
+      "political": false
+    },
+    {
+      "id": "fa-classification-13",
+      "language": "Persian",
+      "headline": "پژوهشگران روش تازه‌ای برای درمان بیماری قلبی یافتند",
+      "political": false
+    },
+    {
+      "id": "fa-classification-14",
+      "language": "Persian",
+      "headline": "گوشی هوشمند جدید با باتری قدرتمند معرفی شد",
+      "political": false
+    },
+    {
+      "id": "fa-classification-15",
+      "language": "Persian",
+      "headline": "طرز تهیه خورش بادمجان به روش سنتی",
+      "political": false
+    },
+    {
+      "id": "fa-classification-16",
+      "language": "Persian",
+      "headline": "زمین‌لرزه‌ای به بزرگی چهار ریشتر شهر را لرزاند",
+      "political": false
+    },
+    {
+      "id": "he-classification-01",
+      "language": "Hebrew",
+      "headline": "הכנסת אישרה את החוק להרחבת גיוס החרדים לצה״ל",
+      "political": true
+    },
+    {
+      "id": "he-classification-02",
+      "language": "Hebrew",
+      "headline": "שליש מסיעת הליכוד התארגן להדחת נתניהו לאחר 7 באוקטובר",
+      "political": true
+    },
+    {
+      "id": "he-classification-03",
+      "language": "Hebrew",
+      "headline": "אושר החוק להפרדה מגדרית בתארים מתקדמים",
+      "political": true
+    },
+    {
+      "id": "he-classification-04",
+      "language": "Hebrew",
+      "headline": "ארה״ב תקפה באזור טהרן ואיראן שיגרה טילים לירדן",
+      "political": true
+    },
+    {
+      "id": "he-classification-05",
+      "language": "Hebrew",
+      "headline": "ישראל ואיראן הסכימו לחדש את שיחות הפסקת האש",
+      "political": true
+    },
+    {
+      "id": "he-classification-06",
+      "language": "Hebrew",
+      "headline": "ועדת הכספים אישרה את תקציב הביטחון החדש",
+      "political": true
+    },
+    {
+      "id": "he-classification-07",
+      "language": "Hebrew",
+      "headline": "האיחוד האירופי הטיל סנקציות חדשות על רוסיה",
+      "political": true
+    },
+    {
+      "id": "he-classification-08",
+      "language": "Hebrew",
+      "headline": "תוצאות הבחירות המקומיות פורסמו הלילה",
+      "political": true
+    },
+    {
+      "id": "he-classification-09",
+      "language": "Hebrew",
+      "headline": "יעל שרוני: בחרתי לא לעלות על האוטובוס ואחר כך היה בו פיגוע",
+      "political": false
+    },
+    {
+      "id": "he-classification-10",
+      "language": "Hebrew",
+      "headline": "מכבי תל אביב ניצחה בגמר גביע המדינה",
+      "political": false
+    },
+    {
+      "id": "he-classification-11",
+      "language": "Hebrew",
+      "headline": "מזג האוויר: ירידה בטמפרטורות וגשם בצפון",
+      "political": false
+    },
+    {
+      "id": "he-classification-12",
+      "language": "Hebrew",
+      "headline": "הזמרת חשפה את השיר החדש שלה",
+      "political": false
+    },
+    {
+      "id": "he-classification-13",
+      "language": "Hebrew",
+      "headline": "מחקר חדש מצא טיפול אפשרי למחלת לב",
+      "political": false
+    },
+    {
+      "id": "he-classification-14",
+      "language": "Hebrew",
+      "headline": "הטלפון החדש יגיע לחנויות בחודש הבא",
+      "political": false
+    },
+    {
+      "id": "he-classification-15",
+      "language": "Hebrew",
+      "headline": "עשר המסעדות הטובות ביותר בתל אביב",
+      "political": false
+    },
+    {
+      "id": "he-classification-16",
+      "language": "Hebrew",
+      "headline": "מדענים גילו מין חדש של ציפור במדבר",
+      "political": false
+    }
+  ],
+  "translations": [
+    {
+      "id": "fa-translation-01",
+      "language": "Persian",
+      "headline": "سپاه اعلام کرد: انهدام یک فروند پهپاد MQ9 آمریکایی در آسمان اندیمشک",
+      "reference": "The IRGC announced: An American MQ-9 drone was destroyed in the skies over Andimeshk",
+      "meaning_units": [
+        "The IRGC made the announcement",
+        "one American MQ-9 drone was destroyed",
+        "the destruction occurred in the skies over Andimeshk"
+      ]
+    },
+    {
+      "id": "fa-translation-02",
+      "language": "Persian",
+      "headline": "ترامپ: ایران یک زن آمریکایی را آزاد کرده است؛ از حسن نیت تهران قدردانی می‌کنم",
+      "reference": "Trump: Iran has released an American woman; I appreciate Tehran's goodwill",
+      "meaning_units": [
+        "Trump is the speaker",
+        "Iran released an American woman",
+        "Trump appreciates Tehran's goodwill"
+      ]
+    },
+    {
+      "id": "fa-translation-03",
+      "language": "Persian",
+      "headline": "بن‌بست در بررسی بودجه پنتاگون",
+      "reference": "Deadlock in the review of the Pentagon budget",
+      "meaning_units": [
+        "there is a deadlock",
+        "the deadlock concerns review of the Pentagon budget"
+      ]
+    },
+    {
+      "id": "fa-translation-04",
+      "language": "Persian",
+      "headline": "توضیح عراقچی درباره سفر به عمان",
+      "reference": "Araghchi's explanation of the trip to Oman",
+      "meaning_units": [
+        "Araghchi gave an explanation",
+        "the explanation concerns the trip to Oman"
+      ]
+    },
+    {
+      "id": "fa-translation-05",
+      "language": "Persian",
+      "headline": "قیمت سکه و طلا امروز پنجشنبه ۲۵ تیر ۱۴۰۵ / سکه امامی چند؟ + جدول",
+      "reference": "Gold and coin prices today, Thursday, 25 Tir 1405 / How much is an Emami coin? + Table",
+      "meaning_units": [
+        "gold and coin prices are being reported",
+        "the prices are for Thursday, 25 Tir 1405",
+        "the headline asks the price of an Emami coin",
+        "the article contains a table"
+      ]
+    },
+    {
+      "id": "fa-translation-06",
+      "language": "Persian",
+      "headline": "جان مرشایمر: ایرانی‌ها هرگز تسلیم نخواهند شد",
+      "reference": "John Mearsheimer: Iranians will never surrender",
+      "meaning_units": [
+        "John Mearsheimer is the attributed speaker",
+        "Iranians will never surrender"
+      ]
+    },
+    {
+      "id": "he-translation-01",
+      "language": "Hebrew",
+      "headline": "טראמפ נאבק עם איראן על השליטה במצר הורמוז ודוחק לשוליים את נושא הגרעין",
+      "reference": "Trump is fighting Iran for control of the Strait of Hormuz and pushing the nuclear issue to the margins",
+      "meaning_units": [
+        "Trump is fighting Iran",
+        "the fight concerns control of the Strait of Hormuz",
+        "Trump is pushing the nuclear issue to the margins"
+      ]
+    },
+    {
+      "id": "he-translation-02",
+      "language": "Hebrew",
+      "headline": "בצל החששות באקדמיה: אושר החוק להפרדה מגדרית בתארים מתקדמים",
+      "reference": "Amid concerns in academia: The law allowing gender segregation in advanced degrees was approved",
+      "meaning_units": [
+        "there are concerns in academia",
+        "a law was approved",
+        "the law allows gender segregation in advanced degrees"
+      ]
+    },
+    {
+      "id": "he-translation-03",
+      "language": "Hebrew",
+      "headline": "לראשונה בהסלמה: ארה״ב תקפה באזור טהרן. איראן שיגרה לירדן - ושחררה אמריקנית",
+      "reference": "For the first time in the escalation: The U.S. attacked in the Tehran area. Iran launched toward Jordan—and released an American woman",
+      "meaning_units": [
+        "this was the first such event in the escalation",
+        "the United States attacked in the Tehran area",
+        "Iran launched toward Jordan",
+        "Iran released an American woman"
+      ]
+    },
+    {
+      "id": "he-translation-04",
+      "language": "Hebrew",
+      "headline": "בין חוק למציאות: הקרב האמיתי על גיוס חרדים מתרחש מתחת לרדאר",
+      "reference": "Between law and reality: The real battle over ultra-Orthodox recruitment is taking place under the radar",
+      "meaning_units": [
+        "the headline contrasts law with reality",
+        "there is a real battle over ultra-Orthodox recruitment",
+        "the battle is taking place under the radar"
+      ]
+    },
+    {
+      "id": "he-translation-05",
+      "language": "Hebrew",
+      "headline": "יעקב ברדוגו נפגש עם ראש שב״כ ולחץ עליו לפתוח בחקירת חדשות 12",
+      "reference": "Yaakov Bardugo met with the head of the Shin Bet and pressured him to open an investigation into Channel 12 News",
+      "meaning_units": [
+        "Yaakov Bardugo met the head of the Shin Bet",
+        "Bardugo pressured the Shin Bet chief",
+        "the pressure was to open an investigation into Channel 12 News"
+      ]
+    },
+    {
+      "id": "he-translation-06",
+      "language": "Hebrew",
+      "headline": "אביו של נהג משאית הסיוע שנהרג ברפיח: ירו לו כדור בין העיניים, בלי להגיד מילה",
+      "reference": "The father of the aid-truck driver killed in Rafah: He was shot between the eyes without a word being said",
+      "meaning_units": [
+        "the speaker is the father of an aid-truck driver",
+        "the driver was killed in Rafah",
+        "the driver was shot between the eyes",
+        "the shooting occurred without a word being said"
+      ]
+    }
+  ],
+  "summaries": [
+    {
+      "id": "fa-summary-01",
+      "language": "Persian",
+      "source": "Shargh",
+      "source_url": "https://www.sharghdaily.com/",
+      "article": "سپاه پاسداران اعلام کرد یک فروند پهپاد MQ9 آمریکایی در آسمان اندیمشک توسط سامانه نوین پدافند هوایی هوافضای سپاه رهگیری و منهدم شد. این خبر را ایسنا منتشر کرد.",
+      "expected_facts": [
+        "The IRGC said it intercepted and destroyed one American MQ-9 drone",
+        "The incident occurred in the skies over Andimeshk",
+        "The IRGC attributed the interception to a new aerospace air-defense system",
+        "The report was published by ISNA"
+      ]
+    },
+    {
+      "id": "fa-summary-02",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "source_url": "https://www.hamshahrionline.ir/",
+      "article": "وزارت دفاع انگلیس اعلام کرد طبق قراردادی به ارزش بیش از ۸۰ میلیون دلار، ارسال ۱۵۰ قبضه لوله توپ ۱۰۵ و ۱۵۵ میلی‌متری به اوکراین آغاز شده است. نخستین محموله ارسال شده و این تجهیزات را شرکت BAE Systems در شفیلد تولید می‌کند. روسیه هشدار داده است که ارسال تسلیحات غربی جنگ را تشدید می‌کند.",
+      "expected_facts": [
+        "The United Kingdom began sending artillery barrels to Ukraine under a contract worth more than 80 million dollars",
+        "The shipment covers 150 barrels in 105 mm and 155 mm sizes",
+        "The first shipment has already been sent",
+        "BAE Systems produces the equipment in Sheffield",
+        "Russia warned that Western arms shipments escalate the war"
+      ]
+    },
+    {
+      "id": "fa-summary-03",
+      "language": "Persian",
+      "source": "Shargh",
+      "source_url": "https://www.sharghdaily.com/",
+      "article": "اسماعیل بقائی، سخنگوی وزارت امور خارجه، از سفر رسمی عباس عراقچی به عمان خبر داد. این سفر برای ادامه رایزنی‌های دوجانبه درباره تحولات منطقه و تنگه هرمز انجام می‌شود. وزیران خارجه ایران و عمان درباره ترتیبات لازم برای عبور امن کشتی‌ها بر اساس ماده پنجم تفاهم‌نامه اسلام‌آباد گفت‌وگو خواهند کرد.",
+      "expected_facts": [
+        "Foreign Ministry spokesman Esmail Baghaei announced Abbas Araghchi's official trip to Oman",
+        "The trip continues bilateral consultations about regional developments and the Strait of Hormuz",
+        "The Iranian and Omani foreign ministers will discuss arrangements for ships to pass safely",
+        "The arrangements are based on Article 5 of the Islamabad memorandum"
+      ]
+    },
+    {
+      "id": "fa-summary-04",
+      "language": "Persian",
+      "source": "Shargh",
+      "source_url": "https://www.sharghdaily.com/",
+      "article": "سناتورهای دموکرات با جلوگیری از پیشبرد لایحه بودجه حدود یک تریلیون دلاری پنتاگون، به ادامه جنگ دولت ترامپ علیه ایران اعتراض کردند. این لایحه ۵۰ رأی موافق و ۴۶ رأی مخالف گرفت، اما نتوانست حد نصاب ۶۰ رأی لازم برای آغاز بررسی را کسب کند.",
+      "expected_facts": [
+        "Democratic senators blocked progress on a Pentagon budget bill worth about one trillion dollars",
+        "The senators used the vote to protest the Trump administration's continuing war against Iran",
+        "The bill received 50 votes in favor and 46 against",
+        "The bill failed to reach the 60 votes required to begin consideration"
+      ]
+    },
+    {
+      "id": "he-summary-01",
+      "language": "Hebrew",
+      "source": "Yedioth Ahronoth",
+      "source_url": "https://www.ynet.co.il/",
+      "article": "מליאת הכנסת אישרה סופית את הצעת החוק המאפשרת הפרדה מגדרית בתארים מתקדמים באקדמיה. ההפרדה תתאפשר רק בכיתות הלימוד ולא במרחבים הציבוריים. תומכי החוק אומרים שהוא יסיר חסמים בפני נשים חרדיות, ואילו מתנגדיו מזהירים מפגיעה בשוויון ובאיכות האקדמית.",
+      "expected_facts": [
+        "The Knesset gave final approval to a law allowing gender segregation in advanced university degrees",
+        "Segregation is allowed only in classrooms and not in public spaces",
+        "Supporters say the law will remove barriers for Haredi women",
+        "Opponents warn that the law could harm equality and academic quality"
+      ]
+    },
+    {
+      "id": "he-summary-02",
+      "language": "Hebrew",
+      "source": "Yedioth Ahronoth",
+      "source_url": "https://www.ynet.co.il/",
+      "article": "צבא ארצות הברית השלים לילה חמישי ברציפות של תקיפות נגד יעדים איראניים, ולראשונה בהסלמה הנוכחית תקף גם באזור טהרן. הצבא מסר שמטרת התקיפות היא לצמצם את יכולתה של איראן לאיים על השיט במצר הורמוז. איראן שיגרה טילים לעבר ירדן, ובמקביל טראמפ הודיע שאיראן שחררה אזרחית אמריקנית.",
+      "expected_facts": [
+        "The United States completed a fifth consecutive night of strikes against Iranian targets",
+        "The United States attacked the Tehran area for the first time in the current escalation",
+        "The stated goal was to reduce Iran's ability to threaten shipping in the Strait of Hormuz",
+        "Iran launched missiles toward Jordan",
+        "Trump announced that Iran released an American woman"
+      ]
+    },
+    {
+      "id": "he-summary-03",
+      "language": "Hebrew",
+      "source": "Haaretz",
+      "source_url": "https://www.haaretz.co.il/",
+      "article": "יעקב ברדוגו נפגש עם ראש שב״כ דוד זיני ודרש ממנו לפתוח בחקירה פלילית נגד חדשות 12. הדרישה התבססה על חשד שמקור ביטחוני הדליף לערוץ מידע על מועד התקיפה באיראן. זיני סירב תחילה, אך בהמשך ביקש את אישור היועצת המשפטית לממשלה לפתוח בחקירה.",
+      "expected_facts": [
+        "Yaakov Bardugo met Shin Bet chief David Zini",
+        "Bardugo demanded a criminal investigation into Channel 12 News",
+        "The demand concerned a suspected leak by a security source about the timing of an attack on Iran",
+        "Zini initially refused but later sought the attorney general's approval to investigate"
+      ]
+    },
+    {
+      "id": "he-summary-04",
+      "language": "Hebrew",
+      "source": "Israel Hayom",
+      "source_url": "https://www.israelhayom.co.il/",
+      "article": "שני חוקים שאושרו לאחרונה, האחד בנושא לימוד תורה והשני להקפאת מעצרם של משתמטי גיוס, הציתו מחדש את הוויכוח. בתוך החברה החרדית מוקד המאבק עבר לשאלת השירות הצבאי. המאמר טוען שצעדי ענישה לא יגדילו את הגיוס, ומציע תהליך הדרגתי ומסגרות קהילתיות תומכות.",
+      "expected_facts": [
+        "Two recently approved laws reignited the dispute over Haredi military recruitment",
+        "One law concerns Torah study and the other freezes detention of draft evaders",
+        "The focus inside Haredi society has shifted to military service",
+        "The article argues punitive measures will not increase recruitment",
+        "The article recommends gradual change and supportive community frameworks"
+      ]
+    }
+  ]
+}

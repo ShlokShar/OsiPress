@@ -1,0 +1,937 @@
+{
+  "evaluated_at": "2026-07-16T18:53:45.538101+00:00",
+  "production_model": "gpt-5.4-nano",
+  "judge_model": "gpt-5.4-mini",
+  "classification": {
+    "metrics": {
+      "precision": 0.9375,
+      "recall": 0.9375,
+      "f1": 0.9375,
+      "true_positive": 15,
+      "false_positive": 1,
+      "false_negative": 1,
+      "true_negative": 15,
+      "accuracy": 0.9375
+    },
+    "examples": [
+      {
+        "id": "fa-classification-01",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-02",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-03",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-04",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-05",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-06",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-07",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-08",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-09",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-10",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-11",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-12",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-13",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-14",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-15",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "fa-classification-16",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "he-classification-01",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "he-classification-02",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "he-classification-03",
+        "expected": true,
+        "prediction": false,
+        "correct": false
+      },
+      {
+        "id": "he-classification-04",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "he-classification-05",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "he-classification-06",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "he-classification-07",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "he-classification-08",
+        "expected": true,
+        "prediction": true,
+        "correct": true
+      },
+      {
+        "id": "he-classification-09",
+        "expected": false,
+        "prediction": true,
+        "correct": false
+      },
+      {
+        "id": "he-classification-10",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "he-classification-11",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "he-classification-12",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "he-classification-13",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "he-classification-14",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "he-classification-15",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      },
+      {
+        "id": "he-classification-16",
+        "expected": false,
+        "prediction": false,
+        "correct": true
+      }
+    ]
+  },
+  "summary": {
+    "metrics": {
+      "precision": 0.9667,
+      "recall": 0.9429,
+      "f1": 0.9546,
+      "correct_claims": 29,
+      "incorrect_claims": 1,
+      "found_facts": 33,
+      "missed_facts": 2
+    },
+    "examples": [
+      {
+        "id": "fa-summary-01",
+        "summary": "Iran’s Islamic Revolutionary Guard Corps (IRGC) says it detected and destroyed an American MQ9 drone in the sky over Andimeshk using its new air-defense system. The report was published by ISNA. The statement underscores heightened military activity involving U.S. aerial assets.",
+        "predictions": [
+          {
+            "prediction": "Iran’s Islamic Revolutionary Guard Corps (IRGC) says it detected and destroyed an American MQ9 drone in the sky over Andimeshk using its new air-defense system.",
+            "correct": true
+          },
+          {
+            "prediction": "The report was published by ISNA.",
+            "correct": true
+          },
+          {
+            "prediction": "The statement underscores heightened military activity involving U.S. aerial assets.",
+            "correct": false
+          }
+        ],
+        "references": [
+          {
+            "reference": "The IRGC said it intercepted and destroyed one American MQ-9 drone",
+            "found": true
+          },
+          {
+            "reference": "The incident occurred in the skies over Andimeshk",
+            "found": true
+          },
+          {
+            "reference": "The IRGC attributed the interception to a new aerospace air-defense system",
+            "found": true
+          },
+          {
+            "reference": "The report was published by ISNA",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "fa-summary-02",
+        "summary": "The UK Ministry of Defence says it has begun sending 150 artillery barrels (105mm and 155mm) to Ukraine under a deal worth over $80 million, with production by BAE Systems in Sheffield. Russia warned that Western arms deliveries could escalate the war.",
+        "predictions": [
+          {
+            "prediction": "The UK Ministry of Defence says it has begun sending 150 artillery barrels (105mm and 155mm) to Ukraine under a deal worth over $80 million.",
+            "correct": true
+          },
+          {
+            "prediction": "BAE Systems in Sheffield is producing the equipment.",
+            "correct": true
+          },
+          {
+            "prediction": "Russia warned that Western arms deliveries could escalate the war.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "The United Kingdom began sending artillery barrels to Ukraine under a contract worth more than 80 million dollars",
+            "found": true
+          },
+          {
+            "reference": "The shipment covers 150 barrels in 105 mm and 155 mm sizes",
+            "found": true
+          },
+          {
+            "reference": "The first shipment has already been sent",
+            "found": false
+          },
+          {
+            "reference": "BAE Systems produces the equipment in Sheffield",
+            "found": true
+          },
+          {
+            "reference": "Russia warned that Western arms shipments escalate the war",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "fa-summary-03",
+        "summary": "Iran’s foreign ministry spokesperson announced Abbas Araghchi’s official visit to Oman. The trip will continue bilateral consultations on regional developments and the Strait of Hormuz. Iran and Oman’s foreign ministers will discuss arrangements for the safe passage of ships under Article 5 of the Islamabad agreement.",
+        "predictions": [
+          {
+            "prediction": "Iran’s foreign ministry spokesperson announced Abbas Araghchi’s official visit to Oman.",
+            "correct": true
+          },
+          {
+            "prediction": "The trip will continue bilateral consultations on regional developments and the Strait of Hormuz.",
+            "correct": true
+          },
+          {
+            "prediction": "Iran and Oman’s foreign ministers will discuss arrangements for the safe passage of ships under Article 5 of the Islamabad agreement.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "Foreign Ministry spokesman Esmail Baghaei announced Abbas Araghchi's official trip to Oman",
+            "found": true
+          },
+          {
+            "reference": "The trip continues bilateral consultations about regional developments and the Strait of Hormuz",
+            "found": true
+          },
+          {
+            "reference": "The Iranian and Omani foreign ministers will discuss arrangements for ships to pass safely",
+            "found": true
+          },
+          {
+            "reference": "The arrangements are based on Article 5 of the Islamabad memorandum",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "fa-summary-04",
+        "summary": "Democratic senators blocked the advancement of a roughly $1 trillion Pentagon budget bill, opposing what they called the Trump administration’s war against Iran. The measure won 50 votes in favor and 46 against but failed to reach the 60-vote threshold needed to begin consideration.",
+        "predictions": [
+          {
+            "prediction": "Democratic senators blocked the advancement of a roughly $1 trillion Pentagon budget bill.",
+            "correct": true
+          },
+          {
+            "prediction": "They opposed what they called the Trump administration’s war against Iran.",
+            "correct": true
+          },
+          {
+            "prediction": "The measure won 50 votes in favor and 46 against.",
+            "correct": true
+          },
+          {
+            "prediction": "It failed to reach the 60-vote threshold needed to begin consideration.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "Democratic senators blocked progress on a Pentagon budget bill worth about one trillion dollars",
+            "found": true
+          },
+          {
+            "reference": "The senators used the vote to protest the Trump administration's continuing war against Iran",
+            "found": true
+          },
+          {
+            "reference": "The bill received 50 votes in favor and 46 against",
+            "found": true
+          },
+          {
+            "reference": "The bill failed to reach the 60 votes required to begin consideration",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "he-summary-01",
+        "summary": "Israel’s Knesset has finally approved a bill allowing gender separation in advanced academic programs. The separation would apply only in classroom settings, not in public areas. Supporters say it would remove barriers for Orthodox/Haredi women, while opponents warn it could undermine equality and the quality of higher education.",
+        "predictions": [
+          {
+            "prediction": "Israel’s Knesset has finally approved a bill allowing gender separation in advanced academic programs.",
+            "correct": true
+          },
+          {
+            "prediction": "The separation would apply only in classroom settings, not in public areas.",
+            "correct": true
+          },
+          {
+            "prediction": "Supporters say it would remove barriers for Orthodox/Haredi women.",
+            "correct": true
+          },
+          {
+            "prediction": "Opponents warn it could undermine equality and the quality of higher education.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "The Knesset gave final approval to a law allowing gender segregation in advanced university degrees",
+            "found": true
+          },
+          {
+            "reference": "Segregation is allowed only in classrooms and not in public spaces",
+            "found": true
+          },
+          {
+            "reference": "Supporters say the law will remove barriers for Haredi women",
+            "found": true
+          },
+          {
+            "reference": "Opponents warn that the law could harm equality and academic quality",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "he-summary-02",
+        "summary": "The U.S. military carried out a fifth consecutive night of strikes on Iranian targets, marking the first time it hit areas near Tehran during the current escalation. The stated goal is to reduce Iran’s ability to threaten shipping in the Strait of Hormuz. In response, Iran launched missiles toward Jordan, while Trump said Iran released an American citizen.",
+        "predictions": [
+          {
+            "prediction": "The U.S. military carried out a fifth consecutive night of strikes on Iranian targets.",
+            "correct": true
+          },
+          {
+            "prediction": "This was the first time in the current escalation that the U.S. hit areas near Tehran.",
+            "correct": true
+          },
+          {
+            "prediction": "The stated goal was to reduce Iran's ability to threaten shipping in the Strait of Hormuz.",
+            "correct": true
+          },
+          {
+            "prediction": "Iran launched missiles toward Jordan.",
+            "correct": true
+          },
+          {
+            "prediction": "Trump said Iran released an American citizen.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "The United States completed a fifth consecutive night of strikes against Iranian targets",
+            "found": true
+          },
+          {
+            "reference": "The United States attacked the Tehran area for the first time in the current escalation",
+            "found": true
+          },
+          {
+            "reference": "The stated goal was to reduce Iran's ability to threaten shipping in the Strait of Hormuz",
+            "found": true
+          },
+          {
+            "reference": "Iran launched missiles toward Jordan",
+            "found": true
+          },
+          {
+            "reference": "Trump announced that Iran released an American woman",
+            "found": false
+          }
+        ]
+      },
+      {
+        "id": "he-summary-03",
+        "summary": "Yaakov Bardugo met with Shin Bet head David Zini and demanded that a criminal investigation be opened against News 12. The request was based on suspicions that a security source leaked information to the channel about the timing of an Iran attack. Zini initially refused, but later sought approval from the government’s legal adviser to begin the investigation.",
+        "predictions": [
+          {
+            "prediction": "Yaakov Bardugo met with Shin Bet head David Zini and demanded that a criminal investigation be opened against News 12.",
+            "correct": true
+          },
+          {
+            "prediction": "The request was based on suspicions that a security source leaked information to the channel about the timing of an Iran attack.",
+            "correct": true
+          },
+          {
+            "prediction": "Zini initially refused, but later sought approval from the government’s legal adviser to begin the investigation.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "Yaakov Bardugo met Shin Bet chief David Zini",
+            "found": true
+          },
+          {
+            "reference": "Bardugo demanded a criminal investigation into Channel 12 News",
+            "found": true
+          },
+          {
+            "reference": "The demand concerned a suspected leak by a security source about the timing of an attack on Iran",
+            "found": true
+          },
+          {
+            "reference": "Zini initially refused but later sought the attorney general's approval to investigate",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "he-summary-04",
+        "summary": "Two recently approved laws—one on Torah study and another freezing the detention of draft resisters—have reignited a dispute within the ultra-Orthodox community over military service. The article argues that punitive measures will not increase enlistment and instead calls for a gradual process supported by community frameworks.",
+        "predictions": [
+          {
+            "prediction": "Two recently approved laws have reignited a dispute within the ultra-Orthodox community over military service.",
+            "correct": true
+          },
+          {
+            "prediction": "One law concerns Torah study and the other freezes the detention of draft resisters.",
+            "correct": true
+          },
+          {
+            "prediction": "The focus inside Haredi society has shifted to military service.",
+            "correct": true
+          },
+          {
+            "prediction": "The article argues that punitive measures will not increase enlistment.",
+            "correct": true
+          },
+          {
+            "prediction": "The article calls for a gradual process supported by community frameworks.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "Two recently approved laws reignited the dispute over Haredi military recruitment",
+            "found": true
+          },
+          {
+            "reference": "One law concerns Torah study and the other freezes detention of draft evaders",
+            "found": true
+          },
+          {
+            "reference": "The focus inside Haredi society has shifted to military service",
+            "found": true
+          },
+          {
+            "reference": "The article argues punitive measures will not increase recruitment",
+            "found": true
+          },
+          {
+            "reference": "The article recommends gradual change and supportive community frameworks",
+            "found": true
+          }
+        ]
+      }
+    ]
+  },
+  "translation": {
+    "metrics": {
+      "precision": 0.9412,
+      "recall": 0.9444,
+      "f1": 0.9428,
+      "correct_units": 32,
+      "incorrect_units": 2,
+      "found_units": 34,
+      "missed_units": 2
+    },
+    "examples": [
+      {
+        "id": "fa-translation-01",
+        "translation": "The IRGC announced: the destruction of an American MQ9 drone in the sky of Andimeshk",
+        "predictions": [
+          {
+            "prediction": "The IRGC announced the event",
+            "correct": true
+          },
+          {
+            "prediction": "an American MQ9 drone was destroyed",
+            "correct": true
+          },
+          {
+            "prediction": "the destruction occurred in the sky of Andimeshk",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "The IRGC made the announcement",
+            "found": true
+          },
+          {
+            "reference": "one American MQ-9 drone was destroyed",
+            "found": true
+          },
+          {
+            "reference": "the destruction occurred in the skies over Andimeshk",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "fa-translation-02",
+        "translation": "Trump: Iran has released an American woman; I appreciate Tehran's goodwill",
+        "predictions": [
+          {
+            "prediction": "Trump is the speaker",
+            "correct": true
+          },
+          {
+            "prediction": "Iran has released an American woman",
+            "correct": true
+          },
+          {
+            "prediction": "Trump appreciates Tehran's goodwill",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "Trump is the speaker",
+            "found": true
+          },
+          {
+            "reference": "Iran released an American woman",
+            "found": true
+          },
+          {
+            "reference": "Trump appreciates Tehran's goodwill",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "fa-translation-03",
+        "translation": "Deadlock in Pentagon budget review",
+        "predictions": [
+          {
+            "prediction": "there is a deadlock",
+            "correct": true
+          },
+          {
+            "prediction": "the deadlock concerns review of the Pentagon budget",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "there is a deadlock",
+            "found": true
+          },
+          {
+            "reference": "the deadlock concerns review of the Pentagon budget",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "fa-translation-04",
+        "translation": "Araghchi's explanation about the trip to Oman",
+        "predictions": [
+          {
+            "prediction": "Araghchi gave an explanation",
+            "correct": true
+          },
+          {
+            "prediction": "the explanation concerns the trip to Oman",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "Araghchi gave an explanation",
+            "found": true
+          },
+          {
+            "reference": "the explanation concerns the trip to Oman",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "fa-translation-05",
+        "translation": "How much is the price of coins and gold today, Thursday, July 25, 1405 / Imami coins? + table",
+        "predictions": [
+          {
+            "prediction": "The headline reports gold and coin prices today.",
+            "correct": true
+          },
+          {
+            "prediction": "The date is Thursday, July 25, 1405.",
+            "correct": false
+          },
+          {
+            "prediction": "It asks how much Imami coins cost.",
+            "correct": true
+          },
+          {
+            "prediction": "There is a table.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "gold and coin prices are being reported",
+            "found": true
+          },
+          {
+            "reference": "the prices are for Thursday, 25 Tir 1405",
+            "found": false
+          },
+          {
+            "reference": "the headline asks the price of an Emami coin",
+            "found": true
+          },
+          {
+            "reference": "the article contains a table",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "fa-translation-06",
+        "translation": "John Mersheimer: Iranians will never surrender",
+        "predictions": [
+          {
+            "prediction": "The speaker is John Mearsheimer.",
+            "correct": true
+          },
+          {
+            "prediction": "Iranians will never surrender.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "John Mearsheimer is the attributed speaker",
+            "found": true
+          },
+          {
+            "reference": "Iranians will never surrender",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "he-translation-01",
+        "translation": "Trump is fighting with Iran for control of the Strait of Hormuz and pushing the nuclear issue to the margins",
+        "predictions": [
+          {
+            "prediction": "Trump is fighting with Iran for control of the Strait of Hormuz",
+            "correct": true
+          },
+          {
+            "prediction": "Trump is pushing the nuclear issue to the margins",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "Trump is fighting Iran",
+            "found": true
+          },
+          {
+            "reference": "the fight concerns control of the Strait of Hormuz",
+            "found": true
+          },
+          {
+            "reference": "Trump is pushing the nuclear issue to the margins",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "he-translation-02",
+        "translation": "In the shadow of the concerns in academia: the law for gender segregation in advanced degrees was approved",
+        "predictions": [
+          {
+            "prediction": "the law was approved",
+            "correct": true
+          },
+          {
+            "prediction": "the law allows gender segregation in advanced degrees",
+            "correct": true
+          },
+          {
+            "prediction": "there are concerns in academia",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "there are concerns in academia",
+            "found": true
+          },
+          {
+            "reference": "a law was approved",
+            "found": true
+          },
+          {
+            "reference": "the law allows gender segregation in advanced degrees",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "he-translation-03",
+        "translation": "For the first time in escalation: the USA attacked in the Tehran area. Iran sent to Jordan - and released an American",
+        "predictions": [
+          {
+            "prediction": "For the first time in escalation:",
+            "correct": true
+          },
+          {
+            "prediction": "the USA attacked in the Tehran area",
+            "correct": true
+          },
+          {
+            "prediction": "Iran sent to Jordan",
+            "correct": true
+          },
+          {
+            "prediction": "and released an American",
+            "correct": false
+          }
+        ],
+        "references": [
+          {
+            "reference": "this was the first such event in the escalation",
+            "found": true
+          },
+          {
+            "reference": "the United States attacked in the Tehran area",
+            "found": true
+          },
+          {
+            "reference": "Iran launched toward Jordan",
+            "found": true
+          },
+          {
+            "reference": "Iran released an American woman",
+            "found": false
+          }
+        ]
+      },
+      {
+        "id": "he-translation-04",
+        "translation": "Between law and reality: the real battle over ultra-Orthodox recruitment takes place under the radar",
+        "predictions": [
+          {
+            "prediction": "The headline contrasts law with reality",
+            "correct": true
+          },
+          {
+            "prediction": "There is a real battle over ultra-Orthodox recruitment",
+            "correct": true
+          },
+          {
+            "prediction": "The battle is taking place under the radar",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "the headline contrasts law with reality",
+            "found": true
+          },
+          {
+            "reference": "there is a real battle over ultra-Orthodox recruitment",
+            "found": true
+          },
+          {
+            "reference": "the battle is taking place under the radar",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "he-translation-05",
+        "translation": "Yaakov Bardugo met with the head of the Shin Bet and pressured him to open an investigation into News 12",
+        "predictions": [
+          {
+            "prediction": "Yaakov Bardugo met with the head of the Shin Bet",
+            "correct": true
+          },
+          {
+            "prediction": "Yaakov Bardugo pressured him",
+            "correct": true
+          },
+          {
+            "prediction": "the pressure was to open an investigation into News 12",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "Yaakov Bardugo met the head of the Shin Bet",
+            "found": true
+          },
+          {
+            "reference": "Bardugo pressured the Shin Bet chief",
+            "found": true
+          },
+          {
+            "reference": "the pressure was to open an investigation into Channel 12 News",
+            "found": true
+          }
+        ]
+      },
+      {
+        "id": "he-translation-06",
+        "translation": "The father of the aid truck driver who was killed in Rafah: He was shot between the eyes, without saying a word",
+        "predictions": [
+          {
+            "prediction": "The speaker is the father of an aid truck driver who was killed in Rafah.",
+            "correct": true
+          },
+          {
+            "prediction": "He was shot between the eyes.",
+            "correct": true
+          },
+          {
+            "prediction": "The shooting happened without saying a word.",
+            "correct": true
+          }
+        ],
+        "references": [
+          {
+            "reference": "the speaker is the father of an aid-truck driver",
+            "found": true
+          },
+          {
+            "reference": "the driver was killed in Rafah",
+            "found": true
+          },
+          {
+            "reference": "the driver was shot between the eyes",
+            "found": true
+          },
+          {
+            "reference": "the shooting occurred without a word being said",
+            "found": true
+          }
+        ]
+      }
+    ]
+  }
+}
