@@ -15,9 +15,22 @@ app = flask.Flask(__name__)
 MAX_FALLBACK_DAYS = 3
 
 
+VISITED_COOKIE = "visited"
+
 @app.route("/")
 def landing():
-    return flask.render_template("landing.html")
+    # First-time visitors see the landing page; returning visitors (who already
+    # carry the cookie) are sent straight to today's edition.
+    if flask.request.cookies.get(VISITED_COOKIE):
+        return flask.redirect(flask.url_for("today"))
+
+    response = flask.make_response(flask.render_template("landing.html"))
+    response.set_cookie(
+        VISITED_COOKIE, "1",
+        max_age=60 * 60 * 24 * 365,  # remember for a year
+        samesite="Lax",
+    )
+    return response
 
 @app.route("/today")
 def today():
