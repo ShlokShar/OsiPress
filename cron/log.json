@@ -1,0 +1,12 @@
+{
+  "logs": [
+    {
+      "timestamp": 1784240584.392891,
+      "message": "Hello World!"
+    },
+    {
+      "timestamp": 1784240629.325375,
+      "message": "Hello World!"
+    }
+  ]
+}
