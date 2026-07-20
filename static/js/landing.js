@@ -4,7 +4,6 @@
  * visible without this file, and is faded in on load/scroll when it
  * runs. Nothing here is required to read the page.
  * ------------------------------------------------------------------ */
-
 /* The example intro tracks the cards beside it on desktop, but must stay
    in normal flow once the columns stack. */
 function initSticky(){
