@@ -1,11 +1,3 @@
-/* ------------------------------------------------------------------ *
- * OsiPress landing page
- * Progressive enhancement only: every [data-reveal] section is fully
- * visible without this file, and is faded in on load/scroll when it
- * runs. Nothing here is required to read the page.
- * ------------------------------------------------------------------ */
-/* The example intro tracks the cards beside it on desktop, but must stay
-   in normal flow once the columns stack. */
 function initSticky(){
   const stickies = Array.from(document.querySelectorAll('[data-sticky]'));
   if (!stickies.length) return;
@@ -47,16 +39,12 @@ function initReveal(){
     return r.top < vh * 0.92 && r.bottom > 0;
   };
 
-  /* Sections below the fold animate when they are scrolled to. */
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); }
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
 
-  /* Hold the opening fade until the webfonts land. The headline is not
-     painted until they do, and starting earlier means the whole animation
-     is over before there is anything on screen to see. */
   let started = false;
   const start = () => {
     if (started) return;
@@ -71,7 +59,7 @@ function initReveal(){
   };
 
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(start);
-  setTimeout(start, 900); /* fonts may stall or never resolve; open anyway */
+  setTimeout(start, 900);
 }
 
 initSticky();

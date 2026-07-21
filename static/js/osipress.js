@@ -1,14 +1,3 @@
-/* ------------------------------------------------------------------ *
- * OsiPress front-page board
- * Data source: <script id="osipress-data"> populated by Flask via
- *   {{ data | tojson }}. Shape:
- *   { "<Country>": { "<Outlet>": { political_leaning: string, articles: [ story, ... ] }, ... }, ... }
- *   story = { id, source_id, headline, translated_headline, link,
- *             summary, references_original[], references_translated[] }
- * ------------------------------------------------------------------ */
-/* Political leaning is read straight from each outlet's own `political_leaning`
-   value in the data (left = red, center = grey-purple, right = blue). Nothing
-   about an outlet's leaning is hardcoded here. */
 function normalizeLean(label){
   const s = (label || '').toLowerCase();
   if (s.includes('left')) return 'left';
@@ -17,48 +6,38 @@ function normalizeLean(label){
   return 'unknown';
 }
 
-/* Native-script label shown next to each country header. */
 const SCRIPT_LABEL = {
   'Iran':   { name: 'Persian', native: 'فارسی' },
   'Israel': { name: 'Hebrew',  native: 'עברית' },
 };
 
-/* Canonical topic-tag vocabulary + display order. Kept in sync with the cron
-   pipeline's ALLOWED_TAGS (cron/util/ai_service.py). Any value not in this list
-   (e.g. the "No tags provided." sentinel from older articles) is ignored. */
 const TAG_ORDER = ['Conflict', 'Diplomacy', 'Sanctions', 'Domestic', 'Economy', 'International'];
 const articleTags = story => (Array.isArray(story.tags) ? story.tags : []);
 
-/* ---------- load Flask-injected data ---------- */
 function loadData(){
   const node = document.getElementById('osipress-data');
   try {
     const parsed = JSON.parse(node.textContent);
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed;
-  } catch (e) { /* not rendered through Flask */ }
+  } catch (e) {}
   return {};
 }
 const DATA = loadData();
 
-/* ---------- responsive helpers ---------- */
 const NARROW_QUERY = '(max-width:700px)';
 const isNarrowViewport = () => window.matchMedia(NARROW_QUERY).matches;
 const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
-/* ---------- state ---------- */
 const countries = Object.keys(DATA);
 const state = {
-  // Below ~700px, default to a single country; otherwise compare the first two.
   selected: countries.slice(0, isNarrowViewport() ? 1 : 2),
-  order: {},                                             // country -> [outlet names]
-  expanded: {},                                          // key -> bool
-  translated: {},                                        // key -> bool
-  selectedTags: new Set(),                               // active topic filter
+  order: {},
+  expanded: {},
+  translated: {},
+  selectedTags: new Set(),
 };
 countries.forEach(c => { state.order[c] = Object.keys(DATA[c]); });
 
-/* Topics actually present in this edition, in canonical order. Drives the
-   filter chips; empty (e.g. pre-tag archive editions) hides the picker. */
 const presentTags = (() => {
   const seen = new Set();
   countries.forEach(c => Object.keys(DATA[c]).forEach(o =>
@@ -67,7 +46,6 @@ const presentTags = (() => {
   return TAG_ORDER.filter(t => seen.has(t));
 })();
 
-/* AND semantics: with tags active, a story must carry every selected tag. */
 function passesTagFilter(story){
   if (!state.selectedTags.size) return true;
   const tags = articleTags(story);
@@ -79,7 +57,6 @@ const keyOf = (country, outlet, i) => country + '|' + outlet + '|' + i;
 const APOLOGY = /^(i can'?t|no content|the provided article content is empty)/i;
 const cleanSummary = s => (s && s.trim() && !APOLOGY.test(s.trim())) ? s.trim() : '';
 
-/* ---------- element helpers ---------- */
 function el(tag, cls, txt){
   const n = document.createElement(tag);
   if (cls) n.className = cls;
@@ -99,7 +76,6 @@ function safeHttpUrl(url){
   } catch (e) { return null; }
 }
 
-/* ---------- story ---------- */
 function buildStory(country, outlet, story, i){
   const key = keyOf(country, outlet, i);
   const wrap = el('div', 'story');
@@ -121,7 +97,6 @@ function buildStory(country, outlet, story, i){
     main.appendChild(ol);
   }
 
-  // Topic pills (canonical order); clicking one toggles the toolbar filter.
   const storyTags = TAG_ORDER.filter(t => articleTags(story).includes(t));
   if (storyTags.length){
     const topics = el('div', 'topics');
@@ -207,15 +182,11 @@ function buildStory(country, outlet, story, i){
   return { wrap, tags: articleTags(story) };
 }
 
-/* ---------- outlet card ---------- */
 function buildCard(country, outlet){
   const card = el('article', 'card');
-  card.dataset.country = country;
   card.dataset.outlet = outlet;
 
   const head = el('div', 'card-head');
-  // HTML5 drag-and-drop has no reliable touch equivalent, so reordering is
-  // desktop/mouse-only until real touch dragging is implemented.
   let handle = null;
   if (!isTouch){
     card.setAttribute('draggable', 'true');
@@ -242,7 +213,6 @@ function buildCard(country, outlet){
   return card;
 }
 
-/* ---------- drag reorder (within a country) ---------- */
 let armed = false, dragCountry = null, draggingEl = null;
 function wireDrag(card, handle, country){
   handle.addEventListener('mousedown', () => { armed = true; });
@@ -258,8 +228,6 @@ function wireDrag(card, handle, country){
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     if (card === draggingEl) return;
-    // "single" mode is a multi-column card grid (order by X position);
-    // "compare" and "stacked" are single-column vertical stacks (order by Y).
     const singleColGrid = board.dataset.mode === 'single';
     const rect = card.getBoundingClientRect();
     const before = singleColGrid
@@ -281,11 +249,10 @@ function wireDrag(card, handle, country){
   });
 }
 
-/* ---------- render skeleton (headers + all cards) ---------- */
 const board = document.getElementById('board');
 const emptyNote = document.getElementById('empty');
-const headerEls = {};   // country -> header el
-const cardEls = {};     // country -> { outlet -> card el }
+const headerEls = {};
+const cardEls = {};
 
 function render(){
   board.innerHTML = '';
@@ -295,7 +262,6 @@ function render(){
   }
   countries.forEach(country => {
     const h = el('div', 'col-header');
-    h.dataset.country = country;
     h.appendChild(el('h2', null, country));
     const sl = SCRIPT_LABEL[country];
     if (sl){
@@ -319,8 +285,6 @@ function render(){
   relayout();
 }
 
-/* Toggle each story in a card by the active topic filter; return whether any
-   story remains visible. With no filter active every story shows. */
 function applyStoryFilter(card){
   let anyVisible = false;
   (card._stories || []).forEach(({ el, tags }) => {
@@ -331,19 +295,14 @@ function applyStoryFilter(card){
   return anyVisible;
 }
 
-/* ---------- layout: selected countries side by side, stacked, or one wide ---------- */
 function relayout(){
   const sel = state.selected.filter(c => countries.includes(c));
   const narrow = isNarrowViewport();
-  // On narrow viewports, a deliberate two-country selection stacks full-width
-  // instead of squeezing into two columns.
   const compare = sel.length === 2 && !narrow;
   const stacked = sel.length === 2 && narrow;
   board.dataset.mode = compare ? 'compare' : (stacked ? 'stacked' : 'single');
 
   const filtering = state.selectedTags.size > 0;
-  // Per country, the ordered outlets whose card still has a matching story.
-  // Filtered cards/headers are removed from flow so explicit grid rows stay gapless.
   const visibleOutlets = {};
   let totalVisibleCards = 0;
   countries.forEach(country => {
@@ -402,15 +361,12 @@ function relayout(){
   }
 }
 
-/* Re-run layout when crossing the mobile breakpoint (resize/rotate), without
-   touching the user's explicit country selection. */
 let resizeRAF = null;
 window.addEventListener('resize', () => {
   if (resizeRAF) cancelAnimationFrame(resizeRAF);
   resizeRAF = requestAnimationFrame(relayout);
 });
 
-/* ---------- country chips ---------- */
 const chipsWrap = document.getElementById('chips');
 function renderChips(){
   chipsWrap.innerHTML = '';
@@ -420,9 +376,9 @@ function renderChips(){
     b.addEventListener('click', () => {
       const isOn = state.selected.includes(country);
       let next = isOn ? state.selected.filter(c => c !== country) : [...state.selected, country];
-      if (next.length === 0) return;               // keep at least one
-      if (next.length > 2) next = next.slice(-2);  // cap at two for comparison
-      state.selected = countries.filter(c => next.includes(c)); // canonical order
+      if (next.length === 0) return;
+      if (next.length > 2) next = next.slice(-2);
+      state.selected = countries.filter(c => next.includes(c));
       renderChips();
       relayout();
     });
@@ -430,16 +386,14 @@ function renderChips(){
   });
 }
 
-/* ---------- topic filter (foldable multi-select) ---------- */
 const topicsPicker = document.getElementById('topics-picker');
 const topicsToggle = document.getElementById('topics-toggle');
 const topicsPanel  = document.getElementById('topics-panel');
 const topicsCount  = document.getElementById('topics-count');
 
-/* Build the checkbox options once; each carries its tag for sync/toggle. */
 function renderTopicOptions(){
   if (!topicsPanel) return;
-  if (!presentTags.length){                        // pre-tag editions: no filter
+  if (!presentTags.length){
     if (topicsPicker) topicsPicker.style.display = 'none';
     return;
   }
@@ -457,7 +411,6 @@ function renderTopicOptions(){
   });
 }
 
-/* Reflect the active filter in option checkmarks + the toggle's count badge. */
 function syncTopicControl(){
   if (topicsPanel){
     Array.from(topicsPanel.children).forEach(opt => {
@@ -481,7 +434,6 @@ if (topicsToggle){
     openTopics(topicsPanel.hidden);
   });
 }
-// Click anywhere outside the open panel closes it.
 document.addEventListener('click', e => {
   if (topicsPicker && topicsPanel && !topicsPanel.hidden && !topicsPicker.contains(e.target)){
     openTopics(false);
@@ -491,19 +443,17 @@ document.addEventListener('click', e => {
 function toggleTag(tag){
   if (state.selectedTags.has(tag)) state.selectedTags.delete(tag);
   else state.selectedTags.add(tag);
-  syncTopicControl();                              // panel stays open (multi-select)
+  syncTopicControl();
   syncTagPills();
   relayout();
 }
 
-/* Keep the on-card topic pills' active state in sync with the filter. */
 function syncTagPills(){
   document.querySelectorAll('.topic').forEach(pill => {
     pill.classList.toggle('active', state.selectedTags.has(pill.dataset.tag));
   });
 }
 
-/* ---------- edition summary ---------- */
 function editionCount(){
   const node = document.getElementById('edition-count');
   if (!node) return;
@@ -513,7 +463,6 @@ function editionCount(){
   node.textContent = stories + ' stories \u00b7 ' + outlets + ' outlets \u00b7 ' + countries.length + ' countries';
 }
 
-/* ---------- init ---------- */
 render();
 renderChips();
 renderTopicOptions();

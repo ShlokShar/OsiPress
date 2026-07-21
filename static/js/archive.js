@@ -1,8 +1,3 @@
-/* ------------------------------------------------------------------ *
- * OsiPress archive date picker
- * Reads/writes ?date=YYYY-MM-DD in the URL. Earliest allowed edition
- * is fixed at 2026-07-09; latest is always yesterday.
- * ------------------------------------------------------------------ */
 (function () {
   const MIN_DATE = '2026-07-09';
 
@@ -34,7 +29,6 @@
   }
 
   function navigateTo(dateStr) {
-    // Reload with the new date so the server can return that edition's data.
     const params = new URLSearchParams(window.location.search);
     params.set('date', dateStr);
     window.location.search = params.toString();
@@ -51,11 +45,9 @@
   label.textContent = formatLabel(date);
   syncUrl(date);
 
-  // Native date inputs only open the calendar dropdown on clicks that land on
-  // specific internal sub-regions; force it open on any click within the label.
   input.addEventListener('click', () => {
     if (typeof input.showPicker === 'function') {
-      try { input.showPicker(); } catch (e) { /* ignore */ }
+      try { input.showPicker(); } catch (e) {}
     }
   });
 
