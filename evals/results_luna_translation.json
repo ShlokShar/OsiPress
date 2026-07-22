@@ -1,17 +1,20 @@
 {
-  "evaluated_at": "2026-07-22T04:21:04.391983+00:00",
+  "evaluated_at": "2026-07-22T16:39:59.009786+00:00",
   "production_model": "gpt-5.4-nano",
   "judge_model": "gpt-5.4-mini",
+  "translation_model": "gpt-5.6-luna",
+  "translation_method": "AIService.translate_headline",
+  "translation_judge": "lenient name transliteration",
   "classification": {
     "metrics": {
-      "precision": 1.0,
+      "precision": 0.9412,
       "recall": 1.0,
-      "f1": 1.0,
+      "f1": 0.9697,
       "true_positive": 16,
-      "false_positive": 0,
+      "false_positive": 1,
       "false_negative": 0,
-      "true_negative": 16,
-      "accuracy": 1.0
+      "true_negative": 15,
+      "accuracy": 0.9688
     },
     "examples": [
       {
@@ -161,8 +164,8 @@
       {
         "id": "he-classification-09",
         "expected": false,
-        "prediction": false,
-        "correct": true
+        "prediction": true,
+        "correct": false
       },
       {
         "id": "he-classification-10",
@@ -210,21 +213,21 @@
   },
   "summary": {
     "metrics": {
-      "precision": 0.9459,
-      "recall": 0.7692,
-      "f1": 0.8485,
-      "correct_claims": 35,
-      "incorrect_claims": 2,
-      "found_facts": 40,
-      "missed_facts": 12
+      "precision": 0.9762,
+      "recall": 0.9423,
+      "f1": 0.9589,
+      "correct_claims": 41,
+      "incorrect_claims": 1,
+      "found_facts": 49,
+      "missed_facts": 3
     },
     "examples": [
       {
         "id": "fa-summary-01",
-        "summary": "The Islamic Revolutionary Guard Corps (IRGC) says it intercepted and destroyed an American MQ9 drone in the skies over Andimeshk using a new air-defense system. The report was published by ISNA.",
+        "summary": "Iran’s Islamic Revolutionary Guard Corps (IRGC) says it intercepted and destroyed an American MQ9 drone over Andimeshk using a new air-defense system. The report was published by ISNA.",
         "predictions": [
           {
-            "prediction": "The Islamic Revolutionary Guard Corps (IRGC) says it intercepted and destroyed an American MQ9 drone in the skies over Andimeshk using a new air-defense system.",
+            "prediction": "Iran’s Islamic Revolutionary Guard Corps (IRGC) says it intercepted and destroyed an American MQ9 drone over Andimeshk using a new air-defense system.",
             "correct": true
           },
           {
@@ -253,18 +256,18 @@
       },
       {
         "id": "fa-summary-02",
-        "summary": "The UK Ministry of Defence says it has begun sending 150 artillery gun tubes of 105mm and 155mm caliber to Ukraine under a contract worth over $80 million. The first shipment is produced by BAE Systems in Sheffield. Russia warned that Western arms deliveries will escalate the war.",
+        "summary": "The UK Ministry of Defence says it has started delivering 150 105mm and 155mm artillery gun barrels to Ukraine under a contract worth over $80 million. The first shipment was produced by BAE Systems in Sheffield. Russia warned that Western weapons deliveries will intensify the war.",
         "predictions": [
           {
-            "prediction": "The UK Ministry of Defence says it has begun sending 150 artillery gun tubes of 105mm and 155mm caliber to Ukraine under a contract worth over $80 million.",
+            "prediction": "The UK Ministry of Defence says it has started delivering 150 105mm and 155mm artillery gun barrels to Ukraine under a contract worth over $80 million.",
             "correct": true
           },
           {
-            "prediction": "The first shipment is produced by BAE Systems in Sheffield.",
+            "prediction": "The first shipment was produced by BAE Systems in Sheffield.",
             "correct": true
           },
           {
-            "prediction": "Russia warned that Western arms deliveries will escalate the war.",
+            "prediction": "Russia warned that Western weapons deliveries will intensify the war.",
             "correct": true
           }
         ],
@@ -279,7 +282,7 @@
           },
           {
             "reference": "The first shipment has already been sent",
-            "found": false
+            "found": true
           },
           {
             "reference": "BAE Systems produces the equipment in Sheffield",
@@ -293,27 +296,23 @@
       },
       {
         "id": "fa-summary-03",
-        "summary": "Iranian foreign ministry spokesperson Ismail Baghai announced that Abbas Araqchi will make an official trip to Oman. The visit will continue bilateral consultations on regional developments and the Strait of Hormuz. Iran and Oman’s foreign ministers will discuss the necessary arrangements for the safe passage of ships based on Article 5 of the Islamabad agreement.",
+        "summary": "Iran’s foreign ministry spokesman announced that Abbas Araqchi will make an official trip to Oman to continue bilateral consultations on regional developments and the Strait of Hormuz. Foreign ministers of Iran and Oman will discuss arrangements for the safe passage of ships based on Article 5 of the Islamabad agreement.",
         "predictions": [
           {
-            "prediction": "The summary is in English.",
+            "prediction": "Iran’s foreign ministry spokesman announced that Abbas Araqchi will make an official trip to Oman.",
             "correct": true
           },
           {
-            "prediction": "Iranian foreign ministry spokesperson Ismail Baghai announced that Abbas Araqchi will make an official trip to Oman.",
+            "prediction": "The trip is to continue bilateral consultations on regional developments and the Strait of Hormuz.",
             "correct": true
           },
           {
-            "prediction": "The visit will continue bilateral consultations on regional developments and the Strait of Hormuz.",
+            "prediction": "Foreign ministers of Iran and Oman will discuss arrangements for the safe passage of ships.",
             "correct": true
           },
           {
-            "prediction": "Iran and Oman’s foreign ministers will discuss the necessary arrangements for the safe passage of ships.",
-            "correct": true
-          },
-          {
-            "prediction": "Those arrangements are based on Article 5 of the Islamabad agreement.",
-            "correct": true
+            "prediction": "The arrangements are based on Article 5 of the Islamabad agreement.",
+            "correct": false
           }
         ],
         "references": [
@@ -331,28 +330,28 @@
           },
           {
             "reference": "The arrangements are based on Article 5 of the Islamabad memorandum",
-            "found": true
+            "found": false
           }
         ]
       },
       {
         "id": "fa-summary-04",
-        "summary": "Democratic senators opposed the advancement of a roughly one-trillion-dollar Pentagon budget bill, saying it reflects continued war by the Trump administration against Iran. The measure received 50 votes in favor and 46 against but failed to reach the 60-vote threshold needed to begin review.",
+        "summary": "Democratic senators blocked consideration of a roughly $1 trillion Pentagon budget bill in protest of the Trump administration’s war policy toward Iran. The bill passed 50-46 but failed to reach the 60-vote threshold needed to begin review.",
         "predictions": [
           {
-            "prediction": "Democratic senators opposed the advancement of a roughly one-trillion-dollar Pentagon budget bill.",
+            "prediction": "Democratic senators blocked consideration of a roughly $1 trillion Pentagon budget bill.",
             "correct": true
           },
           {
-            "prediction": "They said it reflects continued war by the Trump administration against Iran.",
+            "prediction": "The block was in protest of the Trump administration’s war policy toward Iran.",
             "correct": true
           },
           {
-            "prediction": "The measure received 50 votes in favor and 46 against.",
+            "prediction": "The bill passed 50-46.",
             "correct": true
           },
           {
-            "prediction": "It failed to reach the 60-vote threshold needed to begin review.",
+            "prediction": "The bill failed to reach the 60-vote threshold needed to begin review.",
             "correct": true
           }
         ],
@@ -377,22 +376,22 @@
       },
       {
         "id": "he-summary-01",
-        "summary": "The Knesset has approved in finality a bill allowing gender separation in advanced academic degree programs. The separation would be limited to classrooms, not public spaces. Supporters say it will remove barriers for Haredi women, while opponents warn it will harm equality and academic quality.",
+        "summary": "Israel’s parliament has approved a law allowing gender separation in advanced academic degree programs, limited to classroom settings rather than public spaces. Supporters say it will remove barriers for ultra-Orthodox women, while opponents warn it will undermine equality and academic quality.",
         "predictions": [
           {
-            "prediction": "The Knesset has approved in finality a bill allowing gender separation in advanced academic degree programs.",
+            "prediction": "Israel’s parliament has approved a law allowing gender separation in advanced academic degree programs.",
             "correct": true
           },
           {
-            "prediction": "The separation would be limited to classrooms, not public spaces.",
+            "prediction": "The law is limited to classroom settings rather than public spaces.",
             "correct": true
           },
           {
-            "prediction": "Supporters say it will remove barriers for Haredi women.",
+            "prediction": "Supporters say it will remove barriers for ultra-Orthodox women.",
             "correct": true
           },
           {
-            "prediction": "Opponents warn it will harm equality and academic quality.",
+            "prediction": "Opponents warn it will undermine equality and academic quality.",
             "correct": true
           }
         ],
@@ -417,26 +416,26 @@
       },
       {
         "id": "he-summary-02",
-        "summary": "The U.S. Army says it has carried out a fifth consecutive night of strikes on Iranian targets, including an attack near Tehran for the first time in the current escalation. It says the goal is to reduce Iran’s ability to threaten shipping in the Strait of Hormuz. Iran fired missiles toward Jordan, while Trump said Iran released an American citizen.",
+        "summary": "The U.S. carried out a fifth consecutive night of strikes against Iranian targets, for the first time in the current escalation attacking near Tehran, aiming to reduce Iran’s ability to threaten shipping in the Strait of Hormuz. Iran launched missiles toward Jordan, while Trump announced that Iran released an American citizen.",
         "predictions": [
           {
-            "prediction": "The U.S. Army says it has carried out a fifth consecutive night of strikes on Iranian targets.",
+            "prediction": "The U.S. carried out a fifth consecutive night of strikes against Iranian targets.",
             "correct": true
           },
           {
-            "prediction": "The strikes included an attack near Tehran for the first time in the current escalation.",
+            "prediction": "For the first time in the current escalation, the U.S. attacked near Tehran.",
             "correct": true
           },
           {
-            "prediction": "The goal is to reduce Iran’s ability to threaten shipping in the Strait of Hormuz.",
+            "prediction": "The strikes were aimed at reducing Iran’s ability to threaten shipping in the Strait of Hormuz.",
             "correct": true
           },
           {
-            "prediction": "Iran fired missiles toward Jordan.",
+            "prediction": "Iran launched missiles toward Jordan.",
             "correct": true
           },
           {
-            "prediction": "Trump said Iran released an American citizen.",
+            "prediction": "Trump announced that Iran released an American citizen.",
             "correct": true
           }
         ],
@@ -465,22 +464,26 @@
       },
       {
         "id": "he-summary-03",
-        "summary": "Yaakov Bardugo met with Shin Bet chief David Zini and demanded that he open a criminal investigation against Channel 12. The request was based on suspicion that a security source leaked to the channel information about the timing of an attack in Iran. Zini initially refused, but later sought approval from the Attorney General for the investigation.",
+        "summary": "Yaakov Baradugo met with Shin Bet chief David Zini and urged him to open a criminal investigation against News 12 over allegations that a security source leaked information about the timing of an Iran attack. Zini initially refused but later sought approval from the government’s legal adviser to begin the investigation.",
         "predictions": [
           {
-            "prediction": "Yaakov Bardugo met with Shin Bet chief David Zini.",
+            "prediction": "Yaakov Baradugo met with Shin Bet chief David Zini.",
             "correct": true
           },
           {
-            "prediction": "Bardugo demanded that Zini open a criminal investigation against Channel 12.",
+            "prediction": "He urged Zini to open a criminal investigation against News 12.",
             "correct": true
           },
           {
-            "prediction": "The request was based on suspicion that a security source leaked to the channel information about the timing of an attack in Iran.",
+            "prediction": "The request was based on allegations that a security source leaked information about the timing of an Iran attack.",
             "correct": true
           },
           {
-            "prediction": "Zini initially refused, but later sought approval from the Attorney General for the investigation.",
+            "prediction": "Zini initially refused.",
+            "correct": true
+          },
+          {
+            "prediction": "Zini later sought approval from the government’s legal adviser to begin the investigation.",
             "correct": true
           }
         ],
@@ -505,18 +508,14 @@
       },
       {
         "id": "he-summary-04",
-        "summary": "Two newly approved laws—one related to Torah study and another freezing detention for draft dodgers—have reignited the debate. The focus within the ultra-Orthodox community has shifted to the question of military service. The article argues that punitive measures will not increase conscription and proposes a gradual process with supportive community frameworks.",
+        "summary": "Two recently approved laws—one related to Torah study and another freezing detention of draft-evaders—have reignited controversy within the ultra-Orthodox community. The article argues that punitive measures will not increase conscription and instead calls for a gradual process supported by community-based frameworks.",
         "predictions": [
           {
-            "prediction": "Two newly approved laws—one related to Torah study and another freezing detention for draft dodgers—have reignited the debate.",
+            "prediction": "Two recently approved laws—one related to Torah study and another freezing detention of draft-evaders—have reignited controversy within the ultra-Orthodox community.",
             "correct": true
           },
           {
-            "prediction": "The focus within the ultra-Orthodox community has shifted to the question of military service.",
-            "correct": true
-          },
-          {
-            "prediction": "The article argues that punitive measures will not increase conscription and proposes a gradual process with supportive community frameworks.",
+            "prediction": "The article argues that punitive measures will not increase conscription and instead calls for a gradual process supported by community-based frameworks.",
             "correct": true
           }
         ],
@@ -531,7 +530,7 @@
           },
           {
             "reference": "The focus inside Haredi society has shifted to military service",
-            "found": true
+            "found": false
           },
           {
             "reference": "The article argues punitive measures will not increase recruitment",
@@ -545,53 +544,61 @@
       },
       {
         "id": "he-summary-05",
-        "summary": "This article cannot be summarized.",
+        "summary": "The article marks the 80th anniversary of the bombing of the King David Hotel in Jerusalem by the Irgun (IZL/אצ\"ל). It describes the attack as the largest terror attack ever carried out in the Middle East against civilians before October 7 and notes 91 people were killed and 476 others were injured.",
         "predictions": [
           {
-            "prediction": "This article cannot be summarized.",
-            "correct": false
+            "prediction": "The article marks the 80th anniversary of the bombing of the King David Hotel in Jerusalem by the Irgun (IZL/א\"צ).",
+            "correct": true
+          },
+          {
+            "prediction": "It describes the attack as the largest terror attack ever carried out in the Middle East against civilians before October 7.",
+            "correct": true
+          },
+          {
+            "prediction": "91 people were killed and 476 others were injured.",
+            "correct": true
           }
         ],
         "references": [
           {
             "reference": "July 22 marks 80 years since the King David Hotel Bombing",
-            "found": false
+            "found": true
           },
           {
             "reference": "The bombing occurred in Jerusalem",
-            "found": false
+            "found": true
           },
           {
             "reference": "The Irgun carried out the bombing, not the IDF",
-            "found": false
+            "found": true
           },
           {
             "reference": "The bombing killed 91 people and injured 476",
-            "found": false
+            "found": true
           },
           {
             "reference": "Until the October 7 massacre it was considered the Middle East's largest terrorist attack against civilians",
-            "found": false
+            "found": true
           }
         ]
       },
       {
         "id": "he-summary-06",
-        "summary": "The Council for Higher Education approved a decision restricting freedom of protest and expression at universities and colleges. The article says the decision’s validity is unclear after five council members resigned the previous day, leaving the body without the required balance between academic members and other representatives.",
+        "summary": "Israel’s Council for Higher Education approved a decision limiting freedom of protest and expression at universities and colleges. The decision’s validity is unclear after five council members resigned, leaving the body without the necessary balance between academics and other representatives.",
         "predictions": [
           {
-            "prediction": "The Council for Higher Education approved a decision restricting freedom of protest and expression at universities and colleges.",
+            "prediction": "Israel’s Council for Higher Education approved a decision limiting freedom of protest and expression at universities and colleges.",
             "correct": true
           },
           {
-            "prediction": "The article says the decision’s validity is unclear after five council members resigned the previous day, leaving the body without the required balance between academic members and other representatives.",
+            "prediction": "The decision’s validity is unclear after five council members resigned, leaving the body without the necessary balance between academics and other representatives.",
             "correct": true
           }
         ],
         "references": [
           {
             "reference": "The Council for Higher Education approved a decision restricting freedom of assembly and speech at universities and colleges",
-            "found": false
+            "found": true
           },
           {
             "reference": "The decision's validity is unclear",
@@ -609,46 +616,62 @@
       },
       {
         "id": "he-summary-07",
-        "summary": "This article cannot be summarized.",
+        "summary": "The article discusses how Netanyahu’s proposed changes could affect the character and internal influence of Likud’s candidate list. It argues the changes would reduce the likelihood that unexpected “colorful” figures can realistically enter the list. The focus is on how these adjustments will reshape the party’s slate and members’ power.",
         "predictions": [
           {
-            "prediction": "This article cannot be summarized.",
-            "correct": false
+            "prediction": "The article discusses how Netanyahu’s proposed changes could affect the character and internal influence of Likud’s candidate list.",
+            "correct": true
+          },
+          {
+            "prediction": "It argues the changes would reduce the likelihood that unexpected “colorful” figures can realistically enter the list.",
+            "correct": true
+          },
+          {
+            "prediction": "The focus is on how these adjustments will reshape the party’s slate and members’ power.",
+            "correct": true
           }
         ],
         "references": [
           {
             "reference": "Netanyahu is reducing the chances of colorful and unexpected personalities winning a realistic slot on the list",
-            "found": false
+            "found": true
           },
           {
             "reference": "The discussion concerns changes promoted by Netanyahu",
-            "found": false
+            "found": true
           },
           {
             "reference": "The changes may affect the character of the Likud list",
-            "found": false
+            "found": true
           },
           {
             "reference": "The changes may affect the degree of influence held by party members",
-            "found": false
+            "found": true
           }
         ]
       },
       {
         "id": "he-summary-08",
-        "summary": "The head of the Yeroḥam local council held a quiet, coordinated protest, saying the minister refuses to meet her over a financial dispute related to the Yeroḥam lake. About 40 million shekels allocated for developing the park have been stuck for more than four years.",
+        "summary": "The head of Yeroham’s local council held a coordinated quiet protest, alleging that a minister refused to meet over a financial dispute related to the Yeroham Lake. About 40 million shekels allocated to develop the park have been stuck for more than four years.",
         "predictions": [
           {
-            "prediction": "The head of the Yeroḥam local council held a quiet, coordinated protest.",
+            "prediction": "The summary is in English.",
             "correct": true
           },
           {
-            "prediction": "She said the minister refuses to meet her over a financial dispute related to the Yeroḥam lake.",
+            "prediction": "The head of Yeroham’s local council held a coordinated quiet protest.",
             "correct": true
           },
           {
-            "prediction": "About 40 million shekels allocated for developing the park have been stuck for more than four years.",
+            "prediction": "The head of the council alleged that a minister refused to meet with her.",
+            "correct": true
+          },
+          {
+            "prediction": "The financial dispute was related to Yeroham Lake.",
+            "correct": true
+          },
+          {
+            "prediction": "About 40 million shekels allocated to develop the park have been stuck for more than four years.",
             "correct": true
           }
         ],
@@ -675,29 +698,29 @@
   },
   "translation": {
     "metrics": {
-      "precision": 0.8644,
-      "recall": 0.7826,
-      "f1": 0.8215,
-      "correct_units": 51,
-      "incorrect_units": 8,
-      "found_units": 54,
-      "missed_units": 15
+      "precision": 0.9206,
+      "recall": 0.8939,
+      "f1": 0.9071,
+      "correct_units": 58,
+      "incorrect_units": 5,
+      "found_units": 59,
+      "missed_units": 7
     },
     "examples": [
       {
         "id": "fa-translation-01",
-        "translation": "The IRGC announced: the destruction of an American MQ9 drone in the sky of Andimeshk",
+        "translation": "IRGC announced: A U.S. MQ-9 drone was destroyed in the skies over Andimeshk",
         "predictions": [
           {
-            "prediction": "The IRGC made the announcement",
+            "prediction": "IRGC announced the event",
             "correct": true
           },
           {
-            "prediction": "an American MQ9 drone was destroyed",
+            "prediction": "A U.S. MQ-9 drone was destroyed",
             "correct": true
           },
           {
-            "prediction": "the destruction occurred in the sky of Andimeshk",
+            "prediction": "the destruction occurred in the skies over Andimeshk",
             "correct": true
           }
         ],
@@ -718,7 +741,7 @@
       },
       {
         "id": "fa-translation-02",
-        "translation": "Trump: Iran has released an American woman; I appreciate Tehran's goodwill",
+        "translation": "Trump: Iran has released an American woman; I appreciate Tehran’s goodwill",
         "predictions": [
           {
             "prediction": "Trump is the speaker",
@@ -750,14 +773,14 @@
       },
       {
         "id": "fa-translation-03",
-        "translation": "Deadlock in Pentagon budget review",
+        "translation": "Deadlock in the Review of the Pentagon Budget",
         "predictions": [
           {
-            "prediction": "There is a deadlock.",
+            "prediction": "there is a deadlock",
             "correct": true
           },
           {
-            "prediction": "The deadlock concerns review of the Pentagon budget.",
+            "prediction": "the deadlock concerns review of the Pentagon budget",
             "correct": true
           }
         ],
@@ -774,7 +797,7 @@
       },
       {
         "id": "fa-translation-04",
-        "translation": "Araghchi's explanation about the trip to Oman",
+        "translation": "Araghchi’s explanation about his trip to Oman",
         "predictions": [
           {
             "prediction": "Araghchi gave an explanation",
@@ -798,19 +821,19 @@
       },
       {
         "id": "fa-translation-05",
-        "translation": "How much is the price of coins and gold today, Thursday, July 25, 1405 / Imami coins? + table",
+        "translation": "Coin and gold prices today, Thursday, July 16, 2026 / How much is the Emami coin? + table",
         "predictions": [
           {
-            "prediction": "The headline reports the price of coins and gold today.",
+            "prediction": "Coin and gold prices are being reported today.",
             "correct": true
           },
           {
-            "prediction": "The date is Thursday, July 25, 1405.",
+            "prediction": "The prices are for Thursday, July 16, 2026.",
             "correct": false
           },
           {
-            "prediction": "The headline asks how much Imami coins are.",
-            "correct": false
+            "prediction": "The headline asks how much the Emami coin is.",
+            "correct": true
           },
           {
             "prediction": "The article contains a table.",
@@ -823,12 +846,12 @@
             "found": true
           },
           {
-            "reference": "25 Tir 1405 is converted to July 16, 2026",
+            "reference": "the prices are for Thursday, 25 Tir 1405",
             "found": false
           },
           {
             "reference": "the headline asks the price of an Emami coin",
-            "found": false
+            "found": true
           },
           {
             "reference": "the article contains a table",
@@ -838,21 +861,21 @@
       },
       {
         "id": "fa-translation-06",
-        "translation": "John Mersheimer: Iranians will never surrender",
+        "translation": "John Mearsheimer: Iranians will never surrender",
         "predictions": [
           {
-            "prediction": "The attributed speaker is John Mersheimer",
-            "correct": false
+            "prediction": "The attributed speaker is John Mearsheimer.",
+            "correct": true
           },
           {
-            "prediction": "Iranians will never surrender",
+            "prediction": "Iranians will never surrender.",
             "correct": true
           }
         ],
         "references": [
           {
             "reference": "John Mearsheimer is the attributed speaker",
-            "found": false
+            "found": true
           },
           {
             "reference": "Iranians will never surrender",
@@ -861,58 +884,30 @@
         ]
       },
       {
-        "id": "fa-translation-07",
-        "translation": "Gold price today, Tuesday, July 30, 1405",
-        "predictions": [
-          {
-            "prediction": "gold price is being reported",
-            "correct": true
-          },
-          {
-            "prediction": "today is Tuesday",
-            "correct": true
-          },
-          {
-            "prediction": "the date is July 30, 1405",
-            "correct": false
-          }
-        ],
-        "references": [
-          {
-            "reference": "gold prices are being reported",
-            "found": true
-          },
-          {
-            "reference": "30 Tir 1405 is converted to July 21, 2026",
-            "found": false
-          },
-          {
-            "reference": "the day is Tuesday",
-            "found": true
-          }
-        ]
-      },
-      {
         "id": "fa-translation-08",
-        "translation": "The president of the doctors spoke about the negotiations",
+        "translation": "President Pezeshkian spoke about the negotiations",
         "predictions": [
           {
-            "prediction": "The subject is identified as \"the president of the doctors,\" translating پزشکیان as doctors.",
-            "correct": false
+            "prediction": "Pezeshkian is rendered as the president's surname and not translated as 'doctors'.",
+            "correct": true
           },
           {
-            "prediction": "The president spoke about the negotiations.",
+            "prediction": "The headline says President Pezeshkian spoke.",
+            "correct": true
+          },
+          {
+            "prediction": "He spoke about the negotiations.",
             "correct": true
           }
         ],
         "references": [
           {
             "reference": "Pezeshkian is preserved as the president's surname and is not translated as doctors",
-            "found": false
+            "found": true
           },
           {
             "reference": "President Pezeshkian spoke",
-            "found": false
+            "found": true
           },
           {
             "reference": "he spoke about the negotiations",
@@ -922,14 +917,14 @@
       },
       {
         "id": "he-translation-01",
-        "translation": "Trump is fighting with Iran for control of the Strait of Hormuz and pushing the nuclear issue to the margins",
+        "translation": "Trump battles Iran for control of the Strait of Hormuz and pushes the nuclear issue to the sidelines",
         "predictions": [
           {
-            "prediction": "Trump is fighting with Iran for control of the Strait of Hormuz",
+            "prediction": "Trump battles Iran for control of the Strait of Hormuz",
             "correct": true
           },
           {
-            "prediction": "Trump is pushing the nuclear issue to the margins",
+            "prediction": "pushes the nuclear issue to the sidelines",
             "correct": true
           }
         ],
@@ -950,14 +945,18 @@
       },
       {
         "id": "he-translation-02",
-        "translation": "In the shadow of the concerns in academia: the law for gender segregation in advanced degrees was approved",
+        "translation": "Amid concerns in academia: Law allowing gender segregation in graduate degrees approved",
         "predictions": [
           {
-            "prediction": "In the shadow of the concerns in academia",
+            "prediction": "there are concerns in academia",
             "correct": true
           },
           {
-            "prediction": "the law for gender segregation in advanced degrees was approved",
+            "prediction": "a law was approved",
+            "correct": true
+          },
+          {
+            "prediction": "the law allows gender segregation in graduate degrees",
             "correct": true
           }
         ],
@@ -978,22 +977,22 @@
       },
       {
         "id": "he-translation-03",
-        "translation": "For the first time in escalation: the USA attacked in the Tehran area. Iran sent to Jordan - and released an American",
+        "translation": "For the first time in the escalation: The US attacked in the Tehran area. Iran launched [missiles] at Jordan—and released an American woman",
         "predictions": [
           {
-            "prediction": "For the first time in escalation:",
+            "prediction": "For the first time in the escalation",
             "correct": true
           },
           {
-            "prediction": "the USA attacked in the Tehran area.",
+            "prediction": "The US attacked in the Tehran area",
             "correct": true
           },
           {
-            "prediction": "Iran sent to Jordan",
+            "prediction": "Iran launched [missiles] at Jordan",
             "correct": true
           },
           {
-            "prediction": "and released an American",
+            "prediction": "Iran released an American woman",
             "correct": true
           }
         ],
@@ -1012,24 +1011,24 @@
           },
           {
             "reference": "Iran released an American woman",
-            "found": false
+            "found": true
           }
         ]
       },
       {
         "id": "he-translation-04",
-        "translation": "Between law and reality: the real battle over ultra-Orthodox recruitment takes place under the radar",
+        "translation": "Between Law and Reality: The Real Battle Over Haredi Conscription Is Taking Place Under the Radar",
         "predictions": [
           {
-            "prediction": "the headline contrasts law with reality",
+            "prediction": "The headline contrasts law with reality",
             "correct": true
           },
           {
-            "prediction": "there is a real battle over ultra-Orthodox recruitment",
+            "prediction": "There is a real battle over ultra-Orthodox recruitment",
             "correct": true
           },
           {
-            "prediction": "the battle is taking place under the radar",
+            "prediction": "The battle is taking place under the radar",
             "correct": true
           }
         ],
@@ -1050,14 +1049,14 @@
       },
       {
         "id": "he-translation-05",
-        "translation": "Yaakov Berdugo met with the head of the Shin Bet and pressured him to open an investigation into News 12",
+        "translation": "Yaakov Bardugo met with the head of the Shin Bet and pressured him to open an investigation into Channel 12 News",
         "predictions": [
           {
-            "prediction": "Yaakov Berdugo met with the head of the Shin Bet",
+            "prediction": "Yaakov Bardugo met with the head of the Shin Bet",
             "correct": true
           },
           {
-            "prediction": "he pressured him to open an investigation into News 12",
+            "prediction": "and pressured him to open an investigation into Channel 12 News",
             "correct": true
           }
         ],
@@ -1078,10 +1077,10 @@
       },
       {
         "id": "he-translation-06",
-        "translation": "The father of the aid truck driver who was killed in Rafah: He was shot between the eyes, without saying a word",
+        "translation": "Father of aid truck driver killed in Rafah: They shot him between the eyes without saying a word",
         "predictions": [
           {
-            "prediction": "The father of the aid truck driver is the speaker",
+            "prediction": "The speaker is the father of an aid truck driver",
             "correct": true
           },
           {
@@ -1089,11 +1088,11 @@
             "correct": true
           },
           {
-            "prediction": "He was shot between the eyes",
+            "prediction": "The driver was shot between the eyes",
             "correct": true
           },
           {
-            "prediction": "The shooting happened without saying a word",
+            "prediction": "The shooting occurred without saying a word",
             "correct": true
           }
         ],
@@ -1118,14 +1117,22 @@
       },
       {
         "id": "he-translation-07",
-        "translation": "Herzog: Zini and Solberg presented me with threats to the purity of the elections, from within and without",
+        "translation": "Herzog: Zini and Solberg presented me with threats to the integrity of the elections, from within and without",
         "predictions": [
           {
             "prediction": "Herzog is the speaker",
             "correct": true
           },
           {
-            "prediction": "Zini and Solberg presented me with threats to the purity of the elections, from within and without",
+            "prediction": "Zini and Solberg presented threats to Herzog",
+            "correct": true
+          },
+          {
+            "prediction": "the threats concern election integrity",
+            "correct": true
+          },
+          {
+            "prediction": "the threats are domestic and foreign",
             "correct": true
           }
         ],
@@ -1150,10 +1157,22 @@
       },
       {
         "id": "he-translation-08",
-        "translation": "The Council for Higher Education approved limiting the freedom of protest and expression in the academy",
+        "translation": "The Council for Higher Education approved restricting freedom of protest and expression in academia",
         "predictions": [
           {
-            "prediction": "The Council for Higher Education approved limiting the freedom of protest and expression in the academy",
+            "prediction": "The Council for Higher Education approved restricting something",
+            "correct": true
+          },
+          {
+            "prediction": "The restriction concerns freedom of protest",
+            "correct": false
+          },
+          {
+            "prediction": "The restriction concerns freedom of expression",
+            "correct": false
+          },
+          {
+            "prediction": "The restriction applies in academia",
             "correct": true
           }
         ],
@@ -1168,7 +1187,7 @@
           },
           {
             "reference": "the restriction concerns freedom of speech",
-            "found": true
+            "found": false
           },
           {
             "reference": "the restriction applies in academia",
@@ -1178,23 +1197,23 @@
       },
       {
         "id": "he-translation-09",
-        "translation": "July 22, 1946: Explosion at the King David Hotel 22.7.2026",
+        "translation": "July 22, 1946: Explosion at the King David Hotel | 22.7.2026",
         "predictions": [
           {
-            "prediction": "the original headline states July 22, 1946",
+            "prediction": "The historical event occurred on July 22, 1946.",
             "correct": true
           },
           {
-            "prediction": "the headline describes an explosion at the King David Hotel",
-            "correct": true
-          },
-          {
-            "prediction": "the headline preserves 22.7.2026 as a date",
-            "correct": true
-          },
-          {
-            "prediction": "the title and date are separated by a vertical bar",
+            "prediction": "The event is described as an explosion at the King David Hotel.",
             "correct": false
+          },
+          {
+            "prediction": "The publication date is preserved as 22.7.2026.",
+            "correct": true
+          },
+          {
+            "prediction": "The separator between the title and publication date is preserved.",
+            "correct": true
           }
         ],
         "references": [
@@ -1212,29 +1231,29 @@
           },
           {
             "reference": "the separator between the title and publication date is preserved",
-            "found": false
+            "found": true
           }
         ]
       },
       {
         "id": "he-translation-10",
-        "translation": "\"Something happened to him\": the battle for the Likud list reveals the new Netanyahu listen",
+        "translation": "“Something happened to him”: The battle over the Likud list reveals the new Netanyahu | Listen",
         "predictions": [
           {
-            "prediction": "the quoted statement says something happened to him",
+            "prediction": "The quoted statement says something happened to him",
             "correct": true
           },
           {
-            "prediction": "there is a battle over the Likud list",
+            "prediction": "There is a battle over the Likud list",
             "correct": true
           },
           {
-            "prediction": "the battle reveals a new Netanyahu",
+            "prediction": "The battle reveals a new Netanyahu",
             "correct": true
           },
           {
-            "prediction": "listen is attached without a separator and may be read as describing Netanyahu rather than as a separate audio prompt",
-            "correct": false
+            "prediction": "Listen is a separate audio prompt rather than a description of Netanyahu",
+            "correct": true
           }
         ],
         "references": [
@@ -1252,35 +1271,35 @@
           },
           {
             "reference": "Listen is a separate audio prompt rather than a description of Netanyahu",
-            "found": false
+            "found": true
           }
         ]
       },
       {
         "id": "he-translation-11",
-        "translation": "\"The military police came to me, I escaped from the roof\": this is how the \"black color\" mechanism works An inside look",
+        "translation": "“The military police came for me, I escaped via the roof”: This is how the “Black Color” mechanism operates | An inside look",
         "predictions": [
           {
-            "prediction": "the military police came to me",
+            "prediction": "the military police are referred to as an institution/corps",
             "correct": true
           },
           {
-            "prediction": "I escaped from the roof",
+            "prediction": "the speaker escaped via the roof",
             "correct": true
           },
           {
-            "prediction": "this is how the \"black color\" mechanism works",
+            "prediction": "the mechanism is named \"Black Color\"",
             "correct": false
           },
           {
-            "prediction": "An inside look",
+            "prediction": "\"An inside look\" is preserved as a separate label",
             "correct": true
           }
         ],
         "references": [
           {
             "reference": "the institution is the Military Police Corps",
-            "found": false
+            "found": true
           },
           {
             "reference": "the speaker fled the roof",
@@ -1292,20 +1311,20 @@
           },
           {
             "reference": "An inside look is preserved as a separate label",
-            "found": false
+            "found": true
           }
         ]
       },
       {
         "id": "he-translation-12",
-        "translation": "Judge Noam Solberg discussed the validity of the decision",
+        "translation": "Justice Noam Sohlberg considers the validity of the decision",
         "predictions": [
           {
-            "prediction": "The person is a judge named Noam Solberg.",
+            "prediction": "Justice Noam Sohlberg refers to judge Noam Solberg",
             "correct": true
           },
           {
-            "prediction": "He discussed the validity of the decision.",
+            "prediction": "he considers/discusses the validity of the decision",
             "correct": true
           }
         ],
@@ -1316,7 +1335,7 @@
           },
           {
             "reference": "Justice Solberg discussed the matter",
-            "found": true
+            "found": false
           },
           {
             "reference": "validity refers specifically to the decision",
@@ -1326,14 +1345,14 @@
       },
       {
         "id": "he-translation-13",
-        "translation": "\"You will not touch me!\": the protest of the head of the Yeruham Council - which ended in a confrontation with a policeman",
+        "translation": "“You will not touch me!”: The protest by the head of the Yeruham Regional Council—which ended in a confrontation with a police officer",
         "predictions": [
           {
             "prediction": "the quoted speaker says You will not touch me",
             "correct": true
           },
           {
-            "prediction": "the translation says the protest involved the head of the Yeruham Council",
+            "prediction": "the protest involved the head of the Yeruham council",
             "correct": true
           },
           {
@@ -1341,7 +1360,7 @@
             "correct": true
           },
           {
-            "prediction": "the protest ended in a confrontation with a policeman",
+            "prediction": "the protest ended in a confrontation with a police officer",
             "correct": true
           }
         ],

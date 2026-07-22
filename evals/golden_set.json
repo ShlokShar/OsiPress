@@ -259,6 +259,17 @@
       ]
     },
     {
+      "id": "fa-translation-08",
+      "language": "Persian",
+      "headline": "رئیس‌جمهور پزشکیان درباره مذاکرات سخن گفت",
+      "reference": "President Pezeshkian spoke about the negotiations",
+      "meaning_units": [
+        "Pezeshkian is preserved as the president's surname and is not translated as doctors",
+        "President Pezeshkian spoke",
+        "he spoke about the negotiations"
+      ]
+    },
+    {
       "id": "he-translation-01",
       "language": "Hebrew",
       "headline": "טראמפ נאבק עם איראן על השליטה במצר הורמוז ודוחק לשוליים את נושא הגרעין",
@@ -324,6 +335,89 @@
         "the driver was killed in Rafah",
         "the driver was shot between the eyes",
         "the shooting occurred without a word being said"
+      ]
+    },
+    {
+      "id": "he-translation-07",
+      "language": "Hebrew",
+      "headline": "הרצוג: זיני וסולברג הציגו לי איומים על טוהר הבחירות, מבפנים ומבחוץ",
+      "reference": "Herzog: Zini and Solberg presented me with domestic and foreign threats to election integrity",
+      "meaning_units": [
+        "Herzog is the speaker",
+        "Zini and Solberg presented the threats to Herzog",
+        "the threats concern election integrity",
+        "the threats are domestic and foreign"
+      ]
+    },
+    {
+      "id": "he-translation-08",
+      "language": "Hebrew",
+      "headline": "המועצה להשכלה גבוהה אישרה להגביל את חופש המחאה והביטוי באקדמיה",
+      "reference": "The Council for Higher Education approved restricting freedom of assembly and speech in academia",
+      "meaning_units": [
+        "the Council for Higher Education approved the restriction",
+        "the restriction concerns freedom of assembly",
+        "the restriction concerns freedom of speech",
+        "the restriction applies in academia"
+      ]
+    },
+    {
+      "id": "he-translation-09",
+      "language": "Hebrew",
+      "headline": "22 ביולי, 1946: פיצוץ במלון המלך דוד | 22.7.2026",
+      "reference": "July 22, 1946: The King David Hotel Bombing | July 22, 2026",
+      "meaning_units": [
+        "the historical event occurred on July 22, 1946",
+        "the event is named the King David Hotel Bombing",
+        "July 22, 2026 is preserved as the publication date",
+        "the separator between the title and publication date is preserved"
+      ]
+    },
+    {
+      "id": "he-translation-10",
+      "language": "Hebrew",
+      "headline": "\"משהו קרה לו\": הקרב על רשימת הליכוד חושף את נתניהו החדש | האזינו",
+      "reference": "\"Something happened to him\": The battle over the Likud list reveals the new Netanyahu | Listen",
+      "meaning_units": [
+        "the quoted statement says something happened to him",
+        "there is a battle over the Likud list",
+        "the battle reveals a new Netanyahu",
+        "Listen is a separate audio prompt rather than a description of Netanyahu"
+      ]
+    },
+    {
+      "id": "he-translation-11",
+      "language": "Hebrew",
+      "headline": "\"המשטרה הצבאית הגיעה אליי, ברחתי מהגג\": כך פועל מנגנון \"צבע שחור\" | מבט מבפנים",
+      "reference": "\"The Military Police Corps came to me; I fled the roof\": How the \"Code Black\" system works | An inside look",
+      "meaning_units": [
+        "the institution is the Military Police Corps",
+        "the speaker fled the roof",
+        "the system is named Code Black",
+        "An inside look is preserved as a separate label"
+      ]
+    },
+    {
+      "id": "he-translation-12",
+      "language": "Hebrew",
+      "headline": "השופט נעם סולברג דן בתוקף ההחלטה",
+      "reference": "Justice Noam Solberg discussed the decision's validity",
+      "meaning_units": [
+        "the judge's name is Noam Solberg",
+        "Justice Solberg discussed the matter",
+        "validity refers specifically to the decision"
+      ]
+    },
+    {
+      "id": "he-translation-13",
+      "language": "Hebrew",
+      "headline": "\"אתה לא תיגע בי!\": מחאת ראש מועצת ירוחם - שהסתיימה בעימות עם שוטר",
+      "reference": "\"You will not touch me!\": The Yeruham council head's protest ended in a confrontation with a police officer",
+      "meaning_units": [
+        "the quoted speaker says You will not touch me",
+        "the protest involved the head of the Yeruham council",
+        "Yeruham is preserved as the place name",
+        "the protest ended in a confrontation with a police officer"
       ]
     }
   ],
@@ -433,6 +527,59 @@
         "The focus inside Haredi society has shifted to military service",
         "The article argues punitive measures will not increase recruitment",
         "The article recommends gradual change and supportive community frameworks"
+      ]
+    },
+    {
+      "id": "he-summary-05",
+      "language": "Hebrew",
+      "source": "Haaretz",
+      "source_url": "https://www.haaretz.co.il/",
+      "article": "מחר, ב-22 ביולי, ימלאו שמונים שנה לפיצוץ מלון המלך דוד בירושלים על ידי האצ\"ל. עד לטבח השבעה באוקטובר נחשב הפיצוץ במלון לפיגוע הטרור הגדול ביותר שנעשה אי פעם במזרח התיכון נגד אזרחים. נהרגו בו 91 בני אדם ונפצעו 476 נוספים.",
+      "expected_facts": [
+        "July 22 marks 80 years since the King David Hotel Bombing",
+        "The bombing occurred in Jerusalem",
+        "The Irgun carried out the bombing, not the IDF",
+        "The bombing killed 91 people and injured 476",
+        "Until the October 7 massacre it was considered the Middle East's largest terrorist attack against civilians"
+      ]
+    },
+    {
+      "id": "he-summary-06",
+      "language": "Hebrew",
+      "source": "Haaretz",
+      "source_url": "https://www.haaretz.co.il/",
+      "article": "המועצה להשכלה גבוהה אישרה היום החלטה המגבילה את חופש המחאה והביטוי באוניברסיטאות ובמכללות. תוקף ההחלטה אינו ברור לאחר שהתפטרות חמישה מחברי המועצה אתמול הותירה את הגוף ללא האיזון הדרוש בין אנשי האקדמיה לשאר הנציגים.",
+      "expected_facts": [
+        "The Council for Higher Education approved a decision restricting freedom of assembly and speech at universities and colleges",
+        "The decision's validity is unclear",
+        "Five council members resigned the previous day",
+        "The resignations left the body without the required balance between academics and the other representatives"
+      ]
+    },
+    {
+      "id": "he-summary-07",
+      "language": "Hebrew",
+      "source": "Israel Hayom",
+      "source_url": "https://www.israelhayom.co.il/",
+      "article": "נתניהו למעשה מקטין בכך את האפשרות של דמויות צבעוניות ולא צפויות להיכנס במקום ריאלי ברשימה. במוקד הדיון ניצבת השאלה כיצד ישפיעו השינויים שמקדם נתניהו על אופייה של רשימת הליכוד ועל מידת השפעתם של חברי המפלגה.",
+      "expected_facts": [
+        "Netanyahu is reducing the chances of colorful and unexpected personalities winning a realistic slot on the list",
+        "The discussion concerns changes promoted by Netanyahu",
+        "The changes may affect the character of the Likud list",
+        "The changes may affect the degree of influence held by party members"
+      ]
+    },
+    {
+      "id": "he-summary-08",
+      "language": "Hebrew",
+      "source": "Yedioth Ahronoth",
+      "source_url": "https://www.ynet.co.il/",
+      "article": "ראש מועצת ירוחם הגיעה למחאה שקטה ומתואמת לאחר שלטענתה השר מסרב להיפגש איתה על רקע סכסוך כספי הנוגע לאגם ירוחם. כ-40 מיליון שקלים המיועדים לפיתוח הפארק תקועים כבר יותר מארבע שנים.",
+      "expected_facts": [
+        "The head of the Yeruham council held a quiet and coordinated protest",
+        "She said a minister refused to meet with her",
+        "The financial dispute concerns Yeruham Lake",
+        "About 40 million shekels intended for development of the park have been held up for more than four years"
       ]
     }
   ]
