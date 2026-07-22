@@ -147,9 +147,7 @@ for country, sources in data.items():
                 if not relevant:
                     continue
 
-                # get the article text and summarize it
-                stage = "translating headline"
-                translated_headline = translate(headline)
+                # get the article text and log it
 
                 stage = "extracting article text"
                 article_text = get_article_text(link)
@@ -159,10 +157,15 @@ for country, sources in data.items():
                         f"text extraction returned no text ({link})"
                     )
 
-                stage = "summarizing article"
-                processed_article = ai_service.summarize(article_text)
+                stage = "translating headline"
+                translated_headline = ai_service.translate_headline(headline)
 
-                # save the summary, references, and tags
+                stage = "summarizing article"
+                processed_article = ai_service.summarize(headline, article_text)
+
+                # save the translated headline, summary, references, and tags
+                translated_headline = translated_headline.translated_headline if (
+                    translated_headline) else "No headline translated."
                 article_summary = processed_article.summary if (
                     processed_article) else "No summary provided."
                 article_references = processed_article.references \

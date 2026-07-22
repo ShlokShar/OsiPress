@@ -7,12 +7,12 @@ from datetime import (
 from pathlib import Path
 
 from cron.util.ai_service import AIService
-from cron.util.translation import translate
 from evals.util.eval_service import EvalService
 
 
 GOLDEN_SET_PATH = Path(__file__).resolve().parent / "golden_set.json"
-RESULTS_PATH = Path(__file__).resolve().parent / "results.json"
+RESULTS_PATH = (Path(__file__).resolve().parent /
+                "results_luna_translation.json")
 
 
 def get_metrics(true_positive: int, false_positive: int,
@@ -109,7 +109,7 @@ def evaluate_summaries(ai_service: AIService, eval_service: EvalService,
     results = []
 
     for example in examples:
-        processed = ai_service.summarize(example["article"])
+        processed = ai_service.summarize("", example["article"])
         summary = processed.summary if processed else ""
         grade = eval_service.grade_summary(
             example["article"], summary, example["expected_facts"]
@@ -159,11 +159,12 @@ def evaluate_summaries(ai_service: AIService, eval_service: EvalService,
     }
 
 
-def evaluate_translations(eval_service: EvalService,
+def evaluate_translations(ai_service: AIService, eval_service: EvalService,
                           examples: list[dict]) -> dict:
     """
     Evaluates headline translation meaning and completeness.
 
+    :param ai_service: the current production AI service
     :param eval_service: the service used to grade open-ended outputs
     :param examples: the translation examples from the golden set
     :return: the translation metrics and individual results
@@ -176,7 +177,8 @@ def evaluate_translations(eval_service: EvalService,
     results = []
 
     for example in examples:
-        translation = translate(example["headline"])
+        processed = ai_service.translate_headline(example["headline"])
+        translation = processed.translated_headline if processed else ""
         grade = eval_service.grade_translation(
             example["headline"], translation, example["reference"],
             example["meaning_units"]
@@ -236,6 +238,9 @@ results = {
     "evaluated_at": datetime.now(timezone.utc).isoformat(),
     "production_model": ai_service.model,
     "judge_model": eval_service.model,
+    "translation_model": ai_service.translation_model,
+    "translation_method": "AIService.translate_headline",
+    "translation_judge": "lenient name transliteration",
     "classification": evaluate_classifications(
         ai_service, golden_set["classifications"]
     ),
@@ -243,7 +248,7 @@ results = {
         ai_service, eval_service, golden_set["summaries"]
     ),
     "translation": evaluate_translations(
-        eval_service, golden_set["translations"]
+        ai_service, eval_service, golden_set["translations"]
     ),
 }
 
