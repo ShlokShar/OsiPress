@@ -128,31 +128,25 @@
                 {% endif %}
 
                 {% elif state == 'none' %}
-                <div class="state">
-                    <h2>No matches for &ldquo;{{ query }}&rdquo;</h2>
-                    <p>Nothing in the collected archive matches all of those terms. OsiPress only holds articles published from {{ archive_start }} onward, so older documents will not appear.</p>
+                <div class="empty">
+                    <p>Nothing matches &ldquo;{{ query }}&rdquo;. The archive starts {{ archive_start }}; you can also <a href="/archive">browse by date</a>.</p>
                     {% if suggestions %}
-                    <span class="lbl">Try instead</span>
                     <div class="chips">
                         {% for s in suggestions %}<a class="chip" href="{{ url_for('search', q=s) }}">{{ s }}</a>{% endfor %}
                     </div>
                     {% endif %}
-                    <p>Or browse chronologically in the <a href="/archive">archive</a>.</p>
                 </div>
 
                 {% elif state == 'error' %}
-                <div class="state">
-                    <div class="alert" role="alert">
-                        <p class="kicker">Search unavailable</p>
-                        <h2>The index didn&rsquo;t answer in time.</h2>
-                        <p>Your query reached us, but the search index timed out. Nothing is lost &mdash; the archive itself is fine, and today&rsquo;s comparison is still available.</p>
-                        <div class="chips">
-                            <a class="btn" href="{{ url_for('search', q=query) }}">Try again</a>
-                            <a class="chip" href="/today">Go to today&rsquo;s articles</a>
-                        </div>
-                        {% if error_ref %}<p class="ref-code">Reference {{ error_ref }}</p>{% endif %}
-                    </div>
-                </div>
+                {# error_ref is only set when the search itself failed; without
+                   it the query was simply rejected as too long. #}
+                <p class="empty" role="alert">
+                    {%- if error_ref -%}
+                    Search is unavailable right now. <a href="{{ url_for('search', q=query) }}">Try again</a>, or read <a href="/today">today&rsquo;s articles</a>.
+                    {%- else -%}
+                    That search is too long. Keep it under 200 characters.
+                    {%- endif -%}
+                </p>
 
                 {% endif %}
             </main>

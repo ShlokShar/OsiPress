@@ -32,16 +32,10 @@
 .more{display:flex;justify-content:center;padding-top:24px}
 .btn{display:inline-flex;align-items:center;justify-content:center;font:600 12.5px 'Libre Franklin',sans-serif;color:var(--text);background:#fffdfb;border:1px solid #e2d0ba;border-radius:8px;padding:9px 18px;cursor:pointer}
 .btn:hover{border-color:var(--primary);color:var(--text);text-decoration:none}
-.state{max-width:70ch;padding:14px 0 40px}
-.state h2{margin:0 0 10px;font-family:'Source Serif 4',serif;font-size:20px;font-weight:700;line-height:1.35}
-.state p{margin:0 0 18px;font-size:13.5px;line-height:1.7;color:#5c5044}
-.state .lbl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:9px}
-.state .chips{margin-bottom:22px;align-items:center;gap:8px}
+.empty p{margin:0;max-width:62ch;margin-inline:auto}
+.empty .chips{justify-content:center;margin-top:14px}
 a.chip{text-decoration:none}
 a.chip:hover{border-color:var(--primary);color:var(--text);text-decoration:none}
-.alert{border-inline-start:3px solid #b3401f;padding-inline-start:16px}
-.alert .kicker{margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:#b3401f}
-.ref-code{margin:0;font-size:11.5px;color:var(--muted)}
 .loading-status{margin:0;padding:18px 0 0;font-size:12.5px;color:var(--muted)}
 .skel-row{display:flex;gap:12px;padding:20px 0;animation:osiPulse 1.5s ease-in-out infinite}
 .skel-row+.skel-row{border-top:1px solid var(--line)}
@@ -78,7 +72,6 @@ footer{flex-direction:column;align-items:flex-start}
 .results .story-main h3{font-size:17px}
 .result-when{margin-left:0}
 .results .story-detail{padding-left:0}
-.state{padding:10px 0 32px}
 a.chip{display:inline-flex;align-items:center;min-height:40px}
 .btn{min-height:44px}
 }
