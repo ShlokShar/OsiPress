@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>OsiPress &middot; Search</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/osipress.css') }}">
+        <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    </head>
+    <body>
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+            <symbol id="mk" viewBox="0 0 200 160">
+                <g transform="translate(100,80) scale(.9) translate(-100,-80)">
+                    <path d="M68 20 36 20 36 140 68 140" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M132 20 164 20 164 140 132 140" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path transform="translate(88,72) scale(.62)" d="M0,-16A16,16 0 1,0 0,16C-1.5,27 -7,35.5 -15,41L-11,45.5C3,37 14.5,23 16,2A16,16 0 0,0 0,-16Z" fill="currentColor"/>
+                    <path transform="translate(115,72) scale(.62)" d="M0,-16A16,16 0 1,0 0,16C-1.5,27 -7,35.5 -15,41L-11,45.5C3,37 14.5,23 16,2A16,16 0 0,0 0,-16Z" fill="currentColor"/>
+                </g>
+            </symbol>
+        </svg>
+        <div class="wrap">
+            <nav class="top">
+                <a href="/" class="brand">
+                    <svg viewBox="0 0 200 160">
+                        <use href="#mk"></use>
+                    </svg>
+                    <span class="name">OsiPress</span>
+                </a>
+                <div class="navlinks"><a href="/today">Today</a><a
+                    href="/archive">Archive</a><a href="/search"
+                    class="active">Search</a>
+                </div>
+            </nav>
+            <div class="toolbar">
+                <h1 class="page-title">Search the archive</h1>
+                <div class="toolbar-row">
+                    <form class="searchbar" role="search" action="{{ url_for('search') }}" method="get">
+                        <label class="vh" for="q">Search articles</label>
+                        <input id="q" name="q" type="search" value="{{ query }}" placeholder="Search headlines, summaries, quotations&hellip;" autocomplete="off" spellcheck="false" {% if not query %}autofocus{% endif %}>
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+                <div class="toolbar-row toolbar-row--sub">
+                    <div class="picker-group">
+                        <div class="picker">
+                            <span class="lbl">Country</span>
+                            <span class="dd-toggle dd-static"><span class="dd-value">All</span></span>
+                        </div>
+                        <div class="picker">
+                            <span class="lbl">Outlet</span>
+                            <span class="dd-toggle dd-static"><span class="dd-value">All six</span></span>
+                        </div>
+                        <div class="picker">
+                            <span class="lbl">Sort</span>
+                            <span class="dd-toggle dd-static"><span class="dd-value">Relevance</span></span>
+                        </div>
+                    </div>
+                    {% if state == 'results' %}
+                    <div class="edition">{{ total }} match{{ '' if total == 1 else 'es' }} &middot; <b>{{ results|length }} shown</b></div>
+                    {% endif %}
+                </div>
+            </div>
+            <main>
+                {# ---------------------------------------------------------
+                   state: 'empty' | 'results' | 'none' | 'error'
+                   The loading state is client-side only — search.js clones
+                   #search-skeleton below while the request is in flight.
+                   results: [{
+                     rank, outlet, country, leaning, leaning_class, published,
+                     title, title_original, summary, tags[], link, domain,
+                     quotes[{translated, original}]
+                   }]
+                --------------------------------------------------------- #}
+
+                {% if state == 'results' %}
+                <div class="results">
+                    {% for r in results %}
+                    <details class="story">
+                        <summary class="story-row">
+                            <span class="num">{{ '%02d' % r.rank }}</span>
+                            <div class="story-main">
+                                <div class="result-meta">
+                                    <span class="outlet-name">{{ r.outlet }}</span>
+                                    {% if r.country %}<span class="sep" aria-hidden="true">|</span><span>{{ r.country }}</span>{% endif %}
+                                    {% if r.leaning %}<span class="tag {{ r.leaning_class or 'unknown' }}">{{ r.leaning }}</span>{% endif %}
+                                    <span class="result-when">{{ r.published }}</span>
+                                </div>
+                                <h3>{{ r.title }}</h3>
+                                {% if r.title_original %}
+                                <div class="orig-line">
+                                    <span class="orig-label">Original</span>
+                                    <span class="orig" dir="auto">{{ r.title_original }}</span>
+                                </div>
+                                {% endif %}
+                                {% if r.summary %}<p class="summary" dir="auto">{{ r.summary }}</p>{% endif %}
+                                {% if r.tags %}
+                                <div class="topics">
+                                    {% for tag in r.tags %}<a class="topic" href="{{ url_for('search', q=tag) }}">{{ tag }}</a>{% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <span class="chev" aria-hidden="true"></span>
+                        </summary>
+                        <div class="story-detail">
+                            {% if r.quotes %}
+                            <div class="refs-block">
+                                <div class="refs-head"><span class="cap">Quoted from the article</span></div>
+                                <div class="ref-list">
+                                    {% for quote in r.quotes %}
+                                    {% if quote.translated %}<p class="ref">{{ quote.translated }}</p>{% endif %}
+                                    {% if quote.original %}<p class="ref ref--orig" dir="auto">{{ quote.original }}</p>{% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            <a class="readlink" href="{{ r.link }}" target="_blank" rel="noopener">Read at {{ r.domain }} &#8599;</a>
+                        </div>
+                    </details>
+                    {% endfor %}
+                </div>
+                {% if results|length < total %}
+                <div class="more">
+                    <a class="btn" href="{{ url_for('search', q=query, limit=next_limit) }}">Show more results</a>
+                </div>
+                {% endif %}
+
+                {% elif state == 'none' %}
+                <div class="state">
+                    <h2>No matches for &ldquo;{{ query }}&rdquo;</h2>
+                    <p>Nothing in the collected archive matches all of those terms. OsiPress only holds articles published from {{ archive_start }} onward, so older documents will not appear.</p>
+                    {% if suggestions %}
+                    <span class="lbl">Try instead</span>
+                    <div class="chips">
+                        {% for s in suggestions %}<a class="chip" href="{{ url_for('search', q=s) }}">{{ s }}</a>{% endfor %}
+                    </div>
+                    {% endif %}
+                    <p>Or browse chronologically in the <a href="/archive">archive</a>.</p>
+                </div>
+
+                {% elif state == 'error' %}
+                <div class="state">
+                    <div class="alert" role="alert">
+                        <p class="kicker">Search unavailable</p>
+                        <h2>The index didn&rsquo;t answer in time.</h2>
+                        <p>Your query reached us, but the search index timed out. Nothing is lost &mdash; the archive itself is fine, and today&rsquo;s comparison is still available.</p>
+                        <div class="chips">
+                            <a class="btn" href="{{ url_for('search', q=query) }}">Try again</a>
+                            <a class="chip" href="/today">Go to today&rsquo;s articles</a>
+                        </div>
+                        {% if error_ref %}<p class="ref-code">Reference {{ error_ref }}</p>{% endif %}
+                    </div>
+                </div>
+
+                {% endif %}
+            </main>
+            <template id="search-skeleton">
+                <p class="loading-status" data-loading-status role="status" aria-live="polite">Searching&hellip;</p>
+                <div class="results" aria-hidden="true">
+                    <div class="skel-row">
+                        <span class="skel skel-num"></span>
+                        <div class="skel-lines">
+                            <div class="skel skel-meta"></div>
+                            <div class="skel skel-title"></div>
+                            <div class="skel skel-orig"></div>
+                            <div class="skel skel-sum"></div>
+                        </div>
+                    </div>
+                    <div class="skel-row">
+                        <span class="skel skel-num"></span>
+                        <div class="skel-lines">
+                            <div class="skel skel-meta"></div>
+                            <div class="skel skel-title"></div>
+                            <div class="skel skel-orig"></div>
+                            <div class="skel skel-sum"></div>
+                        </div>
+                    </div>
+                    <div class="skel-row">
+                        <span class="skel skel-num"></span>
+                        <div class="skel-lines">
+                            <div class="skel skel-meta"></div>
+                            <div class="skel skel-title"></div>
+                            <div class="skel skel-orig"></div>
+                            <div class="skel skel-sum"></div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <footer>
+                <p>Selection is automated: up to three recent articles classified as political from each outlet's RSS feed appear here. Translations preserve charged language. OsiPress does not rank or score the coverage; summaries are AI-generated and may contain errors.</p>
+                <div class="foot-right">
+                    <span class="fm">
+                        <svg viewBox="0 0 200 160">
+                            <use href="#mk"></use>
+                        </svg>
+                        <span>OsiPress</span>
+                    </span>
+                    <a class="gh" href="https://github.com/ShlokShar/Osipress" target="_blank" rel="noopener">GitHub &#8599;</a>
+                </div>
+            </footer>
+        </div>
+        <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    </body>
+</html>
