@@ -25,6 +25,7 @@ from shared.models import (
 MAX_ARTICLES = 3
 SOURCES_PATH = Path(__file__).resolve().parent / "sources.json"
 
+
 try:
     ai_service = AIService()
     vector_service = SearchService()
