@@ -1,0 +1,454 @@
+"""Evaluate OsiPress lexical, semantic, and hybrid article retrieval.
+
+This runner uses human relevance judgments and calls the production
+``SearchService`` methods. It is intentionally independent of the LLM-as-judge
+evals in ``evals/script.py`` so retrieval regressions are deterministic.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+import statistics
+import sys
+import tempfile
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Callable, Iterable
+
+from sqlalchemy import select
+
+from cron.util.search_service import SearchService
+from shared.database import SessionLocal
+from shared.models import Articles
+
+
+EVAL_DIR = Path(__file__).resolve().parent
+DEFAULT_GOLDEN_SET = EVAL_DIR / "golden" / "search.json"
+DEFAULT_RESULTS = EVAL_DIR / "results" / "search.json"
+CUTOFFS = (1, 3, 5, 10, 15)
+
+
+@dataclass(frozen=True)
+class QueryCase:
+    id: str
+    query: str
+    category: str
+    relevance: dict[str, int]
+
+
+def load_golden_set(path: Path) -> tuple[dict[str, Any], list[QueryCase]]:
+    """Load and strictly validate the versioned retrieval judgments."""
+
+    with path.open("r", encoding="utf-8") as file:
+        document = json.load(file)
+
+    if not isinstance(document, dict):
+        raise ValueError("golden set must be a JSON object")
+    if not isinstance(document.get("version"), str):
+        raise ValueError("golden set requires a string version")
+    if not isinstance(document.get("queries"), list) or not document["queries"]:
+        raise ValueError("golden set requires a non-empty queries list")
+
+    cases: list[QueryCase] = []
+    seen_ids: set[str] = set()
+    for index, raw in enumerate(document["queries"]):
+        label = f"queries[{index}]"
+        if not isinstance(raw, dict):
+            raise ValueError(f"{label} must be an object")
+        query_id = raw.get("id")
+        query = raw.get("query")
+        category = raw.get("category")
+        relevance = raw.get("relevance")
+        if not isinstance(query_id, str) or not query_id.strip():
+            raise ValueError(f"{label}.id must be a non-empty string")
+        if query_id in seen_ids:
+            raise ValueError(f"duplicate query id: {query_id}")
+        if not isinstance(query, str) or not query.strip():
+            raise ValueError(f"{label}.query must be a non-empty string")
+        if not isinstance(category, str) or not category.strip():
+            raise ValueError(f"{label}.category must be a non-empty string")
+        if not isinstance(relevance, dict) or not relevance:
+            raise ValueError(f"{label}.relevance must be a non-empty object")
+        if any(
+            not isinstance(link, str)
+            or not link.startswith(("http://", "https://"))
+            or not isinstance(grade, int)
+            or isinstance(grade, bool)
+            or not 1 <= grade <= 3
+            for link, grade in relevance.items()
+        ):
+            raise ValueError(
+                f"{label}.relevance requires URL keys and integer grades 1-3"
+            )
+        seen_ids.add(query_id)
+        cases.append(QueryCase(query_id, query, category, relevance))
+
+    return document, cases
+
+
+def unique_links(results: Iterable[tuple[Any, Any]]) -> list[str]:
+    """Normalize a SearchService response to a duplicate-free link ranking."""
+
+    links: list[str] = []
+    seen: set[str] = set()
+    for first, second in results:
+        article = second if isinstance(first, int) else first
+        link = getattr(article, "link", None)
+        if not isinstance(link, str) or not link:
+            raise ValueError("search result contains an article without a link")
+        if link not in seen:
+            seen.add(link)
+            links.append(link)
+    return links
+
+
+def reciprocal_rank(ranking: list[str], relevance: dict[str, int],
+                    cutoff: int) -> float:
+    for rank, link in enumerate(ranking[:cutoff], start=1):
+        if relevance.get(link, 0) > 0:
+            return 1.0 / rank
+    return 0.0
+
+
+def average_precision(ranking: list[str], relevance: dict[str, int],
+                      cutoff: int) -> float:
+    relevant_total = len(relevance)
+    hits = 0
+    precision_sum = 0.0
+    for rank, link in enumerate(ranking[:cutoff], start=1):
+        if relevance.get(link, 0) > 0:
+            hits += 1
+            precision_sum += hits / rank
+    return precision_sum / min(relevant_total, cutoff)
+
+
+def ndcg(ranking: list[str], relevance: dict[str, int], cutoff: int) -> float:
+    gains = [relevance.get(link, 0) for link in ranking[:cutoff]]
+    dcg = sum(
+        (2 ** grade - 1) / math.log2(rank + 1)
+        for rank, grade in enumerate(gains, start=1)
+    )
+    ideal = sorted(relevance.values(), reverse=True)[:cutoff]
+    idcg = sum(
+        (2 ** grade - 1) / math.log2(rank + 1)
+        for rank, grade in enumerate(ideal, start=1)
+    )
+    return dcg / idcg if idcg else 0.0
+
+
+def query_metrics(ranking: list[str], relevance: dict[str, int]) -> dict[str, float]:
+    """Compute binary and graded retrieval metrics for one query."""
+
+    metrics: dict[str, float] = {}
+    relevant_links = set(relevance)
+    for cutoff in CUTOFFS:
+        retrieved = ranking[:cutoff]
+        hits = len(relevant_links.intersection(retrieved))
+        metrics[f"hit_rate_at_{cutoff}"] = float(hits > 0)
+        metrics[f"precision_at_{cutoff}"] = hits / cutoff
+        metrics[f"recall_at_{cutoff}"] = hits / len(relevant_links)
+        metrics[f"mrr_at_{cutoff}"] = reciprocal_rank(
+            ranking, relevance, cutoff
+        )
+        metrics[f"map_at_{cutoff}"] = average_precision(
+            ranking, relevance, cutoff
+        )
+        metrics[f"ndcg_at_{cutoff}"] = ndcg(ranking, relevance, cutoff)
+    return metrics
+
+
+def percentile(values: list[float], fraction: float) -> float:
+    """Return an interpolated percentile without an external dependency."""
+
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    position = (len(ordered) - 1) * fraction
+    lower = math.floor(position)
+    upper = math.ceil(position)
+    if lower == upper:
+        return ordered[lower]
+    return (
+        ordered[lower] * (upper - position)
+        + ordered[upper] * (position - lower)
+    )
+
+
+def aggregate(method_results: list[dict[str, Any]]) -> dict[str, Any]:
+    successful = [result for result in method_results if not result["error"]]
+    if not successful:
+        return {
+            "successful_queries": 0,
+            "failed_queries": len(method_results),
+            "metrics": {},
+            "latency_ms": {},
+        }
+
+    metric_names = successful[0]["metrics"].keys()
+    metrics = {
+        name: round(statistics.fmean(
+            result["metrics"][name] for result in successful
+        ), 4)
+        for name in metric_names
+    }
+    latencies = [result["latency_ms"] for result in successful]
+    return {
+        "successful_queries": len(successful),
+        "failed_queries": len(method_results) - len(successful),
+        "metrics": metrics,
+        "latency_ms": {
+            "mean": round(statistics.fmean(latencies), 2),
+            "p50": round(percentile(latencies, 0.50), 2),
+            "p95": round(percentile(latencies, 0.95), 2),
+            "max": round(max(latencies), 2),
+        },
+    }
+
+
+def aggregate_by_category(
+    method_results: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    categories = sorted({result["category"] for result in method_results})
+    return {
+        category: aggregate([
+            result for result in method_results
+            if result["category"] == category
+        ])
+        for category in categories
+    }
+
+
+def compare_methods(methods: dict[str, Any]) -> dict[str, Any]:
+    """Record hybrid quality deltas so regressions are easy to diagnose."""
+
+    metric_names = ("mrr_at_10", "map_at_10", "ndcg_at_10", "recall_at_10")
+    hybrid = methods["hybrid"]["aggregate"]["metrics"]
+    return {
+        f"hybrid_minus_{baseline}": {
+            metric: round(
+                hybrid.get(metric, 0.0)
+                - methods[baseline]["aggregate"]["metrics"].get(metric, 0.0),
+                4,
+            )
+            for metric in metric_names
+        }
+        for baseline in ("lexical", "semantic")
+    }
+
+
+def corpus_coverage(cases: list[QueryCase]) -> dict[str, Any]:
+    """Verify every judged link exists and report embedding coverage."""
+
+    judged_links = {
+        link for case in cases for link in case.relevance
+    }
+    with SessionLocal() as session:
+        corpus_rows = session.execute(
+            select(Articles.link, Articles.embedding.is_not(None))
+        ).all()
+        rows = session.execute(
+            select(Articles.link, Articles.embedding.is_not(None))
+            .where(Articles.link.in_(judged_links))
+        ).all()
+
+    corpus_links = {link for link, _ in corpus_rows}
+    embedded_corpus_links = {
+        link for link, has_embedding in corpus_rows if has_embedding
+    }
+    existing = {link for link, _ in rows}
+    embedded = {link for link, has_embedding in rows if has_embedding}
+    missing = sorted(judged_links - existing)
+    missing_embeddings = sorted(judged_links - embedded)
+    return {
+        "corpus_rows": len(corpus_rows),
+        "corpus_unique_links": len(corpus_links),
+        "corpus_embedded_unique_links": len(embedded_corpus_links),
+        "judged_links": len(judged_links),
+        "present_links": len(existing),
+        "embedded_links": len(embedded),
+        "missing_links": missing,
+        "missing_embeddings": missing_embeddings,
+        "complete": not missing and not missing_embeddings,
+    }
+
+
+def evaluate_method(
+    name: str,
+    search: Callable[[str], Iterable[tuple[Any, Any]]],
+    cases: list[QueryCase],
+) -> list[dict[str, Any]]:
+    results = []
+    for case in cases:
+        started = time.perf_counter()
+        ranking: list[str] = []
+        error: str | None = None
+        try:
+            ranking = unique_links(search(case.query))
+        except Exception as exc:  # Keep the report useful after partial failure.
+            error = f"{type(exc).__name__}: {exc}"
+        latency_ms = (time.perf_counter() - started) * 1000
+        metrics = query_metrics(ranking, case.relevance) if not error else {}
+        results.append({
+            "id": case.id,
+            "query": case.query,
+            "category": case.category,
+            "latency_ms": round(latency_ms, 2),
+            "metrics": metrics,
+            "relevant_ranks": {
+                link: ranking.index(link) + 1 if link in ranking else None
+                for link in case.relevance
+            },
+            "ranking": ranking[:max(CUTOFFS)],
+            "error": error,
+        })
+        status = error or f"MRR@10={metrics['mrr_at_10']:.3f}"
+        print(f"[{name}] {case.id}: {status}", flush=True)
+    return results
+
+
+def threshold_failures(report: dict[str, Any],
+                       thresholds: dict[str, Any]) -> list[str]:
+    failures: list[str] = []
+    hybrid = report["methods"]["hybrid"]["aggregate"]
+    if hybrid["failed_queries"]:
+        failures.append(
+            f"hybrid had {hybrid['failed_queries']} failed queries"
+        )
+    for metric in ("mrr_at_10", "ndcg_at_10", "recall_at_10"):
+        minimum = float(thresholds[metric])
+        actual = hybrid["metrics"].get(metric, 0.0)
+        if actual < minimum:
+            failures.append(f"{metric} {actual:.4f} is below {minimum:.4f}")
+
+    max_regression = float(thresholds["max_regression_vs_best_baseline"])
+    for metric in ("mrr_at_10", "ndcg_at_10", "recall_at_10"):
+        baselines = [
+            report["methods"][name]["aggregate"]["metrics"].get(metric, 0.0)
+            for name in ("lexical", "semantic")
+        ]
+        best = max(baselines)
+        actual = hybrid["metrics"].get(metric, 0.0)
+        if best - actual > max_regression:
+            failures.append(
+                f"{metric} regressed {best - actual:.4f} versus best baseline"
+            )
+    return failures
+
+
+def atomic_json_dump(document: dict[str, Any], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        delete=False,
+    ) as file:
+        json.dump(document, file, ensure_ascii=False, indent=2)
+        file.write("\n")
+        temporary = Path(file.name)
+    temporary.replace(path)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--golden-set", type=Path, default=DEFAULT_GOLDEN_SET)
+    parser.add_argument("--output", type=Path, default=DEFAULT_RESULTS)
+    parser.add_argument(
+        "--limit", type=int, help="run only the first N queries (smoke tests)"
+    )
+    parser.add_argument(
+        "--enforce-thresholds",
+        action="store_true",
+        help="exit non-zero when quality gates fail (full runs only)",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    document, cases = load_golden_set(args.golden_set)
+    if args.limit is not None:
+        if args.limit <= 0:
+            raise ValueError("--limit must be positive")
+        cases = cases[:args.limit]
+    if args.enforce_thresholds and args.limit is not None:
+        raise ValueError("thresholds cannot be enforced on a partial run")
+
+    coverage = corpus_coverage(cases)
+    if not coverage["complete"]:
+        print(
+            "Corpus coverage is incomplete; missing judged data is recorded "
+            "in the report.",
+            file=sys.stderr,
+        )
+
+    service = SearchService()
+    methods = {
+        "lexical": service.lexical_search,
+        "semantic": service.semantic_search,
+        "hybrid": service.hybrid_search,
+    }
+    report: dict[str, Any] = {
+        "category": "search",
+        "evaluated_at": datetime.now(timezone.utc).isoformat(),
+        "golden_set": {
+            "file": args.golden_set.name,
+            "sha256": hashlib.sha256(args.golden_set.read_bytes()).hexdigest(),
+            "version": document["version"],
+            "query_count": len(cases),
+        },
+        "search_config": {
+            "embedding_model": service.model,
+            "cutoffs": list(CUTOFFS),
+        },
+        "corpus_coverage": coverage,
+        "methods": {},
+    }
+
+    for name, search in methods.items():
+        query_results = evaluate_method(name, search, cases)
+        report["methods"][name] = {
+            "aggregate": aggregate(query_results),
+            "by_category": aggregate_by_category(query_results),
+            "queries": query_results,
+        }
+
+    report["comparison"] = compare_methods(report["methods"])
+    failures = threshold_failures(report, document["thresholds"])
+    if not coverage["complete"]:
+        failures.append("golden-set corpus coverage is incomplete")
+    report["quality_gate"] = {
+        "enforced": args.enforce_thresholds,
+        "passed": not failures,
+        "thresholds": document["thresholds"],
+        "failures": failures,
+    }
+    atomic_json_dump(report, args.output)
+
+    print("\nAggregate metrics")
+    for name in methods:
+        summary = report["methods"][name]["aggregate"]
+        metrics = summary["metrics"]
+        print(
+            f"{name:8} MRR@10={metrics.get('mrr_at_10', 0):.4f} "
+            f"nDCG@10={metrics.get('ndcg_at_10', 0):.4f} "
+            f"Recall@10={metrics.get('recall_at_10', 0):.4f} "
+            f"p95={summary['latency_ms'].get('p95', 0):.2f}ms"
+        )
+    print(f"Quality gate: {'PASS' if not failures else 'FAIL'}")
+    for failure in failures:
+        print(f"- {failure}")
+    print(f"Detailed results: {args.output.resolve()}")
+
+    return 1 if args.enforce_thresholds and failures else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,198 @@
+{
+  "category": "classification",
+  "version": "1.0.0",
+  "examples": [
+    {
+      "id": "fa-classification-01",
+      "language": "Persian",
+      "headline": "سپاه اعلام کرد: انهدام یک فروند پهپاد MQ9 آمریکایی در آسمان اندیمشک",
+      "political": true
+    },
+    {
+      "id": "fa-classification-02",
+      "language": "Persian",
+      "headline": "توضیح عراقچی درباره سفر به عمان",
+      "political": true
+    },
+    {
+      "id": "fa-classification-03",
+      "language": "Persian",
+      "headline": "بن‌بست در بررسی بودجه پنتاگون",
+      "political": true
+    },
+    {
+      "id": "fa-classification-04",
+      "language": "Persian",
+      "headline": "ارسال ۱۵۰ قبضه لوله توپ انگلیسی به اوکراین آغاز شد",
+      "political": true
+    },
+    {
+      "id": "fa-classification-05",
+      "language": "Persian",
+      "headline": "اتحادیه اروپا تحریم‌های تازه‌ای علیه مقام‌های ایرانی تصویب کرد",
+      "political": true
+    },
+    {
+      "id": "fa-classification-06",
+      "language": "Persian",
+      "headline": "نتایج نهایی انتخابات پارلمانی اعلام شد",
+      "political": true
+    },
+    {
+      "id": "fa-classification-07",
+      "language": "Persian",
+      "headline": "بانک مرکزی نرخ بهره را برای مهار تورم افزایش داد",
+      "political": true
+    },
+    {
+      "id": "fa-classification-08",
+      "language": "Persian",
+      "headline": "شکایت دولت یمن از ایران به شورای امنیت سازمان ملل",
+      "political": true
+    },
+    {
+      "id": "fa-classification-09",
+      "language": "Persian",
+      "headline": "قیمت سکه و طلا امروز پنجشنبه ۲۵ تیر ۱۴۰۵",
+      "political": false
+    },
+    {
+      "id": "fa-classification-10",
+      "language": "Persian",
+      "headline": "پرسپولیس با دو گل حریف خود را شکست داد",
+      "political": false
+    },
+    {
+      "id": "fa-classification-11",
+      "language": "Persian",
+      "headline": "بازیگر جوان برنده جایزه بهترین بازیگر جشنواره شد",
+      "political": false
+    },
+    {
+      "id": "fa-classification-12",
+      "language": "Persian",
+      "headline": "هواشناسی از بارش شدید باران در شمال کشور خبر داد",
+      "political": false
+    },
+    {
+      "id": "fa-classification-13",
+      "language": "Persian",
+      "headline": "پژوهشگران روش تازه‌ای برای درمان بیماری قلبی یافتند",
+      "political": false
+    },
+    {
+      "id": "fa-classification-14",
+      "language": "Persian",
+      "headline": "گوشی هوشمند جدید با باتری قدرتمند معرفی شد",
+      "political": false
+    },
+    {
+      "id": "fa-classification-15",
+      "language": "Persian",
+      "headline": "طرز تهیه خورش بادمجان به روش سنتی",
+      "political": false
+    },
+    {
+      "id": "fa-classification-16",
+      "language": "Persian",
+      "headline": "زمین‌لرزه‌ای به بزرگی چهار ریشتر شهر را لرزاند",
+      "political": false
+    },
+    {
+      "id": "he-classification-01",
+      "language": "Hebrew",
+      "headline": "הכנסת אישרה את החוק להרחבת גיוס החרדים לצה״ל",
+      "political": true
+    },
+    {
+      "id": "he-classification-02",
+      "language": "Hebrew",
+      "headline": "שליש מסיעת הליכוד התארגן להדחת נתניהו לאחר 7 באוקטובר",
+      "political": true
+    },
+    {
+      "id": "he-classification-03",
+      "language": "Hebrew",
+      "headline": "אושר החוק להפרדה מגדרית בתארים מתקדמים",
+      "political": true
+    },
+    {
+      "id": "he-classification-04",
+      "language": "Hebrew",
+      "headline": "ארה״ב תקפה באזור טהרן ואיראן שיגרה טילים לירדן",
+      "political": true
+    },
+    {
+      "id": "he-classification-05",
+      "language": "Hebrew",
+      "headline": "ישראל ואיראן הסכימו לחדש את שיחות הפסקת האש",
+      "political": true
+    },
+    {
+      "id": "he-classification-06",
+      "language": "Hebrew",
+      "headline": "ועדת הכספים אישרה את תקציב הביטחון החדש",
+      "political": true
+    },
+    {
+      "id": "he-classification-07",
+      "language": "Hebrew",
+      "headline": "האיחוד האירופי הטיל סנקציות חדשות על רוסיה",
+      "political": true
+    },
+    {
+      "id": "he-classification-08",
+      "language": "Hebrew",
+      "headline": "תוצאות הבחירות המקומיות פורסמו הלילה",
+      "political": true
+    },
+    {
+      "id": "he-classification-09",
+      "language": "Hebrew",
+      "headline": "יעל שרוני: בחרתי לא לעלות על האוטובוס ואחר כך היה בו פיגוע",
+      "political": false
+    },
+    {
+      "id": "he-classification-10",
+      "language": "Hebrew",
+      "headline": "מכבי תל אביב ניצחה בגמר גביע המדינה",
+      "political": false
+    },
+    {
+      "id": "he-classification-11",
+      "language": "Hebrew",
+      "headline": "מזג האוויר: ירידה בטמפרטורות וגשם בצפון",
+      "political": false
+    },
+    {
+      "id": "he-classification-12",
+      "language": "Hebrew",
+      "headline": "הזמרת חשפה את השיר החדש שלה",
+      "political": false
+    },
+    {
+      "id": "he-classification-13",
+      "language": "Hebrew",
+      "headline": "מחקר חדש מצא טיפול אפשרי למחלת לב",
+      "political": false
+    },
+    {
+      "id": "he-classification-14",
+      "language": "Hebrew",
+      "headline": "הטלפון החדש יגיע לחנויות בחודש הבא",
+      "political": false
+    },
+    {
+      "id": "he-classification-15",
+      "language": "Hebrew",
+      "headline": "עשר המסעדות הטובות ביותר בתל אביב",
+      "political": false
+    },
+    {
+      "id": "he-classification-16",
+      "language": "Hebrew",
+      "headline": "מדענים גילו מין חדש של ציפור במדבר",
+      "political": false
+    }
+  ]
+}

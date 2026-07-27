@@ -1,0 +1,145 @@
+{
+  "version": "1.0.0",
+  "description": "Human-judged English retrieval queries for the OsiPress production article corpus. Relevance is graded from 1 (relevant) to 3 (directly answers the query).",
+  "thresholds": {
+    "mrr_at_10": 0.8,
+    "ndcg_at_10": 0.8,
+    "recall_at_10": 0.85,
+    "max_regression_vs_best_baseline": 0.05
+  },
+  "queries": [
+    {
+      "id": "search-01",
+      "query": "Did Russia help Iran attack CIA facilities?",
+      "category": "paraphrase_multi_result",
+      "relevance": {
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-22/ty-article/.premium/0000019f-8b2b-df92-a7ff-afaba9580000": 3,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21041042": 3
+      }
+    },
+    {
+      "id": "search-02",
+      "query": "Iran retaliation if Trump attacks power plants and bridges",
+      "category": "paraphrase_multi_result",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1054893/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%A8%D9%87-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AD%D9%85%D9%84%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D9%86%DB%8C%D8%B1%D9%88%DA%AF%D8%A7%D9%87-%D9%87%D8%A7-%D9%88": 3,
+        "https://www.hamshahrionline.ir/news/1054894/%D9%BE%DB%8C%D8%A7%D9%85-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%B3%DB%8C%D8%AF%D9%85%D8%AC%DB%8C%D8%AF-%D9%85%D9%88%D8%B3%D9%88%DB%8C-%D8%A8%D8%B9%D8%AF-%D8%A7%D8%B2-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE": 2,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 2
+      }
+    },
+    {
+      "id": "search-03",
+      "query": "naval blockade forcing the US to split forces between the Red Sea and Persian Gulf",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334631/مقام-سابق-پنتاگون-آمریکا-حالا-مجبور-است-قدرت-خود-را-بین-خلیج-فارس-و-دریای-سرخ-تقسیم-کند": 3
+      }
+    },
+    {
+      "id": "search-04",
+      "query": "Gaza residents waiting for water trucks amid disease outbreaks",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/b1lfpdrnfe": 3
+      }
+    },
+    {
+      "id": "search-05",
+      "query": "Haredi soldiers combining Orthodox religious life with IDF service",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/local/article/21040912": 3
+      }
+    },
+    {
+      "id": "search-06",
+      "query": "Jaffa property tax increase because of gentrification",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.haaretz.co.il/news/local/2026-07-22/ty-article/.premium/0000019f-8966-de9f-afdf-a966410d0000": 3
+      }
+    },
+    {
+      "id": "search-07",
+      "query": "soldier disciplined for putting CNN cameraman in a chokehold",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/bkcn8fr4fl": 3
+      }
+    },
+    {
+      "id": "search-08",
+      "query": "Maduro drug trafficking trial scheduled for 2027",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1116852-%D8%AA%D8%A7%D8%B1%DB%8C%D8%AE-%D9%85%D8%AD%D8%A7%DA%A9%D9%85%D9%87-%D9%85%D8%A7%D8%AF%D9%88%D8%B1%D9%88-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%D8%B4%D8%AF": 3
+      }
+    },
+    {
+      "id": "search-09",
+      "query": "more than 500 American troops wounded in the Iran war",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت": 3
+      }
+    },
+    {
+      "id": "search-10",
+      "query": "Ukrainian protests after repeated defense leadership reshuffles",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334632/اعتراض-اوکراینی-ها-به-تغییرات-پی-درپی-در-دولت": 3
+      }
+    },
+    {
+      "id": "search-11",
+      "query": "Iran dollar gold and coin prices rose overnight",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1116851-%D8%A2%D8%AE%D8%B1%DB%8C%D9%86-%D9%82%DB%8C%D9%85%D8%AA-%D8%AF%D9%84%D8%A7%D8%B1-%D8%B7%D9%84%D8%A7-%D8%B3%DA%A9%D9%87-%D8%B4%D8%A8%D8%A7%D9%86%DA%AF%D8%A7%D9%87-%DA%86%D9%87%D8%A7%D8%B1%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%AF%D9%84%D8%A7%D8%B1-%D8%AF%D9%88%D8%A8%D8%A7%D8%B1%D9%87-%D8%A8%D9%87-%D9%85%D8%B3%DB%8C%D8%B1-%D8%B5%D8%B9%D9%88%D8%AF-%D9%82%DB%8C%D9%85%D8%AA-%D8%A7%D9%81%D8%AA%D8%A7%D8%AF": 3
+      }
+    },
+    {
+      "id": "search-12",
+      "query": "new Israeli research center studying population growth and demographics",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.haaretz.co.il/opinions/zafrir/2026-07-22/ty-article-opinion/.premium/0000019f-89be-dc4a-a1ff-cbbfead70000": 3
+      }
+    },
+    {
+      "id": "search-13",
+      "query": "Gazans with pre-October 7 work permits arrested in Qalqilya",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/defense/article/21040975": 3
+      }
+    },
+    {
+      "id": "search-14",
+      "query": "economic pressure made Trump's war with Iran unpopular",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1054859/%D8%AF%D9%84%DB%8C%D9%84-%D9%86%D8%A7%D9%85%D8%AD%D8%A8%D9%88%D8%A8-%D8%A8%D9%88%D8%AF%D9%86-%D8%AC%D9%86%DA%AF-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%DA%A9%D9%88%D8%AA%D8%A7%D9%87-%D8%AA%D8%B1%DB%8C%D9%86-%D8%B2%D9%85%D8%A7%D9%86": 3
+      }
+    },
+    {
+      "id": "search-15",
+      "query": "IRGC warning that routes around the Strait of Hormuz are mined and unsafe",
+      "category": "paraphrase_multi_result",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1116856-%D8%A7%D8%AE%D8%B7%D8%A7%D8%B1-%D8%AC%D8%AF%DB%8C%D8%AF-%D9%86%DB%8C%D8%B1%D9%88%DB%8C-%D8%AF%D8%B1%DB%8C%D8%A7%DB%8C%DB%8C-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2": 3,
+        "https://www.hamshahrionline.ir/news/1054894/%D9%BE%DB%8C%D8%A7%D9%85-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%B3%DB%8C%D8%AF%D9%85%D8%AC%DB%8C%D8%AF-%D9%85%D9%88%D8%B3%D9%88%DB%8C-%D8%A8%D8%B9%D8%AF-%D8%A7%D8%B2-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE": 2
+      }
+    },
+    {
+      "id": "search-16",
+      "query": "US plans to resume heavy bomber strikes on Iran",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 3
+      }
+    }
+  ],
+  "category": "search"
+}

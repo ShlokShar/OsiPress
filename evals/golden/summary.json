@@ -1,0 +1,166 @@
+{
+  "category": "summary",
+  "version": "1.0.0",
+  "examples": [
+    {
+      "id": "fa-summary-01",
+      "language": "Persian",
+      "source": "Shargh",
+      "source_url": "https://www.sharghdaily.com/",
+      "article": "سپاه پاسداران اعلام کرد یک فروند پهپاد MQ9 آمریکایی در آسمان اندیمشک توسط سامانه نوین پدافند هوایی هوافضای سپاه رهگیری و منهدم شد. این خبر را ایسنا منتشر کرد.",
+      "expected_facts": [
+        "The IRGC said it intercepted and destroyed one American MQ-9 drone",
+        "The incident occurred in the skies over Andimeshk",
+        "The IRGC attributed the interception to a new aerospace air-defense system",
+        "The report was published by ISNA"
+      ]
+    },
+    {
+      "id": "fa-summary-02",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "source_url": "https://www.hamshahrionline.ir/",
+      "article": "وزارت دفاع انگلیس اعلام کرد طبق قراردادی به ارزش بیش از ۸۰ میلیون دلار، ارسال ۱۵۰ قبضه لوله توپ ۱۰۵ و ۱۵۵ میلی‌متری به اوکراین آغاز شده است. نخستین محموله ارسال شده و این تجهیزات را شرکت BAE Systems در شفیلد تولید می‌کند. روسیه هشدار داده است که ارسال تسلیحات غربی جنگ را تشدید می‌کند.",
+      "expected_facts": [
+        "The United Kingdom began sending artillery barrels to Ukraine under a contract worth more than 80 million dollars",
+        "The shipment covers 150 barrels in 105 mm and 155 mm sizes",
+        "The first shipment has already been sent",
+        "BAE Systems produces the equipment in Sheffield",
+        "Russia warned that Western arms shipments escalate the war"
+      ]
+    },
+    {
+      "id": "fa-summary-03",
+      "language": "Persian",
+      "source": "Shargh",
+      "source_url": "https://www.sharghdaily.com/",
+      "article": "اسماعیل بقائی، سخنگوی وزارت امور خارجه، از سفر رسمی عباس عراقچی به عمان خبر داد. این سفر برای ادامه رایزنی‌های دوجانبه درباره تحولات منطقه و تنگه هرمز انجام می‌شود. وزیران خارجه ایران و عمان درباره ترتیبات لازم برای عبور امن کشتی‌ها بر اساس ماده پنجم تفاهم‌نامه اسلام‌آباد گفت‌وگو خواهند کرد.",
+      "expected_facts": [
+        "Foreign Ministry spokesman Esmail Baghaei announced Abbas Araghchi's official trip to Oman",
+        "The trip continues bilateral consultations about regional developments and the Strait of Hormuz",
+        "The Iranian and Omani foreign ministers will discuss arrangements for ships to pass safely",
+        "The arrangements are based on Article 5 of the Islamabad memorandum"
+      ]
+    },
+    {
+      "id": "fa-summary-04",
+      "language": "Persian",
+      "source": "Shargh",
+      "source_url": "https://www.sharghdaily.com/",
+      "article": "سناتورهای دموکرات با جلوگیری از پیشبرد لایحه بودجه حدود یک تریلیون دلاری پنتاگون، به ادامه جنگ دولت ترامپ علیه ایران اعتراض کردند. این لایحه ۵۰ رأی موافق و ۴۶ رأی مخالف گرفت، اما نتوانست حد نصاب ۶۰ رأی لازم برای آغاز بررسی را کسب کند.",
+      "expected_facts": [
+        "Democratic senators blocked progress on a Pentagon budget bill worth about one trillion dollars",
+        "The senators used the vote to protest the Trump administration's continuing war against Iran",
+        "The bill received 50 votes in favor and 46 against",
+        "The bill failed to reach the 60 votes required to begin consideration"
+      ]
+    },
+    {
+      "id": "he-summary-01",
+      "language": "Hebrew",
+      "source": "Yedioth Ahronoth",
+      "source_url": "https://www.ynet.co.il/",
+      "article": "מליאת הכנסת אישרה סופית את הצעת החוק המאפשרת הפרדה מגדרית בתארים מתקדמים באקדמיה. ההפרדה תתאפשר רק בכיתות הלימוד ולא במרחבים הציבוריים. תומכי החוק אומרים שהוא יסיר חסמים בפני נשים חרדיות, ואילו מתנגדיו מזהירים מפגיעה בשוויון ובאיכות האקדמית.",
+      "expected_facts": [
+        "The Knesset gave final approval to a law allowing gender segregation in advanced university degrees",
+        "Segregation is allowed only in classrooms and not in public spaces",
+        "Supporters say the law will remove barriers for Haredi women",
+        "Opponents warn that the law could harm equality and academic quality"
+      ]
+    },
+    {
+      "id": "he-summary-02",
+      "language": "Hebrew",
+      "source": "Yedioth Ahronoth",
+      "source_url": "https://www.ynet.co.il/",
+      "article": "צבא ארצות הברית השלים לילה חמישי ברציפות של תקיפות נגד יעדים איראניים, ולראשונה בהסלמה הנוכחית תקף גם באזור טהרן. הצבא מסר שמטרת התקיפות היא לצמצם את יכולתה של איראן לאיים על השיט במצר הורמוז. איראן שיגרה טילים לעבר ירדן, ובמקביל טראמפ הודיע שאיראן שחררה אזרחית אמריקנית.",
+      "expected_facts": [
+        "The United States completed a fifth consecutive night of strikes against Iranian targets",
+        "The United States attacked the Tehran area for the first time in the current escalation",
+        "The stated goal was to reduce Iran's ability to threaten shipping in the Strait of Hormuz",
+        "Iran launched missiles toward Jordan",
+        "Trump announced that Iran released an American woman"
+      ]
+    },
+    {
+      "id": "he-summary-03",
+      "language": "Hebrew",
+      "source": "Haaretz",
+      "source_url": "https://www.haaretz.co.il/",
+      "article": "יעקב ברדוגו נפגש עם ראש שב״כ דוד זיני ודרש ממנו לפתוח בחקירה פלילית נגד חדשות 12. הדרישה התבססה על חשד שמקור ביטחוני הדליף לערוץ מידע על מועד התקיפה באיראן. זיני סירב תחילה, אך בהמשך ביקש את אישור היועצת המשפטית לממשלה לפתוח בחקירה.",
+      "expected_facts": [
+        "Yaakov Bardugo met Shin Bet chief David Zini",
+        "Bardugo demanded a criminal investigation into Channel 12 News",
+        "The demand concerned a suspected leak by a security source about the timing of an attack on Iran",
+        "Zini initially refused but later sought the attorney general's approval to investigate"
+      ]
+    },
+    {
+      "id": "he-summary-04",
+      "language": "Hebrew",
+      "source": "Israel Hayom",
+      "source_url": "https://www.israelhayom.co.il/",
+      "article": "שני חוקים שאושרו לאחרונה, האחד בנושא לימוד תורה והשני להקפאת מעצרם של משתמטי גיוס, הציתו מחדש את הוויכוח. בתוך החברה החרדית מוקד המאבק עבר לשאלת השירות הצבאי. המאמר טוען שצעדי ענישה לא יגדילו את הגיוס, ומציע תהליך הדרגתי ומסגרות קהילתיות תומכות.",
+      "expected_facts": [
+        "Two recently approved laws reignited the dispute over Haredi military recruitment",
+        "One law concerns Torah study and the other freezes detention of draft evaders",
+        "The focus inside Haredi society has shifted to military service",
+        "The article argues punitive measures will not increase recruitment",
+        "The article recommends gradual change and supportive community frameworks"
+      ]
+    },
+    {
+      "id": "he-summary-05",
+      "language": "Hebrew",
+      "source": "Haaretz",
+      "source_url": "https://www.haaretz.co.il/",
+      "article": "מחר, ב-22 ביולי, ימלאו שמונים שנה לפיצוץ מלון המלך דוד בירושלים על ידי האצ\"ל. עד לטבח השבעה באוקטובר נחשב הפיצוץ במלון לפיגוע הטרור הגדול ביותר שנעשה אי פעם במזרח התיכון נגד אזרחים. נהרגו בו 91 בני אדם ונפצעו 476 נוספים.",
+      "expected_facts": [
+        "July 22 marks 80 years since the King David Hotel Bombing",
+        "The bombing occurred in Jerusalem",
+        "The Irgun carried out the bombing, not the IDF",
+        "The bombing killed 91 people and injured 476",
+        "Until the October 7 massacre it was considered the Middle East's largest terrorist attack against civilians"
+      ]
+    },
+    {
+      "id": "he-summary-06",
+      "language": "Hebrew",
+      "source": "Haaretz",
+      "source_url": "https://www.haaretz.co.il/",
+      "article": "המועצה להשכלה גבוהה אישרה היום החלטה המגבילה את חופש המחאה והביטוי באוניברסיטאות ובמכללות. תוקף ההחלטה אינו ברור לאחר שהתפטרות חמישה מחברי המועצה אתמול הותירה את הגוף ללא האיזון הדרוש בין אנשי האקדמיה לשאר הנציגים.",
+      "expected_facts": [
+        "The Council for Higher Education approved a decision restricting freedom of assembly and speech at universities and colleges",
+        "The decision's validity is unclear",
+        "Five council members resigned the previous day",
+        "The resignations left the body without the required balance between academics and the other representatives"
+      ]
+    },
+    {
+      "id": "he-summary-07",
+      "language": "Hebrew",
+      "source": "Israel Hayom",
+      "source_url": "https://www.israelhayom.co.il/",
+      "article": "נתניהו למעשה מקטין בכך את האפשרות של דמויות צבעוניות ולא צפויות להיכנס במקום ריאלי ברשימה. במוקד הדיון ניצבת השאלה כיצד ישפיעו השינויים שמקדם נתניהו על אופייה של רשימת הליכוד ועל מידת השפעתם של חברי המפלגה.",
+      "expected_facts": [
+        "Netanyahu is reducing the chances of colorful and unexpected personalities winning a realistic slot on the list",
+        "The discussion concerns changes promoted by Netanyahu",
+        "The changes may affect the character of the Likud list",
+        "The changes may affect the degree of influence held by party members"
+      ]
+    },
+    {
+      "id": "he-summary-08",
+      "language": "Hebrew",
+      "source": "Yedioth Ahronoth",
+      "source_url": "https://www.ynet.co.il/",
+      "article": "ראש מועצת ירוחם הגיעה למחאה שקטה ומתואמת לאחר שלטענתה השר מסרב להיפגש איתה על רקע סכסוך כספי הנוגע לאגם ירוחם. כ-40 מיליון שקלים המיועדים לפיתוח הפארק תקועים כבר יותר מארבע שנים.",
+      "expected_facts": [
+        "The head of the Yeruham council held a quiet and coordinated protest",
+        "She said a minister refused to meet with her",
+        "The financial dispute concerns Yeruham Lake",
+        "About 40 million shekels intended for development of the park have been held up for more than four years"
+      ]
+    }
+  ]
+}
