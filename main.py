@@ -1,6 +1,8 @@
 
 import re
 from datetime import date, datetime, timedelta, timezone
+from functools import cache
+from itertools import zip_longest
 from urllib.parse import urlparse
 
 import flask
@@ -84,8 +86,6 @@ def archive():
 ARCHIVE_START_LABEL = "March 2026"
 SEARCH_PAGE_SIZE = 6
 
-# Mirrors normalizeLean() in static/js/osipress.js so a leaning renders with
-# the same .tag colour here as it does on the today and archive boards.
 LEANING_CLASSES = (
     ("left", "left"),
     ("right", "right"),
@@ -93,38 +93,18 @@ LEANING_CLASSES = (
     ("centre", "center"),
 )
 
-# Summaries occasionally come back as a model apology rather than a summary.
-# Same guard as cleanSummary() in static/js/osipress.js.
 APOLOGY = re.compile(
     r"^(i can'?t|no content|the provided article content is empty)",
     re.IGNORECASE
 )
 
-_search_service = None
 
-
+@cache
 def get_search_service() -> SearchService:
-    """
-    Returns the shared search service, building it on first use so that a
-    missing embedding credential fails on request rather than at import.
-
-    :return: the search service
-    """
-
-    global _search_service
-    if _search_service is None:
-        _search_service = SearchService()
-    return _search_service
+    return SearchService()
 
 
 def leaning_class(political_leaning: str) -> str:
-    """
-    Maps a political leaning onto one of the .tag classes in the stylesheet.
-
-    :param political_leaning: the leaning as stored on the source
-    :return: the matching tag class name
-    """
-
     label = (political_leaning or "").lower()
     for needle, class_name in LEANING_CLASSES:
         if needle in label:
@@ -133,74 +113,36 @@ def leaning_class(political_leaning: str) -> str:
 
 
 def clean_summary(summary: str) -> str:
-    """
-    Drops summaries that are a refusal rather than a description.
-
-    :param summary: the stored article summary
-    :return: the summary, or an empty string if it is unusable
-    """
-
     text = (summary or "").strip()
     return "" if not text or APOLOGY.match(text) else text
 
 
 def source_domain(link: str) -> str:
-    """
-    Extracts the display domain from an article link.
-
-    :param link: the article's source url
-    :return: the hostname without a www prefix
-    """
-
     try:
         hostname = urlparse(link or "").hostname or ""
     except ValueError:
         return "source"
 
-    if hostname.startswith("www."):
-        hostname = hostname[4:]
-    return hostname or "source"
+    return hostname.removeprefix("www.") or "source"
 
 
 def build_quotes(article: Articles) -> list[dict[str, str]]:
-    """
-    Pairs each translated quotation with its original by position. Where the
-    two arrays are identical the translation added nothing, so the original
-    is dropped to avoid printing the same line twice.
-
-    :param article: the article holding the quotation arrays
-    :return: the quotations as translated and original pairs
-    """
-
     translated = list(article.references_translated or [])
     original = list(article.references_original or [])
-    identical = translated == original
+    if translated == original:
+        original = []
 
-    quotes = []
-    for index in range(max(len(translated), len(original))):
-        quote = {
-            "translated": translated[index] if index < len(translated) else "",
-            "original": original[index] if index < len(original) else "",
-        }
-        if identical:
-            quote["original"] = ""
-        if quote["translated"] or quote["original"]:
-            quotes.append(quote)
-
-    return quotes
+    return [
+        {"translated": translated_quote, "original": original_quote}
+        for translated_quote, original_quote in zip_longest(
+            translated, original, fillvalue=""
+        )
+        if translated_quote or original_quote
+    ]
 
 
 def build_result(rank: int, article: Articles,
                  sources: dict[int, dict[str, str]]) -> dict:
-    """
-    Maps a ranked search hit onto the shape search.html renders.
-
-    :param rank: the article's position in the ranked results
-    :param article: the matching article
-    :param sources: the outlet details keyed by source id
-    :return: a single renderable search result
-    """
-
     source = sources.get(article.source_id, {})
     headline = (article.headline or "").strip()
     translated_headline = (article.translated_headline or "").strip()
