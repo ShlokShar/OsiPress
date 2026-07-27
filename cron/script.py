@@ -12,9 +12,9 @@ from cron.util.ai_service import AIService
 from cron.util.article import get_article_text, is_safe_article_url
 from cron.util.log import add_log
 from cron.util.translation import (
-    translate,
     translate_references
 )
+from cron.util.search_service import SearchService
 from shared.models import (
     Countries,
     Sources,
@@ -27,9 +27,10 @@ SOURCES_PATH = Path(__file__).resolve().parent / "sources.json"
 
 try:
     ai_service = AIService()
+    vector_service = SearchService()
 except Exception as exception:
     add_log(
-        f"AI service failed to initialize "
+        f"AI or Vector Service failed to initialize "
         f"({type(exception).__name__}): {exception}"
     )
     raise
@@ -46,7 +47,6 @@ except Exception as exception:
     raise
 
 for country, sources in data.items():
-    press_information = {} # for logging purposes
 
     # skip if country is not found in database
     try:
@@ -91,7 +91,6 @@ for country, sources in data.items():
             )
             continue
 
-        press_information[source] = {} # set the source
 
         try:
             feed = feedparser.parse(url) # parse the RSS
@@ -119,13 +118,10 @@ for country, sources in data.items():
         # go through each object in the RSS
         for entry in feed.entries:
             headline = ""
-            article = ""
-            link = ""
             stage = "reading feed entry"
             try:
-                # end iteration once there are enough articles recorded for this
-                # source
-                if len(press_information[source]) >= MAX_ARTICLES:
+                # end iteration once there are enough articles recorded
+                if saved_articles >= MAX_ARTICLES:
                     break
 
                 headline = entry.title
@@ -158,14 +154,18 @@ for country, sources in data.items():
                     )
 
                 stage = "translating headline"
-                translated_headline = ai_service.translate_headline(headline)
+                translated_result = ai_service.translate_headline(headline)
+
+                translated_headline = (
+                    translated_result.translated_headline
+                    if translated_result
+                    else "No headline translated."
+                )
 
                 stage = "summarizing article"
                 processed_article = ai_service.summarize(headline, article_text)
 
                 # save the translated headline, summary, references, and tags
-                translated_headline = translated_headline.translated_headline if (
-                    translated_headline) else "No headline translated."
                 article_summary = processed_article.summary if (
                     processed_article) else "No summary provided."
                 article_references = processed_article.references \
@@ -176,9 +176,19 @@ for country, sources in data.items():
                 stage = "translating references"
                 references_translated = translate_references(article_references)
 
-                press_information[source][headline] = {
-                    article_summary: article_references
-                }
+
+                stage = "embedding article"
+
+                article_overview = f"{translated_headline}:{article_summary}"
+
+                try:
+                    vector = vector_service.embed(article_overview)
+                except Exception as exception:
+                    add_log(
+                        f"exception: {type(exception).__name__}: {exception}"
+                        f"failed to embed article overview: {article_overview}"
+                    )
+                    vector = None
 
                 # save the article in the database with the timestamp
                 article = Articles(
@@ -190,21 +200,19 @@ for country, sources in data.items():
                     references_original=article_references,
                     references_translated=references_translated,
                     tags=article_tags,
+                    embedding=vector,
                     captured_at=run_time,
                 )
 
                 stage = "saving article"
                 Articles.add_article(article)
                 saved_articles += 1
-                print("tag:", article_tags)
             except Exception as exception:
                 article_name = headline or "unknown headline"
                 add_log(
                     f"{country} / {source_name} / {article_name}: {stage} "
                     f"failed ({type(exception).__name__}): {exception}"
                 )
-                print(exception)
-                print(f"exception: {headline}: {article}")
 
         if saved_articles < MAX_ARTICLES:
             add_log(

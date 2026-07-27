@@ -6,8 +6,12 @@ from datetime import (
     timedelta,
     timezone
 )
-from typing import Optional, Any
+from typing import (
+    Optional,
+    Any
+)
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     ForeignKey,
     ARRAY,
@@ -44,8 +48,8 @@ class Countries(Base):
 
         with SessionLocal() as session:
             if id > 0:
-                return session.query(cls).filter(cls.id == id).first()
-            return session.query(cls).filter(cls.name == name).first()
+                return session.semantic_search(cls).filter(cls.id == id).first()
+            return session.semantic_search(cls).filter(cls.name == name).first()
 
 
 class Sources(Base):
@@ -69,8 +73,9 @@ class Sources(Base):
 
         with SessionLocal() as session:
             if source_id:
-                return session.query(cls).filter(cls.id == source_id).first()
-            return session.query(cls).filter(
+                return session.semantic_search(
+                    cls).filter(cls.id == source_id).first()
+            return session.semantic_search(cls).filter(
                 cls.country_id == country_id
             ).first()
 
@@ -85,7 +90,7 @@ class Sources(Base):
         """
 
         with SessionLocal() as session:
-            return session.query(cls).filter(
+            return session.semantic_search(cls).filter(
                 cls.country_id == country_id, cls.name == name
             ).first()
 
@@ -102,6 +107,10 @@ class Articles(Base):
     references_original: Mapped[list[str]] = mapped_column(ARRAY(String))
     references_translated: Mapped[list[str]] = mapped_column(ARRAY(String))
     tags: Mapped[list[str]] = mapped_column(ARRAY(String))
+    embedding: Mapped[Optional[list[float]]] = mapped_column(
+        Vector(1536),
+        nullable=True
+    )
     captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                   server_default=func.now())
 
@@ -158,18 +167,14 @@ def get_headlines_by_country(target_date: Optional[date] = None) -> defaultdict[
 
     with SessionLocal() as session:
         latest_per_source = (
-            session.query(
-                Articles.source_id,
-                func.max(Articles.captured_at).label("latest_captured_at")
-            )
+            session.semantic_search(Articles.source_id)
             .filter(Articles.captured_at >= start, Articles.captured_at < end)
             .group_by(Articles.source_id)
             .subquery()
         )
 
         results = (
-            session.query(Countries.name, Sources.name,
-                          Sources.political_leaning, Articles)
+            session.semantic_search(Countries.name)
             .join(Sources, Sources.country_id == Countries.id)
             .join(Articles, Articles.source_id == Sources.id)
             .join(
