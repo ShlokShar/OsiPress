@@ -48,7 +48,6 @@ except Exception as exception:
 
 for country, sources in data.items():
 
-    # skip if country is not found in database
     try:
         country_object = Countries.get_country(country)
     except Exception as exception:
@@ -62,9 +61,7 @@ for country, sources in data.items():
         add_log(f"{country}: country is missing from database")
         continue
 
-    # now iterate through the major sources for each country
     for source in sources:
-        # if source does not exist in database, skip it.
         try:
             source_name = sources[source]["name"]
             url = sources[source]["url"]
@@ -93,7 +90,7 @@ for country, sources in data.items():
 
 
         try:
-            feed = feedparser.parse(url) # parse the RSS
+            feed = feedparser.parse(url)
         except Exception as exception:
             add_log(
                 f"{country} / {source_name}: feed failed to load "
@@ -115,12 +112,10 @@ for country, sources in data.items():
 
         saved_articles = 0
 
-        # go through each object in the RSS
         for entry in feed.entries:
             headline = ""
             stage = "reading feed entry"
             try:
-                # end iteration once there are enough articles recorded
                 if saved_articles >= MAX_ARTICLES:
                     break
 
@@ -139,11 +134,8 @@ for country, sources in data.items():
                     )
                     continue
 
-                # if this headline is not political at all, then skip
                 if not relevant:
                     continue
-
-                # get the article text and log it
 
                 stage = "extracting article text"
                 article_text = get_article_text(link)
@@ -165,7 +157,6 @@ for country, sources in data.items():
                 stage = "summarizing article"
                 processed_article = ai_service.summarize(headline, article_text)
 
-                # save the translated headline, summary, references, and tags
                 article_summary = processed_article.summary if (
                     processed_article) else "No summary provided."
                 article_references = processed_article.references \
@@ -190,7 +181,6 @@ for country, sources in data.items():
                     )
                     vector = None
 
-                # save the article in the database with the timestamp
                 article = Articles(
                     source_id=source_object.id,
                     headline=headline,
