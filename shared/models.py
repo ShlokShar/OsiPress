@@ -128,6 +128,14 @@ class Articles(Base):
             session.add(article)
             session.commit()
 
+    def embedding_text(self) -> str:
+        """
+        Retrieves the translated headline and article summary to be embedded.
+        :return: the text to be embedded
+        """
+
+        return f"{self.translated_headline}:{self.summary}"
+
     def to_dict(self):
         """
         Returns a dictionary version of the data.
