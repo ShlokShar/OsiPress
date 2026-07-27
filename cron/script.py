@@ -14,7 +14,7 @@ from cron.util.log import add_log
 from cron.util.translation import (
     translate_references
 )
-from cron.util.search_service import SearchService
+from shared.search_service import SearchService
 from shared.models import (
     Countries,
     Sources,
