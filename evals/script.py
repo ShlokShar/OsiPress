@@ -10,9 +10,14 @@ from cron.util.ai_service import AIService
 from evals.util.eval_service import EvalService
 
 
-GOLDEN_SET_PATH = Path(__file__).resolve().parent / "golden_set.json"
-RESULTS_PATH = (Path(__file__).resolve().parent /
-                "results_luna_translation.json")
+EVALS_DIR = Path(__file__).resolve().parent
+GOLDEN_DIR = EVALS_DIR / "golden"
+RESULTS_DIR = EVALS_DIR / "results"
+GOLDEN_PATHS = {
+    "classification": GOLDEN_DIR / "classification.json",
+    "summary": GOLDEN_DIR / "summary.json",
+    "translation": GOLDEN_DIR / "translation.json",
+}
 
 
 def get_metrics(true_positive: int, false_positive: int,
@@ -228,34 +233,61 @@ def evaluate_translations(ai_service: AIService, eval_service: EvalService,
     }
 
 
+def load_examples(category: str) -> list[dict]:
+    path = GOLDEN_PATHS[category]
+    with path.open("r", encoding="utf-8") as file:
+        document = json.load(file)
+    return document["examples"]
+
+
+def append_result(category: str, run: dict) -> Path:
+    path = RESULTS_DIR / f"{category}.json"
+    if path.exists():
+        with path.open("r", encoding="utf-8") as file:
+            document = json.load(file)
+    else:
+        document = {"category": category, "runs": []}
+
+    document["runs"].append(run)
+    temporary_path = path.with_suffix(".json.tmp")
+    with temporary_path.open("w", encoding="utf-8") as file:
+        json.dump(document, file, ensure_ascii=False, indent=2)
+        file.write("\n")
+    temporary_path.replace(path)
+    return path
+
+
 ai_service = AIService()
 eval_service = EvalService()
-
-with GOLDEN_SET_PATH.open("r", encoding="utf-8") as file:
-    golden_set = json.load(file)
-
-results = {
-    "evaluated_at": datetime.now(timezone.utc).isoformat(),
+evaluated_at = datetime.now(timezone.utc).isoformat()
+config = {
     "production_model": ai_service.model,
     "judge_model": eval_service.model,
     "translation_model": ai_service.translation_model,
     "translation_method": "AIService.translate_headline",
     "translation_judge": "lenient name transliteration",
+}
+
+results = {
     "classification": evaluate_classifications(
-        ai_service, golden_set["classifications"]
+        ai_service, load_examples("classification")
     ),
     "summary": evaluate_summaries(
-        ai_service, eval_service, golden_set["summaries"]
+        ai_service, eval_service, load_examples("summary")
     ),
     "translation": evaluate_translations(
-        ai_service, eval_service, golden_set["translations"]
+        ai_service, eval_service, load_examples("translation")
     ),
 }
 
-with RESULTS_PATH.open("w", encoding="utf-8") as file:
-    json.dump(results, file, ensure_ascii=False, indent=2)
+for category, result in results.items():
+    append_result(category, {
+        "evaluated_at": evaluated_at,
+        "config": config,
+        **result,
+    })
 
 print("Classification:", results["classification"]["metrics"])
 print("Summary:", results["summary"]["metrics"])
 print("Translation:", results["translation"]["metrics"])
-print("Detailed results:", RESULTS_PATH)
+print("Detailed results:", RESULTS_DIR)
