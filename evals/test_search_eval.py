@@ -2,7 +2,7 @@ import math
 import unittest
 from types import SimpleNamespace
 
-from cron.util.search_service import RRF_K, SearchService
+from shared.search_service import RRF_K, SearchService
 from evals.search_eval import (
     aggregate_by_category,
     average_precision,
