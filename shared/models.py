@@ -48,8 +48,8 @@ class Countries(Base):
 
         with SessionLocal() as session:
             if id > 0:
-                return session.semantic_search(cls).filter(cls.id == id).first()
-            return session.semantic_search(cls).filter(cls.name == name).first()
+                return session.query(cls).filter(cls.id == id).first()
+            return session.query(cls).filter(cls.name == name).first()
 
 
 class Sources(Base):
@@ -73,9 +73,8 @@ class Sources(Base):
 
         with SessionLocal() as session:
             if source_id:
-                return session.semantic_search(
-                    cls).filter(cls.id == source_id).first()
-            return session.semantic_search(cls).filter(
+                return session.query(cls).filter(cls.id == source_id).first()
+            return session.query(cls).filter(
                 cls.country_id == country_id
             ).first()
 
@@ -90,7 +89,7 @@ class Sources(Base):
         """
 
         with SessionLocal() as session:
-            return session.semantic_search(cls).filter(
+            return session.query(cls).filter(
                 cls.country_id == country_id, cls.name == name
             ).first()
 
@@ -175,14 +174,18 @@ def get_headlines_by_country(target_date: Optional[date] = None) -> defaultdict[
 
     with SessionLocal() as session:
         latest_per_source = (
-            session.semantic_search(Articles.source_id)
+            session.query(
+                Articles.source_id,
+                func.max(Articles.captured_at).label("latest_captured_at")
+            )
             .filter(Articles.captured_at >= start, Articles.captured_at < end)
             .group_by(Articles.source_id)
             .subquery()
         )
 
         results = (
-            session.semantic_search(Countries.name)
+            session.query(Countries.name, Sources.name,
+                          Sources.political_leaning, Articles)
             .join(Sources, Sources.country_id == Countries.id)
             .join(Articles, Articles.source_id == Sources.id)
             .join(
@@ -206,3 +209,39 @@ def get_headlines_by_country(target_date: Optional[date] = None) -> defaultdict[
             )
 
     return output
+
+
+def get_sources_by_ids(source_ids: list[int]) -> dict[int, dict[str, str]]:
+    """
+    Returns the outlet and country details for the given source ids. Search
+    results carry only a source id, so this resolves the outlet name, its
+    country and its political leaning in a single query.
+
+    :param source_ids: the source ids as per Postgres
+    :return: a mapping of source id to its outlet, country and leaning
+    """
+
+    if not source_ids:
+        return {}
+
+    with SessionLocal() as session:
+        results = (
+            session.query(
+                Sources.id,
+                Sources.name,
+                Sources.political_leaning,
+                Countries.name
+            )
+            .join(Countries, Sources.country_id == Countries.id)
+            .filter(Sources.id.in_(set(source_ids)))
+            .all()
+        )
+
+    return {
+        source_id: {
+            "outlet": source_name,
+            "political_leaning": political_leaning,
+            "country": country_name,
+        }
+        for source_id, source_name, political_leaning, country_name in results
+    }
