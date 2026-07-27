@@ -1,10 +1,9 @@
 
 from sqlalchemy import (
-    select,
-    func
+    select
 )
 
-from cron.util.search_service import SearchService
+from shared.search_service import SearchService
 from shared.database import SessionLocal
 from shared.models import (
     Articles
