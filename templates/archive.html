@@ -6,7 +6,7 @@
         <title>OsiPress &middot; Archive</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Vazirmatn:wght@400;500;600&display=optional" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/osipress.css') }}">
         <link rel="icon"href="{{ url_for('static', filename='img/favicon.ico') }}">
     </head>
@@ -54,8 +54,6 @@
                     </div>
                     <div class="date-toolbar">
                         <label class="date-pick"><span class="date-lbl" id="date-label">&mdash;</span><input type="date" id="date-input" class="date-input" min="{{ min_date if min_date else '2026-07-09' }}" value="{{ date if date else '' }}"></label>
-                        <div class="edition">Recent pages &middot; <b
-                            id="edition-count">&mdash;</b></div>
                     </div>
                 </div>
             </div>

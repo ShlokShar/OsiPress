@@ -454,17 +454,7 @@ function syncTagPills(){
   });
 }
 
-function editionCount(){
-  const node = document.getElementById('edition-count');
-  if (!node) return;
-  if (!countries.length){ node.textContent = 'no data'; return; }
-  let stories = 0, outlets = 0;
-  countries.forEach(c => Object.keys(DATA[c]).forEach(o => { outlets++; stories += ((DATA[c][o] || {}).articles || []).length; }));
-  node.textContent = stories + ' stories \u00b7 ' + outlets + ' outlets \u00b7 ' + countries.length + ' countries';
-}
-
 render();
 renderChips();
 renderTopicOptions();
 syncTopicControl();
-editionCount();

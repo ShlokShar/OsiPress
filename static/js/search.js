@@ -115,3 +115,254 @@ if (form && main && skeleton){
     if (event.persisted) clearLoading();
   });
 }
+
+
+// ---------------------------------------------------------------------------
+// Filters
+//
+// Country, outlet and sort all run against the rows already on the page, so no
+// request is made and main.py never sees them. Controls mirror the Countries
+// chips and Topics dropdown on today/archive (see renderChips /
+// renderTopicOptions in osipress.js) so the existing styles apply unchanged.
+// ---------------------------------------------------------------------------
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const resultList = document.querySelector('.results:not([aria-hidden="true"])');
+const rows = resultList ? Array.from(resultList.querySelectorAll(':scope > .story')) : [];
+
+const filters = { countries: new Set(), outlets: new Set(), sort: 'relevance' };
+
+const SORTS = [
+  { id: 'relevance', label: 'Relevance' },
+  { id: 'newest', label: 'Newest first' },
+  { id: 'oldest', label: 'Oldest first' },
+];
+
+// data-published is a display string ("20 Jun 2026") because that is what the
+// result dict carries. Date.parse of that format is implementation-defined, so
+// pick it apart by hand.
+function publishedAt(row){
+  const parts = (row.dataset.published || '').split(' ');
+  if (parts.length !== 3) return 0;
+  const month = MONTHS.indexOf(parts[1]);
+  if (month < 0) return 0;
+  return Date.UTC(Number(parts[2]), month, Number(parts[0]));
+}
+
+function distinct(attribute){
+  return [...new Set(rows.map(row => row.dataset[attribute]).filter(Boolean))].sort();
+}
+
+function matches(row){
+  if (filters.countries.size && !filters.countries.has(row.dataset.country)) return false;
+  if (filters.outlets.size && !filters.outlets.has(row.dataset.outlet)) return false;
+  return true;
+}
+
+function applyFilters(){
+  const visible = [];
+  rows.forEach(row => {
+    const show = matches(row);
+    row.hidden = !show;
+    row.classList.remove('first-visible');
+    if (show) visible.push(row);
+  });
+
+  const ordered = visible.slice();
+  if (filters.sort === 'relevance'){
+    ordered.sort((a, b) => Number(a.dataset.rank) - Number(b.dataset.rank));
+  } else {
+    const direction = filters.sort === 'newest' ? -1 : 1;
+    ordered.sort((a, b) => (publishedAt(a) - publishedAt(b)) * direction);
+  }
+  // Move nodes rather than using CSS order: `.story + .story` draws the
+  // separator from DOM order, so visual-only reordering misplaces it.
+  ordered.forEach(row => resultList.appendChild(row));
+
+  // A hidden first row would otherwise leave its separator on the row below.
+  if (ordered.length) ordered[0].classList.add('first-visible');
+
+  const emptyNote = document.getElementById('filter-empty');
+  if (emptyNote) emptyNote.hidden = ordered.length > 0;
+
+  syncControls();
+  syncUrl();
+}
+
+function syncUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const set = (key, value) => value ? params.set(key, value) : params.delete(key);
+
+  set('country', [...filters.countries].join(','));
+  set('outlet', [...filters.outlets].join(','));
+  set('sort', filters.sort === 'relevance' ? '' : filters.sort);
+
+  const query = params.toString();
+  window.history.replaceState(null, '',
+    window.location.pathname + (query ? '?' + query : ''));
+
+  // Keep the filters through "Show more", which is a real navigation.
+  const more = document.querySelector('.more a');
+  if (more) more.search = new URLSearchParams({
+    ...Object.fromEntries(new URLSearchParams(more.search)),
+    ...Object.fromEntries(params),
+  }).toString();
+}
+
+function readUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const load = (key, target) => (params.get(key) || '')
+    .split(',').filter(Boolean).forEach(value => target.add(value));
+
+  load('country', filters.countries);
+  load('outlet', filters.outlets);
+  const sort = params.get('sort');
+  if (SORTS.some(option => option.id === sort)) filters.sort = sort;
+}
+
+function buildChips(container, values, selected){
+  container.innerHTML = '';
+  values.forEach(value => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip';
+    chip.textContent = value;
+    chip.dataset.value = value;
+    chip.setAttribute('aria-pressed', selected.has(value) ? 'true' : 'false');
+    chip.addEventListener('click', () => {
+      if (selected.has(value)) selected.delete(value);
+      else selected.add(value);
+      applyFilters();
+    });
+    container.appendChild(chip);
+  });
+}
+
+function buildOptions(panel, values, onPick, isChecked, role){
+  panel.innerHTML = '';
+  values.forEach(value => {
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'dd-opt';
+    option.dataset.value = value.id || value;
+    option.setAttribute('role', role);
+    option.setAttribute('aria-checked', isChecked(value) ? 'true' : 'false');
+
+    const box = document.createElement('span');
+    box.className = 'dd-box';
+    const label = document.createElement('span');
+    label.textContent = value.label || value;
+
+    option.append(box, label);
+    option.addEventListener('click', () => { onPick(value); applyFilters(); });
+    panel.appendChild(option);
+  });
+}
+
+// Every dropdown registers here so opening one can close the rest. A
+// per-dropdown outside-click listener is not enough: the toggle stops
+// propagation, so its click never reaches the other dropdown's listener and
+// both panels stay open.
+const dropdowns = [];
+
+function setDropdown(entry, open){
+  entry.panel.hidden = !open;
+  entry.toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+function closeDropdowns(except){
+  dropdowns.forEach(entry => { if (entry !== except) setDropdown(entry, false); });
+}
+
+function wireDropdown(picker, toggle, panel){
+  const entry = { picker, toggle, panel };
+  dropdowns.push(entry);
+  toggle.addEventListener('click', event => {
+    event.stopPropagation();
+    const open = panel.hidden;
+    closeDropdowns(entry);
+    setDropdown(entry, open);
+  });
+}
+
+// One shared listener: a click inside a panel keeps that panel open (outlet is
+// multi-select), anything else closes them all.
+document.addEventListener('click', event => {
+  closeDropdowns(dropdowns.find(entry => entry.picker.contains(event.target)));
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeDropdowns(null);
+});
+
+function syncControls(){
+  document.querySelectorAll('#country-chips .chip').forEach(chip => {
+    chip.setAttribute('aria-pressed',
+      filters.countries.has(chip.dataset.value) ? 'true' : 'false');
+  });
+
+  const outletPanel = document.getElementById('outlet-panel');
+  const outletValue = document.getElementById('outlet-value');
+  const outletToggle = document.getElementById('outlet-toggle');
+  if (outletPanel){
+    Array.from(outletPanel.children).forEach(option => {
+      option.setAttribute('aria-checked',
+        filters.outlets.has(option.dataset.value) ? 'true' : 'false');
+    });
+    const count = filters.outlets.size;
+    outletValue.textContent = count === 0 ? 'All' : count + ' selected';
+    outletToggle.classList.toggle('has-selection', count > 0);
+  }
+
+  const sortPanel = document.getElementById('sort-panel');
+  const sortValue = document.getElementById('sort-value');
+  const sortToggle = document.getElementById('sort-toggle');
+  if (sortPanel){
+    Array.from(sortPanel.children).forEach(option => {
+      option.setAttribute('aria-checked',
+        option.dataset.value === filters.sort ? 'true' : 'false');
+    });
+    const active = SORTS.find(option => option.id === filters.sort);
+    sortValue.textContent = active ? active.label : 'Relevance';
+    sortToggle.classList.toggle('has-selection', filters.sort !== 'relevance');
+  }
+}
+
+if (rows.length){
+  readUrl();
+
+  const countries = distinct('country');
+  const outlets = distinct('outlet');
+
+  // Same rule as renderTopicOptions(): a picker with nothing to choose between
+  // is hidden rather than shown as a dead control.
+  const countryPicker = document.getElementById('country-picker');
+  if (countries.length < 2) countryPicker.hidden = true;
+  else buildChips(document.getElementById('country-chips'), countries, filters.countries);
+
+  const outletPicker = document.getElementById('outlet-picker');
+  if (outlets.length < 2) outletPicker.hidden = true;
+  else {
+    const panel = document.getElementById('outlet-panel');
+    buildOptions(panel, outlets,
+      value => {
+        if (filters.outlets.has(value)) filters.outlets.delete(value);
+        else filters.outlets.add(value);
+      },
+      value => filters.outlets.has(value), 'menuitemcheckbox');
+    wireDropdown(outletPicker, document.getElementById('outlet-toggle'), panel);
+  }
+
+  const sortPicker = document.getElementById('sort-picker');
+  const sortPanel = document.getElementById('sort-panel');
+  buildOptions(sortPanel, SORTS,
+    option => { filters.sort = option.id; sortPanel.hidden = true;
+                document.getElementById('sort-toggle')
+                  .setAttribute('aria-expanded', 'false'); },
+    option => option.id === filters.sort, 'menuitemradio');
+  wireDropdown(sortPicker, document.getElementById('sort-toggle'), sortPanel);
+
+  applyFilters();
+}
