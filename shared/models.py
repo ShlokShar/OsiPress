@@ -7,21 +7,21 @@ from datetime import (
     timezone
 )
 from typing import (
-    Optional,
-    Any
+    Any,
+    Optional
 )
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
-    ForeignKey,
     ARRAY,
-    String,
     DateTime,
-    func
+    ForeignKey,
+    func,
+    String
 )
 from sqlalchemy.orm import (
     Mapped,
-    mapped_column,
+    mapped_column
 )
 
 from shared.database import (
@@ -37,18 +37,22 @@ class Countries(Base):
     name: Mapped[str] = mapped_column()
 
     @classmethod
-    def get_country(cls, name: str = "", id: int = -1) -> Mapped[str]:
+    def get_country(
+        cls,
+        name: str = "",
+        country_id: int = -1
+    ) -> Optional["Countries"]:
         """
         Receives a country object from either the name or its database id.
 
         :param name: the country name
-        :param id: the country id as per Postgres
+        :param country_id: the country id as per Postgres
         :return: the country object
         """
 
         with SessionLocal() as session:
-            if id > 0:
-                return session.query(cls).filter(cls.id == id).first()
+            if country_id > 0:
+                return session.query(cls).filter(cls.id == country_id).first()
             return session.query(cls).filter(cls.name == name).first()
 
 
@@ -110,8 +114,10 @@ class Articles(Base):
         Vector(1536),
         nullable=True
     )
-    captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
-                                                  server_default=func.now())
+    captured_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
 
 
     @staticmethod
@@ -155,8 +161,9 @@ class Articles(Base):
         }
 
 
-def get_headlines_by_country(target_date: Optional[date] = None) -> defaultdict[
-    Any, dict[Any, Any]]:
+def get_headlines_by_country(
+    target_date: Optional[date] = None
+) -> defaultdict[Any, dict[Any, Any]]:
     """
     Returns a dictionary version of the data based on the date the articles
     were captured.
@@ -168,8 +175,11 @@ def get_headlines_by_country(target_date: Optional[date] = None) -> defaultdict[
     if target_date is None:
         target_date = datetime.now(timezone.utc).date()
 
-    start = datetime.combine(target_date, datetime.min.time(),
-                             tzinfo=timezone.utc)
+    start = datetime.combine(
+        target_date,
+        datetime.min.time(),
+        tzinfo=timezone.utc
+    )
     end = start + timedelta(days=1)
 
     with SessionLocal() as session:
@@ -184,15 +194,21 @@ def get_headlines_by_country(target_date: Optional[date] = None) -> defaultdict[
         )
 
         results = (
-            session.query(Countries.name, Sources.name,
-                          Sources.political_leaning, Articles)
+            session.query(
+                Countries.name,
+                Sources.name,
+                Sources.political_leaning,
+                Articles
+            )
             .join(Sources, Sources.country_id == Countries.id)
             .join(Articles, Articles.source_id == Sources.id)
             .join(
                 latest_per_source,
                 (Articles.source_id == latest_per_source.c.source_id)
-                & (Articles.captured_at ==
-                   latest_per_source.c.latest_captured_at)
+                & (
+                    Articles.captured_at ==
+                    latest_per_source.c.latest_captured_at
+                )
             )
             .all()
         )
