@@ -1,10 +1,10 @@
 
-import json
 from datetime import (
     datetime,
     timedelta,
     timezone
 )
+import json
 from pathlib import Path
 
 LOG_PATH = Path(__file__).resolve().parent.parent / "log.json"
