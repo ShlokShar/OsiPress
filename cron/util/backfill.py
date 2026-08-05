@@ -1,16 +1,19 @@
 
-from sqlalchemy import (
-    select
-)
+from sqlalchemy import select
 
-from shared.search_service import SearchService
 from shared.database import SessionLocal
 from shared.models import (
     Articles
 )
+from shared.search_service import SearchService
 
 
 def backfill() -> None:
+    """
+    a function to fill in the embeddings of the article that were previously
+    not embedded.
+    """
+    
     search_service = SearchService()
 
     # grab articles that aren't embedded
