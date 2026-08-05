@@ -12,7 +12,14 @@ MAX_ARTICLE_BYTES = 5 * 1024 * 1024
 REQUEST_TIMEOUT = (5, 20)
 
 def is_safe_article_url(url: str) -> bool:
-    """Return whether a URL is a public HTTP(S) destination."""
+    """
+    Checks whether an article URL uses HTTP(S) and resolves only to public IP
+    addresses.
+
+    :param url: the article URL to validate
+    :return: True if the URL resolves to a public host, otherwise False
+    """
+
     try:
         parsed = urlparse(url)
         if parsed.scheme not in {"http", "https"} or not parsed.hostname:
@@ -33,7 +40,16 @@ def is_safe_article_url(url: str) -> bool:
 
 
 def fetch_safe_article(url: str) -> bytes:
-    """Download an article while validating every redirect destination."""
+    """
+    Fetches an article while validating every redirect and enforcing the
+    response size and redirect limits.
+
+    :param url: the article URL to fetch
+    :return: the raw article response content
+    :raises ValueError: if the URL or redirect chain fails a safety limit
+    :raises requests.RequestException: if the HTTP request fails
+    """
+
     current_url = url
     headers = {"User-Agent": "OsiPress/1.0"}
 
@@ -71,7 +87,7 @@ def fetch_safe_article(url: str) -> bytes:
     raise ValueError("Article exceeded redirect limit")
 
 
-def get_article_text(url: str) -> str:
+def get_article_content(url: str) -> str:
     """
     derives only the article content, ignores navigation bars, footers,
     miscellaneous information in the page.
