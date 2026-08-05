@@ -1,4 +1,4 @@
-# OsiPress ([osipress.com]())
+# OsiPress ([osipress.com](https://osipress.com))
 
 Snapshots of what foreign press are telling their own people, 
 translated to English and shown side by side. Prototype pair: Iran and Israel.
