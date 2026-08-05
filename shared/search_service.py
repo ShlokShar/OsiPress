@@ -1,12 +1,13 @@
 
 from openai import OpenAI
 from sqlalchemy import (
-    select,
-    func
+    func,
+    select
 )
 
 from shared.database import SessionLocal
 from shared.models import Articles
+
 
 RRF_K = 60
 
@@ -16,8 +17,10 @@ class SearchService:
         self.client = OpenAI()
         self.model = model
 
-    def _deduplicate(self, articles: list[tuple[Articles, float]]) -> list[
-                    tuple[Articles, float]]:
+    @staticmethod
+    def _deduplicate(
+            articles: list[tuple[Articles, float]]
+    ) -> list[tuple[Articles, float]]:
         """
         Removes duplicate articles while preserving their original ranking.
         The first occurrence of each article link is retained.
@@ -142,13 +145,16 @@ class SearchService:
                 scores[article.link]["score"] = (1 / (RRF_K + (i + 1)))
                 scores[article.link]["article"] = article
 
-        sorted_scores = dict(sorted(scores.items(), key=lambda item: item[1][
-                                    "score"], reverse=True))
+        sorted_scores = dict(
+            sorted(
+                scores.items(),
+                key=lambda item: item[1]["score"],
+                reverse=True
+            )
+        )
 
-        search_result = [(i + 1, article_object["article"]) for i,
-                         article_object in enumerate(sorted_scores.values())]
+        search_result = [
+            (i + 1, article_object["article"]) for i,
+            article_object in enumerate(sorted_scores.values())
+        ]
         return search_result[:15]
-
-if __name__ == "__main__":
-    service = SearchService()
-    hybrid_search = service.hybrid_search("iran bombs kuwait")
