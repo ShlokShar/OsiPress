@@ -1,0 +1,258 @@
+{
+  "category": "dates",
+  "version": "1.0.0",
+  "examples": [
+    {
+      "id": "fa-solar-three-references",
+      "language": "Persian",
+      "headline": "زمان‌بندی سه مرحله برنامه اقتصادی اعلام شد",
+      "article": "دولت اعلام کرد نشست خبری رئیس‌جمهور در ۳۰ تیر ۱۴۰۵ برگزار شد. مرحله نخست برنامه در ۵ مرداد ۱۴۰۵ آغاز خواهد شد. گزارش نتایج اولیه نیز در ۱۲ شهریور ۱۴۰۵ منتشر می‌شود.",
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 30, "gregorian": "July 21, 2026"},
+        {"year": 1405, "month": 5, "day": 5, "gregorian": "July 27, 2026"},
+        {"year": 1405, "month": 6, "day": 12, "gregorian": "September 3, 2026"}
+      ]
+    },
+    {
+      "id": "fa-solar-two-in-one-reference",
+      "language": "Persian",
+      "headline": "زمان آغاز و پایان ثبت‌نام اعلام شد",
+      "article": "وزارت کشور اعلام کرد ثبت‌نام نامزدها از ۱ فروردین ۱۴۰۵ آغاز می‌شود و در ۱۵ فروردین ۱۴۰۵ پایان می‌یابد. مقام‌های انتخاباتی گفتند این جدول زمانی قطعی است.",
+      "expected_dates": [
+        {"year": 1405, "month": 1, "day": 1, "gregorian": "March 21, 2026"},
+        {"year": 1405, "month": 1, "day": 15, "gregorian": "April 4, 2026"}
+      ]
+    },
+    {
+      "id": "fa-solar-numeric",
+      "language": "Persian",
+      "headline": "تاریخ اجرای مصوبه جدید اعلام شد",
+      "article": "هیئت دولت اعلام کرد مصوبه جدید از تاریخ ۱۴۰۵/۰۴/۳۰ اجرا خواهد شد. وزارتخانه‌ها موظف‌اند پیش از آن دستورالعمل‌های اجرایی را منتشر کنند.",
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 30, "gregorian": "July 21, 2026"}
+      ]
+    },
+    {
+      "id": "en-explicit-solar",
+      "language": "English",
+      "headline": "Iran schedules a cabinet meeting",
+      "article": "Iran's cabinet said it will meet on 30 Tir 1405 in the Solar Hijri calendar to review the proposed budget. Officials said the agenda would be published beforehand.",
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 30, "gregorian": "July 21, 2026"}
+      ]
+    },
+    {
+      "id": "fa-gregorian-negative",
+      "language": "Persian",
+      "headline": "دیدار دیپلماتیک در ماه ژوئیه برگزار می‌شود",
+      "article": "وزارت خارجه اعلام کرد این دیدار در ۲۲ ژوئیه ۲۰۲۶ در ژنو برگزار می‌شود. دو طرف درباره همکاری‌های منطقه‌ای گفت‌وگو خواهند کرد.",
+      "expected_dates": []
+    },
+    {
+      "id": "he-gregorian-negative",
+      "language": "Hebrew",
+      "headline": "הכנסת תקיים דיון מדיני ביולי",
+      "article": "הכנסת הודיעה כי הדיון המדיני יתקיים ב-22 ביולי 2026. חברי הוועדה ידונו ביחסים האזוריים ובהסכמים חדשים.",
+      "expected_dates": []
+    },
+    {
+      "id": "he-hebrew-calendar-negative",
+      "language": "Hebrew",
+      "headline": "ישיבת הממשלה נקבעה לפי הלוח העברי",
+      "article": "ישיבת הממשלה תתקיים בי״ז בתמוז תשפ״ו לפי הלוח העברי. השרים ידונו בתקציב ובמדיניות החוץ.",
+      "expected_dates": []
+    },
+    {
+      "id": "en-non-solar-negative",
+      "language": "English",
+      "headline": "Officials announce two upcoming meetings",
+      "article": "The first meeting will take place on July 30, 2026. A separate religious commemoration will be held on 10 Muharram 1448 AH in the Islamic Hijri calendar.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-solar-ordibehesht",
+      "language": "Persian",
+      "headline": "نشست کمیسیون اقتصادی برنامه‌ریزی شد",
+      "article": "کمیسیون اقتصادی اعلام کرد نشست بعدی در ۱۰ اردیبهشت ۱۴۰۵ برگزار می‌شود. اعضا در این نشست پیشنهادهای مالیاتی را بررسی خواهند کرد.",
+      "expected_dates": [
+        {"year": 1405, "month": 2, "day": 10, "gregorian": "April 30, 2026"}
+      ]
+    },
+    {
+      "id": "fa-solar-latin-digits",
+      "language": "Persian",
+      "headline": "زمان ارائه بودجه مشخص شد",
+      "article": "سازمان برنامه اعلام کرد لایحه بودجه در 15 مهر 1405 به مجلس ارائه خواهد شد. بررسی کمیسیون‌ها یک هفته بعد آغاز می‌شود.",
+      "expected_dates": [
+        {"year": 1405, "month": 7, "day": 15, "gregorian": "October 7, 2026"}
+      ]
+    },
+    {
+      "id": "fa-solar-arabic-digits",
+      "language": "Persian",
+      "headline": "تاریخ انتشار گزارش بانک مرکزی اعلام شد",
+      "article": "بانک مرکزی اعلام کرد گزارش تازه خود را در ٩ آذر ١٤٠٥ منتشر می‌کند. این گزارش وضعیت تورم و بازار ارز را بررسی خواهد کرد.",
+      "expected_dates": [
+        {"year": 1405, "month": 9, "day": 9, "gregorian": "November 30, 2026"}
+      ]
+    },
+    {
+      "id": "fa-solar-three-two-references",
+      "language": "Persian",
+      "headline": "تقویم سه مرحله انتخابات منتشر شد",
+      "article": "ثبت‌نام در ۱ فروردین ۱۴۰۵ آغاز و در ۱۵ فروردین ۱۴۰۵ پایان می‌یابد. رأی‌گیری نهایی در ۱۰ اردیبهشت ۱۴۰۵ برگزار خواهد شد.",
+      "expected_dates": [
+        {"year": 1405, "month": 1, "day": 1, "gregorian": "March 21, 2026"},
+        {"year": 1405, "month": 1, "day": 15, "gregorian": "April 4, 2026"},
+        {"year": 1405, "month": 2, "day": 10, "gregorian": "April 30, 2026"}
+      ]
+    },
+    {
+      "id": "fa-mixed-solar-gregorian",
+      "language": "Persian",
+      "headline": "دو نشست داخلی و خارجی برنامه‌ریزی شد",
+      "article": "نشست داخلی در ۲۲ بهمن ۱۴۰۵ برگزار می‌شود. نشست بین‌المللی جداگانه در ۱۸ فوریه ۲۰۲۷ در ژنو برگزار خواهد شد.",
+      "expected_dates": [
+        {"year": 1405, "month": 11, "day": 22, "gregorian": "February 11, 2027"}
+      ]
+    },
+    {
+      "id": "fa-incomplete-month-year-negative",
+      "language": "Persian",
+      "headline": "اجرای طرح برای مرداد برنامه‌ریزی شد",
+      "article": "دولت اعلام کرد اجرای طرح در مرداد ۱۴۰۵ آغاز خواهد شد، اما روز دقیق هنوز تعیین نشده است. جزئیات بعداً منتشر می‌شود.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-year-only-negative",
+      "language": "Persian",
+      "headline": "برنامه اقتصادی سال آینده بررسی شد",
+      "article": "مجلس برنامه اقتصادی سال ۱۴۰۵ را بررسی کرد. این برنامه شامل اصلاحات مالیاتی و حمایت از تولید است.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-time-number-negative",
+      "language": "Persian",
+      "headline": "سخنگوی دولت ساعت نشست را اعلام کرد",
+      "article": "نشست خبری روز دوشنبه ساعت ۱۴:۰۵ برگزار می‌شود. هیچ تاریخ تقویمی در اطلاعیه اعلام نشده است.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-solar-leap-day",
+      "language": "Persian",
+      "headline": "مصوبه در آخرین روز سال اجرا شد",
+      "article": "مصوبه ویژه دولت در ۳۰ اسفند ۱۳۹۹ اجرا شد. وزارت اقتصاد گزارش اجرای آن را همان روز منتشر کرد.",
+      "expected_dates": [
+        {"year": 1399, "month": 12, "day": 30, "gregorian": "March 20, 2021"}
+      ]
+    },
+    {
+      "id": "fa-solar-esfand",
+      "language": "Persian",
+      "headline": "مهلت ارسال گزارش تعیین شد",
+      "article": "وزارتخانه‌ها باید گزارش نهایی خود را تا ۲۹ اسفند ۱۴۰۴ ارسال کنند. گزارش‌های دیرهنگام پذیرفته نخواهد شد.",
+      "expected_dates": [
+        {"year": 1404, "month": 12, "day": 29, "gregorian": "March 20, 2026"}
+      ]
+    },
+    {
+      "id": "en-explicit-solar-farvardin",
+      "language": "English",
+      "headline": "Iran sets the first cabinet session of the new year",
+      "article": "The first cabinet session will take place on 1 Farvardin 1406 in Iran's Solar Hijri calendar. Ministers will review the annual economic plan.",
+      "expected_dates": [
+        {"year": 1406, "month": 1, "day": 1, "gregorian": "March 21, 2027"}
+      ]
+    },
+    {
+      "id": "en-solar-month-name",
+      "language": "English",
+      "headline": "Iranian officials publish a budget deadline",
+      "article": "Iranian officials set 15 Mehr 1405 as the deadline for submitting the national budget. Parliamentary review will begin afterward.",
+      "expected_dates": [
+        {"year": 1405, "month": 7, "day": 15, "gregorian": "October 7, 2026"}
+      ]
+    },
+    {
+      "id": "en-hebrew-calendar-negative",
+      "language": "English",
+      "headline": "Israeli cabinet schedules a meeting",
+      "article": "The Israeli cabinet will meet on 17 Tammuz 5786 in the Hebrew calendar. Ministers will discuss the state budget.",
+      "expected_dates": []
+    },
+    {
+      "id": "en-ordinal-number-negative",
+      "language": "English",
+      "headline": "Committee approves applications",
+      "article": "The committee approved 1,405 applications during its latest session. It did not announce a calendar date for the next meeting.",
+      "expected_dates": []
+    },
+    {
+      "id": "en-numeric-gregorian-negative",
+      "language": "English",
+      "headline": "Diplomatic talks scheduled",
+      "article": "The diplomatic talks are scheduled for 2026/07/22 in Geneva. Delegations will discuss a regional agreement.",
+      "expected_dates": []
+    },
+    {
+      "id": "he-numeric-gregorian-negative",
+      "language": "Hebrew",
+      "headline": "נקבע מועד לדיון בכנסת",
+      "article": "הדיון בכנסת יתקיים בתאריך 30.07.2026. חברי הוועדה ידונו בהצעת התקציב החדשה.",
+      "expected_dates": []
+    },
+    {
+      "id": "he-year-only-negative",
+      "language": "Hebrew",
+      "headline": "הממשלה דנה בתוכנית לשנת 2026",
+      "article": "הממשלה אישרה תוכנית כלכלית לשנת 2026. התוכנית כוללת השקעה בתשתיות ובחינוך.",
+      "expected_dates": []
+    },
+    {
+      "id": "he-iran-context-gregorian-negative",
+      "language": "Hebrew",
+      "headline": "איראן הודיעה על מועד השיחות",
+      "article": "איראן הודיעה כי השיחות יתקיימו ב-30 ביולי 2026 בז׳נבה. הצדדים ידונו ביחסים האזוריים.",
+      "expected_dates": []
+    },
+    {
+      "id": "he-islamic-hijri-negative",
+      "language": "Hebrew",
+      "headline": "טקס דתי ייערך בחודש מוחרם",
+      "article": "הטקס יתקיים ב-10 במוחרם 1448 לפי לוח ההיג׳רה האסלאמי. המארגנים פרסמו הנחיות לציבור.",
+      "expected_dates": []
+    },
+    {
+      "id": "he-explicit-solar-positive",
+      "language": "Hebrew",
+      "headline": "איראן קבעה מועד לישיבת הממשלה",
+      "article": "איראן הודיעה שישיבת הממשלה תתקיים ב-30 בתיר 1405 לפי הלוח ההיג׳רי השמשי האיראני. השרים ידונו בתקציב.",
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 30, "gregorian": "July 21, 2026"}
+      ]
+    },
+    {
+      "id": "fa-islamic-hijri-negative",
+      "language": "Persian",
+      "headline": "مراسم مذهبی در ماه محرم برگزار می‌شود",
+      "article": "این مراسم در ۱۰ محرم ۱۴۴۸ قمری برگزار خواهد شد. برگزارکنندگان جزئیات برنامه را منتشر کردند.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-numeric-gregorian-negative",
+      "language": "Persian",
+      "headline": "نشست ژنو برای ماه ژوئیه برنامه‌ریزی شد",
+      "article": "وزارت خارجه اعلام کرد نشست ژنو در تاریخ ۲۰۲۶/۰۷/۲۲ برگزار می‌شود. هیئت‌ها درباره همکاری منطقه‌ای گفت‌وگو خواهند کرد.",
+      "expected_dates": []
+    },
+    {
+      "id": "en-explicit-numeric-solar",
+      "language": "English",
+      "headline": "Iran sets an implementation date",
+      "article": "The regulation takes effect on 1405/11/22 under Iran's Solar Hijri calendar. Agencies must publish guidance before then.",
+      "expected_dates": [
+        {"year": 1405, "month": 11, "day": 22, "gregorian": "February 11, 2027"}
+      ]
+    }
+  ]
+}
