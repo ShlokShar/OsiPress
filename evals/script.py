@@ -6,7 +6,7 @@ from datetime import (
 )
 from pathlib import Path
 
-from cron.util.ai_service import AIService
+from cron.ai.service import AIService
 from evals.util.eval_service import EvalService
 
 
