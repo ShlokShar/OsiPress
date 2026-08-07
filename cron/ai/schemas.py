@@ -8,16 +8,28 @@ from cron.ai.tags import ALLOWED_TAGS
 
 
 class IranianDate(BaseModel):
-    year: int = Field(description="the date's year in the Persian Calendar.")
-    month: int = Field(description="the date's month in the Persian Calendar.")
-    day: int = Field(description="the date's day in the Persian Calendar.")
+    year: int = Field(
+        ge=1,
+        description="Solar Hijri year from a complete date.",
+    )
+    month: int = Field(
+        ge=1,
+        le=12,
+        description="Numeric Solar Hijri month from 1 through 12.",
+    )
+    day: int = Field(
+        ge=1,
+        le=31,
+        description="Day from a complete Solar Hijri date.",
+    )
 
 
 class DateModel(BaseModel):
     dates: list[IranianDate] = Field(
         description=(
-            "Solar Hijri dates mentioned in the article, ordered to match "
-            "DATE_0, DATE_1, and subsequent placeholders."
+            "Only Solar Hijri dates whose year, month, and day are explicitly "
+            "present in one non-range expression; never infer a component. "
+            "Ordered to match DATE_0, DATE_1, and subsequent placeholders."
         )
     )
 
@@ -39,9 +51,9 @@ class Parsed(DateModel):
     )
     references_dates: list[list[IranianDate]] = Field(
         description=(
-            "One date list per item in references_for_translation. Each inner "
-            "list is ordered to match that reference's DATE_0, DATE_1, and "
-            "subsequent placeholders."
+            "One list per translated reference containing only complete, "
+            "non-range Solar Hijri dates with three explicit components. Each "
+            "inner list matches that reference's ordered placeholders."
         )
     )
     tags: list[ALLOWED_TAGS] = Field(

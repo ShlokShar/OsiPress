@@ -17,7 +17,10 @@ from cron.ai.schemas import (
     Parsed,
     TranslatedHeadline
 )
-from cron.ai.tools import handle_iranian_date
+from cron.ai.tools import (
+    handle_iranian_date_text,
+    handle_iranian_date_references,
+)
 
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
@@ -83,7 +86,8 @@ class AIService:
         dates = parsed.dates
         translated_headline = parsed.translated_headline
 
-        translated_headline = handle_iranian_date(dates, translated_headline)
+        translated_headline = handle_iranian_date_text(dates,
+                                                       translated_headline)
 
         return translated_headline
 
@@ -114,14 +118,16 @@ class AIService:
         summary = parsed.summary
         dates = parsed.dates
 
-        parsed.summary = handle_iranian_date(dates, summary)
+        parsed.summary = handle_iranian_date_text(dates, summary)
 
         for i, reference in enumerate(parsed.references_for_translation):
             dates = parsed.references_dates[i]
-            parsed.references_for_translation[i] = handle_iranian_date(
-                dates,
-                reference
-            )
+            try:
+                parsed.references_for_translation[i] = (
+                    handle_iranian_date_references(dates, reference)
+                )
+            except ValueError:
+                parsed.references_for_translation[i] = parsed.references[i]
 
         return parsed
 

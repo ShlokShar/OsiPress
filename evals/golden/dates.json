@@ -1,6 +1,6 @@
 {
   "category": "dates",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "examples": [
     {
       "id": "fa-solar-three-references",
@@ -117,17 +117,77 @@
       ]
     },
     {
-      "id": "fa-incomplete-month-year-negative",
+      "id": "fa-solar-partial-month-year",
       "language": "Persian",
       "headline": "اجرای طرح برای مرداد برنامه‌ریزی شد",
       "article": "دولت اعلام کرد اجرای طرح در مرداد ۱۴۰۵ آغاز خواهد شد، اما روز دقیق هنوز تعیین نشده است. جزئیات بعداً منتشر می‌شود.",
+      "expected_summary_displays": ["Mordad 1405"],
       "expected_dates": []
     },
     {
-      "id": "fa-year-only-negative",
+      "id": "fa-solar-partial-month-day",
+      "language": "Persian",
+      "headline": "نشست دولت در ۳ تیر برگزار می‌شود",
+      "article": "دولت اعلام کرد نشست بررسی بودجه در ۳ تیر برگزار می‌شود. اعضای کابینه درباره برنامه اقتصادی گفت‌وگو خواهند کرد.",
+      "expected_headline_displays": ["Tir 3"],
+      "expected_summary_displays": ["Tir 3"],
+      "expected_dates": []
+    },
+    {
+      "id": "fa-solar-two-partial-forms",
+      "language": "Persian",
+      "headline": "زمان نشست و انتشار گزارش اعلام شد",
+      "article": "نشست اقتصادی در ۳ تیر برگزار می‌شود و گزارش نهایی در مرداد ۱۴۰۵ منتشر خواهد شد. دولت هر دو زمان را در برنامه رسمی خود اعلام کرد.",
+      "expected_summary_displays": ["Tir 3", "Mordad 1405"],
+      "expected_dates": []
+    },
+    {
+      "id": "en-explicit-solar-partial-forms",
+      "language": "English",
+      "headline": "Iran schedules meetings for 3 Tir and Mordad 1405",
+      "article": "Under Iran's Solar Hijri calendar, the cabinet will meet on 3 Tir and publish its final report in Mordad 1405. Officials said both dates are part of the economic program.",
+      "expected_headline_displays": ["Tir 3", "Mordad 1405"],
+      "expected_summary_displays": ["Tir 3", "Mordad 1405"],
+      "expected_dates": []
+    },
+    {
+      "id": "he-explicit-solar-partial-month-day",
+      "language": "Hebrew",
+      "headline": "איראן קבעה את הישיבה ל-3 בתיר",
+      "article": "לפי הלוח ההיג׳רי השמשי האיראני, ישיבת הממשלה תתקיים ב-3 בתיר. השרים ידונו בתוכנית הכלכלית.",
+      "expected_headline_displays": ["Tir 3"],
+      "expected_summary_displays": ["Tir 3"],
+      "expected_dates": []
+    },
+    {
+      "id": "fa-solar-month-only-preserved",
+      "language": "Persian",
+      "headline": "نشست برای ماه تیر برنامه‌ریزی شد",
+      "article": "دولت اعلام کرد نشست در ماه تیر برگزار خواهد شد، اما روز و سال آن هنوز مشخص نیست. جزئیات بعداً منتشر می‌شود.",
+      "expected_summary_displays": ["Tir"],
+      "expected_dates": []
+    },
+    {
+      "id": "fa-solar-day-only-negative",
+      "language": "Persian",
+      "headline": "نشست در روز سوم برگزار می‌شود",
+      "article": "اطلاعیه دولت فقط گفت نشست در روز سوم برگزار می‌شود و هیچ ماه یا سالی را مشخص نکرد. زمان دقیق بعداً اعلام خواهد شد.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-solar-year-day-preserved",
+      "language": "Persian",
+      "headline": "گزارش به روز سوم سال ۱۴۰۵ اشاره کرد",
+      "article": "گزارش رسمی به روز سوم سال ۱۴۰۵ اشاره کرد، اما ماه رویداد را مشخص نکرد. بنابراین تاریخ کامل در متن وجود ندارد.",
+      "expected_summary_displays": ["1405"],
+      "expected_dates": []
+    },
+    {
+      "id": "fa-solar-year-only-preserved",
       "language": "Persian",
       "headline": "برنامه اقتصادی سال آینده بررسی شد",
       "article": "مجلس برنامه اقتصادی سال ۱۴۰۵ را بررسی کرد. این برنامه شامل اصلاحات مالیاتی و حمایت از تولید است.",
+      "expected_summary_displays": ["1405"],
       "expected_dates": []
     },
     {
@@ -252,6 +312,271 @@
       "article": "The regulation takes effect on 1405/11/22 under Iran's Solar Hijri calendar. Agencies must publish guidance before then.",
       "expected_dates": [
         {"year": 1405, "month": 11, "day": 22, "gregorian": "February 11, 2027"}
+      ]
+    },
+    {
+      "id": "fa-date-range-shared-month-preserved",
+      "category": "compound",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "مهلت ثبت‌نام نامزدها اعلام شد",
+      "article": "وزارت کشور اعلام کرد ثبت‌نام نامزدها از ۳ تا ۵ تیر ۱۴۰۵ انجام می‌شود. مسئولان گفتند درخواست‌های خارج از این بازه پذیرفته نخواهد شد.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-date-range-two-months-preserved",
+      "category": "compound",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "headline": "بازه اجرای طرح اقتصادی مشخص شد",
+      "article": "دولت اعلام کرد اجرای آزمایشی طرح از ۳۰ تیر ۱۴۰۵ تا ۵ مرداد ۱۴۰۵ ادامه خواهد داشت. نتیجه این مرحله پس از پایان بازه بررسی می‌شود.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-season-year-preserved",
+      "category": "partial",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "اجرای برنامه برای تابستان ۱۴۰۵ پیش‌بینی شد",
+      "article": "وزارت اقتصاد اعلام کرد مرحله تازه برنامه در تابستان ۱۴۰۵ اجرا خواهد شد. زمان دقیق آغاز آن هنوز مشخص نشده است.",
+      "expected_summary_displays": ["1405"],
+      "expected_dates": []
+    },
+    {
+      "id": "fa-relative-only-negative",
+      "category": "relative",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "headline": "نشست هیئت دولت فردا برگزار می‌شود",
+      "article": "سخنگوی دولت گفت نشست هیئت دولت فردا برگزار می‌شود و نتایج آن پس از پایان جلسه اعلام خواهد شد. هیچ تاریخ تقویمی در اطلاعیه نیامده است.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-relative-plus-partial-date",
+      "category": "partial",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "نشست بعدی فردا، ۳ تیر، برگزار می‌شود",
+      "article": "دبیر شورا اعلام کرد نشست بعدی فردا، ۳ تیر، برگزار می‌شود. اعضا در این جلسه درباره بودجه سالانه تصمیم خواهند گرفت.",
+      "expected_headline_displays": ["Tir 3"],
+      "expected_summary_displays": ["Tir 3"],
+      "expected_dates": []
+    },
+    {
+      "id": "fa-ambiguous-numeric-preserved",
+      "category": "ambiguous",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "زمان جلسه در اطلاعیه جدید درج شد",
+      "article": "در اطلاعیه کمیسیون، زمان جلسه به صورت ۰۳/۰۴/۱۴۰۵ درج شده است، اما ترتیب روز و ماه یا نوع تقویم توضیح داده نشده است. دبیرخانه بعداً توضیح تکمیلی می‌دهد.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-solar-dash-numeric",
+      "category": "full",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "headline": "مصوبه از ۱۴۰۵-۰۴-۰۳ اجرا می‌شود",
+      "article": "بر اساس اطلاعیه رسمی، مصوبه دولت از تاریخ ۱۴۰۵-۰۴-۰۳ اجرا می‌شود. دستگاه‌های اجرایی باید پیش از آن دستورالعمل‌های لازم را منتشر کنند.",
+      "expected_headline_displays": ["June 24, 2026"],
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 3, "gregorian": "June 24, 2026"}
+      ]
+    },
+    {
+      "id": "fa-solar-zero-padded-numeric",
+      "category": "full",
+      "language": "Persian",
+      "source": "Kayhan",
+      "headline": "نشست در ۱۴۰۵/۰۱/۰۹ برگزار خواهد شد",
+      "article": "دبیرخانه شورا اعلام کرد نشست فوق‌العاده در ۱۴۰۵/۰۱/۰۹ برگزار خواهد شد. دستور جلسه پیش از برگزاری منتشر می‌شود.",
+      "expected_headline_displays": ["March 29, 2026"],
+      "expected_dates": [
+        {"year": 1405, "month": 1, "day": 9, "gregorian": "March 29, 2026"}
+      ]
+    },
+    {
+      "id": "fa-persian-count-negative",
+      "category": "non_date",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "headline": "ثبت‌نام ۱۴۰۵ نفر در طرح جدید",
+      "article": "وزارت رفاه اعلام کرد ۱۴۰۵ نفر در مرحله نخست طرح جدید ثبت‌نام کرده‌اند. این عدد شمار متقاضیان است و اطلاعیه هیچ تاریخ تقویمی اعلام نکرده است.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-islamic-hijri-year-1405-negative",
+      "category": "other_calendar",
+      "language": "Persian",
+      "source": "Kayhan",
+      "headline": "سندی از سال ۱۴۰۵ قمری بررسی شد",
+      "article": "پژوهشگران یک سند تاریخی مربوط به سال ۱۴۰۵ قمری را بررسی کردند. عبارت قمری در متن به تقویم هجری اسلامی اشاره دارد، نه تقویم هجری شمسی ایران.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-gregorian-month-persian-digits-negative",
+      "category": "other_calendar",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "مذاکرات در مارس ۲۰۲۶ برگزار شد",
+      "article": "وزارت خارجه اعلام کرد مذاکرات در ۳ مارس ۲۰۲۶ در ژنو برگزار شد. دو هیئت درباره همکاری‌های منطقه‌ای گفت‌وگو کردند.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-full-date-inside-quote",
+      "category": "full",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "وزیر اقتصاد زمان ارائه گزارش را اعلام کرد",
+      "article": "وزیر اقتصاد گفت: «گزارش نهایی در ۱۲ دی ۱۴۰۵ به مجلس ارائه می‌شود.» او افزود که داده‌های همه استان‌ها در گزارش لحاظ خواهد شد.",
+      "expected_dates": [
+        {"year": 1405, "month": 10, "day": 12, "gregorian": "January 2, 2027"}
+      ]
+    },
+    {
+      "id": "fa-full-date-parenthetical",
+      "category": "full",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "headline": "جلسه بعدی کمیسیون تعیین شد",
+      "article": "کمیسیون اقتصادی جلسه بعدی خود را برای هفته آینده (۱ آبان ۱۴۰۵) تعیین کرد. بررسی اصلاحات مالیاتی محور اصلی جلسه خواهد بود.",
+      "expected_dates": [
+        {"year": 1405, "month": 8, "day": 1, "gregorian": "October 23, 2026"}
+      ]
+    },
+    {
+      "id": "fa-long-realistic-single-solar-date",
+      "category": "full",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "جزئیات برنامه تازه حمایت از تولید اعلام شد",
+      "article": "وزارت صنعت پس از چند هفته مذاکره با نمایندگان بخش خصوصی، جزئیات برنامه تازه حمایت از تولید را اعلام کرد. بر اساس این برنامه، ثبت درخواست واحدهای صنعتی از ۱۷ شهریور ۱۴۰۵ آغاز می‌شود و بودجه‌ای معادل ۲۵ هزار میلیارد ریال برای مرحله نخست اختصاص یافته است. مقام‌های وزارتخانه گفتند تعداد متقاضیان محدود نخواهد بود و ارزیابی درخواست‌ها بر اساس ظرفیت تولید انجام می‌شود.",
+      "expected_dates": [
+        {"year": 1405, "month": 6, "day": 17, "gregorian": "September 8, 2026"}
+      ]
+    },
+    {
+      "id": "he-solar-partial-month-year",
+      "category": "partial",
+      "language": "Hebrew",
+      "source": "Haaretz",
+      "headline": "איראן מתכננת לפרסם את הדוח בתיר 1405",
+      "article": "לפי הלוח ההיג׳רי השמשי האיראני, הממשלה מתכננת לפרסם את הדוח בתיר 1405, אך היום המדויק טרם נקבע. הדוח יעסוק במדיניות הכלכלית.",
+      "expected_headline_displays": ["Tir 1405"],
+      "expected_summary_displays": ["Tir 1405"],
+      "expected_dates": []
+    },
+    {
+      "id": "he-solar-full-latin-month",
+      "category": "full",
+      "language": "Hebrew",
+      "source": "Yedioth Ahronoth",
+      "headline": "הישיבה באיראן נקבעה ל-15 Mehr 1405",
+      "article": "לפי הלוח ההיג׳רי השמשי של איראן, ישיבת הממשלה נקבעה ל-15 Mehr 1405. השרים צפויים לדון בתקציב המדינה.",
+      "expected_headline_displays": ["October 7, 2026"],
+      "expected_dates": [
+        {"year": 1405, "month": 7, "day": 15, "gregorian": "October 7, 2026"}
+      ]
+    },
+    {
+      "id": "he-count-1405-negative",
+      "category": "non_date",
+      "language": "Hebrew",
+      "source": "Israel Hayom",
+      "headline": "המשרד קיבל 1,405 בקשות",
+      "article": "המשרד הודיע כי קיבל 1,405 בקשות לתוכנית החדשה. המספר מתאר את כמות הבקשות ולא תאריך בלוח כלשהו.",
+      "expected_dates": []
+    },
+    {
+      "id": "en-solar-season-year",
+      "category": "partial",
+      "language": "English",
+      "headline": "Iran plans the program for summer 1405",
+      "article": "Iran's ministry said the program will begin in summer 1405 under the Solar Hijri calendar, but it has not announced a month or day. The program concerns domestic investment.",
+      "expected_summary_displays": ["1405"],
+      "expected_dates": []
+    },
+    {
+      "id": "en-ambiguous-numeric-preserved",
+      "category": "ambiguous",
+      "language": "English",
+      "headline": "Committee notice lists an ambiguous date",
+      "article": "The notice lists the meeting as 03/04/1405 without identifying the calendar or whether the first number is the day or month. Officials said a clarification will follow.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-three-calendars-one-solar",
+      "category": "mixed_calendar",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "سه رویداد با تقویم‌های متفاوت اعلام شد",
+      "article": "نشست داخلی در ۳۰ تیر ۱۴۰۵ برگزار می‌شود. دیدار خارجی در ۲۲ ژوئیه ۲۰۲۶ انجام خواهد شد و مراسم مذهبی نیز برای ۱۰ محرم ۱۴۴۸ قمری برنامه‌ریزی شده است.",
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 30, "gregorian": "July 21, 2026"}
+      ]
+    },
+    {
+      "id": "fa-mixed-numeral-scripts-full-date",
+      "category": "full",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "headline": "جلسه در ۳۰ تیر 1405 برگزار می‌شود",
+      "article": "دبیرخانه اعلام کرد جلسه کمیسیون در ۳۰ تیر 1405 برگزار می‌شود. اعضا درباره اصلاحات بودجه گفت‌وگو خواهند کرد.",
+      "expected_headline_displays": ["July 21, 2026"],
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 30, "gregorian": "July 21, 2026"}
+      ]
+    },
+    {
+      "id": "fa-full-and-partial-dates",
+      "category": "mixed_precision",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "زمان نشست و مرحله بعدی برنامه مشخص شد",
+      "article": "نشست اصلی در ۳۰ تیر ۱۴۰۵ برگزار می‌شود و مرحله بعدی برنامه در ۵ مرداد آغاز خواهد شد. دولت اعلام کرد هر دو رویداد به بررسی سیاست اقتصادی مربوط است.",
+      "expected_summary_displays": ["Mordad 5"],
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 30, "gregorian": "July 21, 2026"}
+      ]
+    },
+    {
+      "id": "en-tir-proper-noun-negative",
+      "category": "non_date",
+      "language": "English",
+      "headline": "Government discusses the TIR Convention",
+      "article": "Officials discussed implementation of the TIR Convention governing international road transport. TIR is the name of the customs transit system here, not an Iranian calendar month.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-mehr-news-agency-negative",
+      "category": "non_date",
+      "language": "Persian",
+      "source": "Kayhan",
+      "headline": "خبرگزاری مهر گزارش تازه‌ای منتشر کرد",
+      "article": "خبرگزاری مهر گزارش تازه‌ای درباره نشست مجلس منتشر کرد. در این متن، مهر نام خبرگزاری است و هیچ تاریخ تقویمی اعلام نشده است.",
+      "expected_dates": []
+    },
+    {
+      "id": "fa-dey-month-year-preserved",
+      "category": "partial",
+      "language": "Persian",
+      "source": "Shargh",
+      "headline": "انتشار گزارش برای دی ۱۴۰۵ برنامه‌ریزی شد",
+      "article": "بانک مرکزی اعلام کرد گزارش سالانه در دی ۱۴۰۵ منتشر خواهد شد، اما روز دقیق را مشخص نکرد. این گزارش تحولات بازار ارز را بررسی می‌کند.",
+      "expected_headline_displays": ["Dey 1405"],
+      "expected_summary_displays": ["Dey 1405"],
+      "expected_dates": []
+    },
+    {
+      "id": "fa-explicit-solar-dotted-numeric",
+      "category": "full",
+      "language": "Persian",
+      "source": "Hamshahri",
+      "headline": "تاریخ ۱۴۰۵.۰۴.۳۰ برای اجرای طرح تعیین شد",
+      "article": "در اطلاعیه دولت، تاریخ ۱۴۰۵.۰۴.۳۰ بر اساس تقویم هجری شمسی برای اجرای طرح تعیین شده است. وزارتخانه‌ها باید تا پیش از آن آماده شوند.",
+      "expected_headline_displays": ["July 21, 2026"],
+      "expected_dates": [
+        {"year": 1405, "month": 4, "day": 30, "gregorian": "July 21, 2026"}
       ]
     }
   ]
