@@ -36,6 +36,8 @@ const state = {
   translated: {},
   selectedTags: new Set(),
 };
+const comparisonArticles = new Map();
+const comparisonButtons = new Set();
 countries.forEach(c => { state.order[c] = Object.keys(DATA[c]); });
 
 const presentTags = (() => {
@@ -76,12 +78,38 @@ function safeHttpUrl(url){
   } catch (e) { return null; }
 }
 
+const comparisonKey = story => story.id != null ? story.id : story.link;
+
+function buildComparisonButton(country, outlet, story){
+  const key = comparisonKey(story);
+  const button = el('button', 'compare-add', 'Compare');
+  button.type = 'button';
+  button._comparisonKey = key;
+  button._comparisonLabel = story.translated_headline || story.headline || 'article';
+  button.addEventListener('click', e => {
+    e.stopPropagation();
+    if (comparisonArticles.has(key)) comparisonArticles.delete(key);
+    else if (comparisonArticles.size < 4){
+      comparisonArticles.set(key, {
+        country,
+        outlet,
+        leaning: (DATA[country][outlet] || {}).political_leaning,
+        story,
+      });
+    }
+    syncComparisonUI();
+  });
+  comparisonButtons.add(button);
+  return button;
+}
+
 function buildStory(country, outlet, story, i){
   const key = keyOf(country, outlet, i);
   const wrap = el('div', 'story');
 
   const row = el('div', 'story-row');
   row.setAttribute('role', 'button');
+  row.tabIndex = 0;
   const num = el('span', 'num', String(i + 1).padStart(2, '0'));
   const main = el('div', 'story-main');
   main.appendChild(el('h3', null, story.translated_headline || ''));
@@ -111,8 +139,9 @@ function buildStory(country, outlet, story, i){
     main.appendChild(topics);
   }
 
+  const compareButton = buildComparisonButton(country, outlet, story);
   const chev = el('span', 'chev');
-  row.appendChild(num); row.appendChild(main); row.appendChild(chev);
+  row.appendChild(num); row.appendChild(main); row.appendChild(compareButton); row.appendChild(chev);
 
   const detail = el('div', 'story-detail');
 
@@ -172,9 +201,15 @@ function buildStory(country, outlet, story, i){
   const setOpen = (open) => {
     state.expanded[key] = open;
     detail.classList.toggle('hidden', !open);
+    row.setAttribute('aria-expanded', open ? 'true' : 'false');
     chev.textContent = open ? '\u25be' : '\u25b8';
   };
   row.addEventListener('click', () => setOpen(!state.expanded[key]));
+  row.addEventListener('keydown', e => {
+    if (e.target !== row || (e.key !== 'Enter' && e.key !== ' ')) return;
+    e.preventDefault();
+    setOpen(!state.expanded[key]);
+  });
   setOpen(state.expanded[key] ?? false);
 
   wrap.appendChild(row);
@@ -253,6 +288,213 @@ const board = document.getElementById('board');
 const emptyNote = document.getElementById('empty');
 const headerEls = {};
 const cardEls = {};
+
+let comparisonTray;
+let comparisonCount;
+let comparisonClear;
+let comparisonOpen;
+let comparisonModal;
+let comparisonModalBody;
+let comparisonLastFocus;
+
+function comparisonText(value){
+  const node = el('p', value ? 'comparison-copy' : 'comparison-empty', value || 'Not available');
+  node.setAttribute('dir', 'auto');
+  return node;
+}
+
+function comparisonReferences(values){
+  if (!values.length) return el('p', 'comparison-empty', 'Not available');
+  const refs = el('div', 'comparison-refs');
+  values.forEach(value => {
+    const ref = el('p', 'comparison-ref', value);
+    ref.setAttribute('dir', 'auto');
+    refs.appendChild(ref);
+  });
+  return refs;
+}
+
+function comparisonTags(values){
+  if (!values.length) return el('p', 'comparison-empty', 'Not available');
+  const tags = el('div', 'comparison-tags');
+  values.forEach(value => tags.appendChild(el('span', 'topic', value)));
+  return tags;
+}
+
+function comparisonSection(label, items, renderCell){
+  const section = el('section', 'comparison-section');
+  section.appendChild(el('h3', null, label));
+  const grid = el('div', 'comparison-section-grid');
+  items.forEach(item => {
+    const cell = el('div', 'comparison-cell');
+    cell.appendChild(el('div', 'comparison-cell-outlet', item.outlet));
+    cell.appendChild(renderCell(item));
+    grid.appendChild(cell);
+  });
+  section.appendChild(grid);
+  return section;
+}
+
+function comparisonMetadata(items){
+  const grid = el('div', 'comparison-metadata comparison-section-grid');
+  grid.setAttribute('aria-label', 'Selected article identities');
+  items.forEach(item => {
+    const cell = el('div', 'comparison-cell');
+    const meta = el('div', 'comparison-meta');
+    meta.appendChild(el('span', 'comparison-country', item.country));
+    meta.appendChild(el('span', 'outlet-name', item.outlet));
+    meta.appendChild(el('span', 'tag ' + normalizeLean(item.leaning), item.leaning || 'Leaning not available'));
+    cell.appendChild(meta);
+    grid.appendChild(cell);
+  });
+  return grid;
+}
+
+function comparisonDisclosure(items){
+  const disclosure = el('div', 'comparison-disclosure');
+  const button = el('button', 'comparison-disclosure-toggle');
+  button.type = 'button';
+  button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-controls', 'comparison-evidence');
+  button.appendChild(el('span', 'comparison-disclosure-caret', '\u25b8'));
+  button.appendChild(el('span', null, 'View original text and evidence'));
+  const content = el('div', 'comparison-evidence');
+  content.id = 'comparison-evidence';
+  content.hidden = true;
+  content.appendChild(comparisonSection('Original headline', items, item => comparisonText(item.story.headline)));
+  content.appendChild(comparisonSection('Original references', items, item => comparisonReferences(item.story.references_original || [])));
+  content.appendChild(comparisonSection('Translated references', items, item => comparisonReferences(item.story.references_translated || [])));
+  button.addEventListener('click', () => {
+    const expanded = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    button.querySelector('.comparison-disclosure-caret').textContent = expanded ? '\u25b8' : '\u25be';
+    content.hidden = expanded;
+  });
+  disclosure.appendChild(button);
+  disclosure.appendChild(content);
+  return disclosure;
+}
+
+function buildComparisonSections(items){
+  const sections = document.createDocumentFragment();
+  sections.appendChild(comparisonMetadata(items));
+  sections.appendChild(comparisonSection('Translated headline', items, item => comparisonText(item.story.translated_headline)));
+  sections.appendChild(comparisonSection('Summary', items, item => comparisonText(cleanSummary(item.story.summary))));
+  sections.appendChild(comparisonDisclosure(items));
+  sections.appendChild(comparisonSection('Tags', items, item => comparisonTags(articleTags(item.story))));
+  sections.appendChild(comparisonSection('Source', items, item => {
+    const safeLink = safeHttpUrl(item.story.link);
+    if (!safeLink) return el('p', 'comparison-empty', 'Not available');
+    const link = el('a', 'readlink', 'Read at ' + hostOf(safeLink) + ' \u2197');
+    link.href = safeLink; link.target = '_blank'; link.rel = 'noopener';
+    return link;
+  }));
+  return sections;
+}
+
+function closeComparison(){
+  if (!comparisonModal || comparisonModal.hidden) return;
+  comparisonModal.hidden = true;
+  document.body.classList.remove('comparison-modal-open');
+  document.removeEventListener('keydown', handleComparisonKeys);
+  if (comparisonLastFocus && comparisonLastFocus.isConnected) comparisonLastFocus.focus();
+}
+
+function handleComparisonKeys(e){
+  if (e.key === 'Escape'){
+    e.preventDefault();
+    closeComparison();
+    return;
+  }
+  if (e.key !== 'Tab') return;
+  const focusable = Array.from(comparisonModal.querySelectorAll('button:not([disabled]),a[href]'));
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+}
+
+function openComparison(){
+  if (comparisonArticles.size < 2) return;
+  comparisonLastFocus = document.activeElement;
+  comparisonModalBody.innerHTML = '';
+  const items = Array.from(comparisonArticles.values());
+  comparisonModalBody.appendChild(buildComparisonSections(items));
+  comparisonModalBody.style.setProperty('--comparison-columns', items.length);
+  comparisonModal.hidden = false;
+  comparisonModalBody.scrollTop = 0;
+  document.body.classList.add('comparison-modal-open');
+  document.addEventListener('keydown', handleComparisonKeys);
+  comparisonModal.querySelector('.comparison-close').focus();
+}
+
+function createComparisonUI(){
+  comparisonTray = el('aside', 'comparison-tray');
+  comparisonTray.setAttribute('aria-label', 'Article comparison selection');
+  comparisonCount = el('span', 'comparison-count');
+  comparisonCount.setAttribute('role', 'status');
+  comparisonCount.setAttribute('aria-live', 'polite');
+  const actions = el('div', 'comparison-actions');
+  comparisonClear = el('button', 'comparison-clear', 'Clear');
+  comparisonClear.type = 'button';
+  comparisonClear.addEventListener('click', () => {
+    comparisonArticles.clear();
+    syncComparisonUI();
+  });
+  comparisonOpen = el('button', 'comparison-open', 'Compare articles');
+  comparisonOpen.type = 'button';
+  comparisonOpen.addEventListener('click', openComparison);
+  actions.appendChild(comparisonClear);
+  actions.appendChild(comparisonOpen);
+  comparisonTray.appendChild(comparisonCount);
+  comparisonTray.appendChild(actions);
+  document.body.appendChild(comparisonTray);
+
+  comparisonModal = el('div', 'comparison-modal');
+  comparisonModal.hidden = true;
+  comparisonModal.setAttribute('role', 'dialog');
+  comparisonModal.setAttribute('aria-modal', 'true');
+  comparisonModal.setAttribute('aria-labelledby', 'comparison-title');
+  const panel = el('div', 'comparison-panel');
+  const head = el('div', 'comparison-modal-head');
+  const heading = el('div');
+  const title = el('h2', null, 'Compare selected articles');
+  title.id = 'comparison-title';
+  heading.appendChild(title);
+  heading.appendChild(el('p', null, 'Articles appear in the order you selected them.'));
+  const close = el('button', 'comparison-close', '\u00d7');
+  close.type = 'button';
+  close.setAttribute('aria-label', 'Close comparison');
+  close.addEventListener('click', closeComparison);
+  head.appendChild(heading);
+  head.appendChild(close);
+  comparisonModalBody = el('div', 'comparison-sections');
+  panel.appendChild(head);
+  panel.appendChild(comparisonModalBody);
+  comparisonModal.appendChild(panel);
+  comparisonModal.addEventListener('click', e => {
+    if (e.target === comparisonModal) closeComparison();
+  });
+  document.body.appendChild(comparisonModal);
+  syncComparisonUI();
+}
+
+function syncComparisonUI(){
+  const count = comparisonArticles.size;
+  comparisonButtons.forEach(button => {
+    const selected = comparisonArticles.has(button._comparisonKey);
+    button.textContent = selected ? '\u2713 Selected' : 'Compare';
+    button.setAttribute('aria-label', (selected ? 'Remove “' : 'Add “') + button._comparisonLabel + (selected ? '” from comparison' : '” to comparison'));
+    button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    button.disabled = !selected && count >= 4;
+  });
+  if (!comparisonTray) return;
+  comparisonTray.hidden = count === 0;
+  comparisonCount.textContent = count + ' article' + (count === 1 ? '' : 's') + ' selected';
+  comparisonOpen.disabled = count < 2;
+  document.body.classList.toggle('comparison-tray-visible', count > 0);
+}
 
 function render(){
   board.innerHTML = '';
@@ -458,3 +700,4 @@ render();
 renderChips();
 renderTopicOptions();
 syncTopicControl();
+createComparisonUI();
