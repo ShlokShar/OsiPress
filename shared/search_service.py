@@ -10,7 +10,7 @@ from shared.models import Articles
 
 
 RRF_K = 60
-
+MAX_SEMANTIC_DISTANCE = 0.6
 
 class SearchService:
     def __init__(self, model: str = "text-embedding-3-small"):
@@ -106,7 +106,10 @@ class SearchService:
         with SessionLocal() as session:
             statement = (
                 select(Articles, distance.label("distance"))
-                .where(Articles.embedding.is_not(None))
+                .where(
+                    Articles.embedding.is_not(None),
+                    distance < MAX_SEMANTIC_DISTANCE
+                )
                 .order_by(distance)
                 .limit(50)
             )
@@ -152,9 +155,18 @@ class SearchService:
                 reverse=True
             )
         )
+        print(sorted_scores)
 
         search_result = [
             (i + 1, article_object["article"]) for i,
             article_object in enumerate(sorted_scores.values())
         ]
         return search_result[:15]
+
+if __name__ == "__main__":
+    sample_text = "bombings in kuwait"
+    search_service = SearchService()
+    hybrid_search = search_service.hybrid_search(sample_text)
+    print(hybrid_search)
+    for rank, article_object in hybrid_search:
+        print(article_object.translated_headline, )
