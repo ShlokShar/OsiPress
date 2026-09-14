@@ -1,0 +1,1678 @@
+{
+  "version": "3.0.0",
+  "description": "Retrieval judgments for the OsiPress corpus. Combines the hand-written 2.0.0 queries (judged_by: human) with short, realistic queries seeded from topically diverse articles, deduplicated by embedding similarity, pooled across lexical, semantic and BM25 retrieval, and graded by an LLM judge (judged_by: llm). Grade 3 = directly answers or is centrally about the query; 2 = substantially covers the topic from another angle; 1 = related context; 0 = a HARD NEGATIVE, retrieved by some method but judged irrelevant. Queries relevant to more than 7% of the corpus were dropped as non-discriminative. Recall is measured against the judged pool, not the full corpus, so the pool must be rebuilt when a materially different backend is introduced. For the same reason false_positive_rate is recorded but must NOT gate a backend that did not contribute to the pool.",
+  "build": {
+    "seed": 20260825,
+    "articles_selected": 40,
+    "corpus_size": 114,
+    "selection": "farthest-first traversal over embeddings",
+    "pool_depth": 12,
+    "pooled_methods": [
+      "lexical",
+      "semantic",
+      "bm25"
+    ],
+    "judge_model": "gpt-5.4-mini",
+    "duplicate_similarity": 0.9,
+    "max_relevant_fraction": 0.07,
+    "max_relevant_articles": 7,
+    "dropped_non_discriminative": 4,
+    "dropped_no_relevant": 2,
+    "judge_calibration": {
+      "pairs": 48,
+      "queries_regraded": 20,
+      "exact_agreement": 0.7708,
+      "within_one_grade": 1.0,
+      "binary_relevance_agreement": 0.9583,
+      "mean_human_grade": 2.562,
+      "mean_llm_grade": 2.458
+    }
+  },
+  "thresholds": {
+    "mrr_at_10": 0.8,
+    "ndcg_at_10": 0.75,
+    "recall_at_10": 0.8,
+    "ndcg_at_5": 0.7,
+    "max_regression_vs_best_baseline": 0.05,
+    "max_outlet_concentration_at_10": 0.6
+  },
+  "queries": [
+    {
+      "id": "search-01",
+      "query": "Trump declares the ceasefire with Iran is over",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article/.premium/trump-says-iran-cease-fire-is-over-but-isnt-galloping-toward-all-out-war/0000019f-433b-d913-abff-df7b368a0000": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.highlight/0000019f-431d-d6c0-a9df-df9f44810000": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4bcc-df3a-afbf-6fddddb90000": 3,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 3,
+        "https://www.hamshahrionline.ir/news/1050803/%D8%A2%D8%AA%D8%B4-%D8%A8%D8%B3-%D8%A8%D8%A7-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B7%D9%88%D8%B1-%D9%85%D9%88%D9%82%D8%AA-%D9%85%D8%AA%D9%88%D9%82%D9%81-%D8%B4%D8%AF%D9%87-%D8%A7%D8%B3%D8%AA": 2,
+        "https://www.hamshahrionline.ir/news/1050802/%D8%A7%D8%AF%D8%B9%D8%A7%DB%8C-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D9%BE%D8%B3-%D8%A7%D8%B2-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D8%A7-%D9%85%D8%A7-%D8%AA%D9%85%D8%A7%D8%B3-%DA%AF%D8%B1%D9%81%D8%AA": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-02",
+      "query": "Iran denies that it asked Washington for negotiations",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 3,
+        "https://www.hamshahrionline.ir/news/1051082/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%AA%D9%87%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%A7%D8%AF%D8%B9%D8%A7%DB%8C-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7": 3,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 2,
+        "https://www.hamshahrionline.ir/news/1050802/%D8%A7%D8%AF%D8%B9%D8%A7%DB%8C-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D9%BE%D8%B3-%D8%A7%D8%B2-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D8%A7-%D9%85%D8%A7-%D8%AA%D9%85%D8%A7%D8%B3-%DA%AF%D8%B1%D9%81%D8%AA": 1,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4bcc-df3a-afbf-6fddddb90000": 1,
+        "https://www.hamshahrionline.ir/news/1056219/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D9%87%D8%A7-%D8%B1%D8%A7-%D9%86%D9%85%DB%8C-%D8%AA%D9%88%D8%A7%D9%86-%D8%A8%D8%A7-%D8%B1%D8%B4%D9%88%D9%87-%D8%AA%D8%B7%D9%85%DB%8C%D8%B9-%DA%A9%D8%B1%D8%AF-%D8%A8%D8%A7-%D9%86%D8%AA%D8%A7%D9%86%DB%8C%D8%A7%D9%87%D9%88": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-03",
+      "query": "Iranian missiles struck American bases in Kuwait and Bahrain",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1050807/%D9%84%D8%AD%D8%B8%D8%A7%D8%AA-%D8%A7%D8%B5%D8%A7%D8%A8%D8%AA-%D9%85%D9%88%D8%B4%DA%A9-%D9%87%D8%A7%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D8%A8%D9%87-%D9%BE%D8%A7%DB%8C%DA%AF%D8%A7%D9%87-%D9%87%D8%A7%DB%8C-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%DA%A9%D9%88%DB%8C%D8%AA-%D9%88-%D8%A8%D8%AD%D8%B1%DB%8C%D9%86": 3,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 3,
+        "https://www.hamshahrionline.ir/news/1050804/%D9%81%D9%88%D8%B1%DB%8C-%D8%A8%DB%8C%D8%A7%D9%86%DB%8C%D9%87-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%A7%D8%B3%D8%AE-%D8%A8%D9%87-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D8%A7%DB%8C%D9%86-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D8%AE%D8%AA-%D9%87%D8%A7": 2,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article-live/u-s-strikes-targets-in-iran-for-second-night-in-a-row/0000019f-449e-d269-af9f-46df98160000": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-04",
+      "query": "US intelligence investigating whether Russia helped Iran strike CIA facilities",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-22/ty-article/.premium/0000019f-8b2b-df92-a7ff-afaba9580000": 3,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21041042": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-05",
+      "query": "Iran's response to threats against its bridges and power stations",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1054893/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%A8%D9%87-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AD%D9%85%D9%84%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D9%86%DB%8C%D8%B1%D9%88%DA%AF%D8%A7%D9%87-%D9%87%D8%A7-%D9%88": 3,
+        "https://www.hamshahrionline.ir/news/1054894/%D9%BE%DB%8C%D8%A7%D9%85-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%B3%DB%8C%D8%AF%D9%85%D8%AC%DB%8C%D8%AF-%D9%85%D9%88%D8%B3%D9%88%DB%8C-%D8%A8%D8%B9%D8%AF-%D8%A7%D8%B2-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE": 3,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 2,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4bcc-df3a-afbf-6fddddb90000": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-06",
+      "query": "Likud approved reserved slots for Netanyahu on the Knesset list",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.haaretz.co.il/news/elections/2026-07-27/ty-article/0000019f-a1bc-df92-a7ff-a7bee7470000": 3,
+        "https://www.ynet.co.il/news/article/bjzm4mshgx": 3,
+        "https://www.ynet.co.il/news/article/yokra14827470": 2,
+        "https://www.ynet.co.il/news/120andone/article/bk2gcbmvgg": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-07",
+      "query": "Mohsen Rezaei appointed secretary of the Supreme National Security Council",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.sharghdaily.com/fa/tiny/news-1120373": 3,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-08",
+      "query": "Will Scharf named White House counsel replacing David Warrington",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/world-news/usa/article/21163323": 3,
+        "https://www.hamshahrionline.ir/news/1059507/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%AF%DB%8C%DA%AF%D8%B1-%D8%B1%D8%A7-%D8%A7%D8%B2-%DA%A9%D8%A7%D8%AE-%D8%B3%D9%81%DB%8C%D8%AF-%D8%A7%D8%AE%D8%B1%D8%A7%D8%AC-%DA%A9%D8%B1%D8%AF": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-09",
+      "query": "polls on Eisenkot's bloc and the anti-Netanyahu majority",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.haaretz.co.il/news/elections/2026-07-27/ty-article/.premium/0000019f-a4cc-d641-a1df-e7ce05000000": 3,
+        "https://www.haaretz.co.il/news/elections/2026-08-09/ty-article/.premium/0000019f-e79e-d86b-a59f-e7be1e940000": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-10",
+      "query": "American strikes near Tehran and the end of the latest wave of attacks",
+      "category": "cross_outlet_event",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/r1r0mrs4me": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115359-%D8%AE%D8%A8%D8%B1-%D8%B3%D9%86%D8%AA%DA%A9%D8%A7%D9%85-%D8%A7%D8%B2-%D9%BE%D8%A7%DB%8C%D8%A7%D9%86-%D9%85%D9%88%D8%AC-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%B9%D9%84%DB%8C%D9%87-%D8%A8%D9%87-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D9%85%D9%88%D8%A7%D8%B6%D8%B9-%D8%AF%D9%81%D8%A7%D8%B9-%D8%B3%D8%A7%D8%AD%D9%84%DB%8C-%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D9%87%D8%A7%DB%8C-%D9%85%D9%88%D8%B4%DA%A9-%DA%A9%D8%B1%D9%88%D8%B2-%D8%AF%D8%B1-%D8%AC%D8%B2%DB%8C%D8%B1%D9%87-%D8%AA%D9%86%D8%A8-%D8%A8%D8%B2%D8%B1%DA%AF-%D8%B1%D8%A7-%D9%87%D8%AF%D9%81-%D9%82%D8%B1%D8%A7%D8%B1-%D8%AF%D8%A7%D8%AF%DB%8C%D9%85": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-11",
+      "query": "Moscow suspected of feeding coordinates for attacks on American spy sites",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-22/ty-article/.premium/0000019f-8b2b-df92-a7ff-afaba9580000": 3,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21041042": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-12",
+      "query": "people bathing once a week and lining up with containers for delivered drinking water",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/b1lfpdrnfe": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-13",
+      "query": "Washington's navy stretched thin across two seas at once",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334631/مقام-سابق-پنتاگون-آمریکا-حالا-مجبور-است-قدرت-خود-را-بین-خلیج-فارس-و-دریای-سرخ-تقسیم-کند": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-14",
+      "query": "a scholar argues Tehran will not capitulate no matter the pressure",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334242/جان-مرشایمر-ایرانی‌ها-هرگز-تسلیم-نخواهند-شد": 3,
+        "https://www.hamshahrionline.ir/news/1059498/%D8%B1%D8%A7%D8%B2-%D8%AF%D8%B3%D8%AA-%D8%A8%D8%B1%D8%AA%D8%B1-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%A7%D8%A8%D8%B1-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%B7%D8%B9%D9%86%D9%87-%D8%A8%D9%87-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D9%85%D9%86%D8%AA%D8%B8%D8%B1-%D8%AA%D8%B3%D9%84%DB%8C%D9%85": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-15",
+      "query": "troops told to hold fire and seek clearance from senior officers before engaging",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/yokra14859550": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-16",
+      "query": "the defence department is short of cash despite an enormous budget",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://kayhan.ir/fa/news/333870/ان‌بی‌سی-از-بحران-مالی-در-پنتاگون-پس-از-جنگ-با-ایران-خبر-داد": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115316-%D8%A8%D9%86-%D8%A8%D8%B3%D8%AA-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%B1%D8%B3%DB%8C-%D8%A8%D9%88%D8%AF%D8%AC%D9%87-%D9%BE%D9%86%D8%AA%D8%A7%DA%AF%D9%88%D9%86": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-17",
+      "query": "public support for the campaign against Tehran collapsed faster than for Vietnam",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1054859/%D8%AF%D9%84%DB%8C%D9%84-%D9%86%D8%A7%D9%85%D8%AD%D8%A8%D9%88%D8%A8-%D8%A8%D9%88%D8%AF%D9%86-%D8%AC%D9%86%DA%AF-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%DA%A9%D9%88%D8%AA%D8%A7%D9%87-%D8%AA%D8%B1%DB%8C%D9%86-%D8%B2%D9%85%D8%A7%D9%86": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-18",
+      "query": "the president swapped aircraft on security advice while leaving Turkey",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://kayhan.ir/fa/news/333927/تغییر-هواپیمای-ترامپ-در-بازگشت-از-ترکیه-از-ترس-انتقام-ایران": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-19",
+      "query": "a city government wants residents of a gentrifying district to pay far higher municipal rates",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.haaretz.co.il/news/local/2026-07-22/ty-article/.premium/0000019f-8966-de9f-afdf-a966410d0000": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-20",
+      "query": "air defences brought down an unmanned American aircraft",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115355-%D8%B3%D9%BE%D8%A7%D9%87-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%DA%A9%D8%B1%D8%AF-%D8%A7%D9%86%D9%87%D8%AF%D8%A7%D9%85-%DB%8C%DA%A9-%D9%81%D8%B1%D9%88%D9%86%D8%AF-%D9%BE%D9%87%D9%BE%D8%A7%D8%AF-mq-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%AF%D8%B1-%D8%A2%D8%B3%D9%85%D8%A7%D9%86-%D8%A7%D9%86%D8%AF%DB%8C%D9%85%D8%B4%DA%A9": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-21",
+      "query": "seminary students and the fight over who must serve in uniform",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/defense/article/20992355": 3,
+        "https://www.ynet.co.il/news/120andone/article/bk2gcbmvgg": 2,
+        "https://www.israelhayom.co.il/news/local/article/21040912": 2,
+        "https://www.israelhayom.co.il/news/politics/article/21073333": 1,
+        "https://www.israelhayom.co.il/business/article/20942115": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-22",
+      "query": "separate classrooms for men and women in postgraduate programmes",
+      "category": "semantic_paraphrase",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/syww6pr4ge": 3,
+        "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-23",
+      "query": "Fifth Fleet headquarters in Bahrain",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1050807/%D9%84%D8%AD%D8%B8%D8%A7%D8%AA-%D8%A7%D8%B5%D8%A7%D8%A8%D8%AA-%D9%85%D9%88%D8%B4%DA%A9-%D9%87%D8%A7%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D8%A8%D9%87-%D9%BE%D8%A7%DB%8C%DA%AF%D8%A7%D9%87-%D9%87%D8%A7%DB%8C-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%DA%A9%D9%88%DB%8C%D8%AA-%D9%88-%D8%A8%D8%AD%D8%B1%DB%8C%D9%86": 3,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-24",
+      "query": "Lindsey Graham Russia sanctions bill",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1114361-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AA%D8%AD%D8%B1%DB%8C%D9%85-%D8%B1%D9%88%D8%B3%DB%8C%D9%87-%D8%B1%D8%A7-%D8%AA%D8%B4%D8%AF%DB%8C%D8%AF-%D9%85%DB%8C-%DA%A9%D9%86%D8%AF": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-25",
+      "query": "Nicolas Maduro trial date Brooklyn",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1116852-%D8%AA%D8%A7%D8%B1%DB%8C%D8%AE-%D9%85%D8%AD%D8%A7%DA%A9%D9%85%D9%87-%D9%85%D8%A7%D8%AF%D9%88%D8%B1%D9%88-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%D8%B4%D8%AF": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-26",
+      "query": "Avichai Mandelblit",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/education/article/21073344": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-27",
+      "query": "Majdal Shams Druze task force",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/local/article/21073319": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-28",
+      "query": "Bampoor military dormitory strike",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-29",
+      "query": "Andimeshk MQ9",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115355-%D8%B3%D9%BE%D8%A7%D9%87-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%DA%A9%D8%B1%D8%AF-%D8%A7%D9%86%D9%87%D8%AF%D8%A7%D9%85-%DB%8C%DA%A9-%D9%81%D8%B1%D9%88%D9%86%D8%AF-%D9%BE%D9%87%D9%BE%D8%A7%D8%AF-mq-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%AF%D8%B1-%D8%A2%D8%B3%D9%85%D8%A7%D9%86-%D8%A7%D9%86%D8%AF%DB%8C%D9%85%D8%B4%DA%A9": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-30",
+      "query": "Ceuta Morocco Spain migrants",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.ynet.co.il/news/theheadline/article/7e94dw5ts": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-31",
+      "query": "Solomon's Pools Oslo Accords Area C",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.israelhayom.co.il/opinions/article/20990470": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-32",
+      "query": "Yaakov Bardugo Channel 12 investigation",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.premium/0000019f-4274-df3a-afbf-6e7defbf0000": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-33",
+      "query": "Mahan Air landing at Sanaa airport",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-34",
+      "query": "Pakistan Saudi Arabia Turkey defence agreement signed in Mecca",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163273": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-35",
+      "query": "Greater Tunb island coastal defences",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115359-%D8%AE%D8%A8%D8%B1-%D8%B3%D9%86%D8%AA%DA%A9%D8%A7%D9%85-%D8%A7%D8%B2-%D9%BE%D8%A7%DB%8C%D8%A7%D9%86-%D9%85%D9%88%D8%AC-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%B9%D9%84%DB%8C%D9%87-%D8%A8%D9%87-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D9%85%D9%88%D8%A7%D8%B6%D8%B9-%D8%AF%D9%81%D8%A7%D8%B9-%D8%B3%D8%A7%D8%AD%D9%84%DB%8C-%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D9%87%D8%A7%DB%8C-%D9%85%D9%88%D8%B4%DA%A9-%DA%A9%D8%B1%D9%88%D8%B2-%D8%AF%D8%B1-%D8%AC%D8%B2%DB%8C%D8%B1%D9%87-%D8%AA%D9%86%D8%A8-%D8%A8%D8%B2%D8%B1%DA%AF-%D8%B1%D8%A7-%D9%87%D8%AF%D9%81-%D9%82%D8%B1%D8%A7%D8%B1-%D8%AF%D8%A7%D8%AF%DB%8C%D9%85": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-36",
+      "query": "Qalqilya arrest of Gazans with pre-October work permits",
+      "category": "lexical_entity",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/defense/article/21040975": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-37",
+      "query": "how many American service members have been wounded in the war with Iran",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-38",
+      "query": "price of the Imami gold coin in toman",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1115362-%D9%82%DB%8C%D9%85%D8%AA-%D8%B3%DA%A9%D9%87-%D8%B7%D9%84%D8%A7-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D9%BE%D9%86%D8%AC%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%B3%DA%A9%D9%87-%D8%A7%D9%85%D8%A7%D9%85%DB%8C-%DA%86%D9%86%D8%AF-%D8%AC%D8%AF%D9%88%D9%84": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1116851-%D8%A2%D8%AE%D8%B1%DB%8C%D9%86-%D9%82%DB%8C%D9%85%D8%AA-%D8%AF%D9%84%D8%A7%D8%B1-%D8%B7%D9%84%D8%A7-%D8%B3%DA%A9%D9%87-%D8%B4%D8%A8%D8%A7%D9%86%DA%AF%D8%A7%D9%87-%DA%86%D9%87%D8%A7%D8%B1%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%AF%D9%84%D8%A7%D8%B1-%D8%AF%D9%88%D8%A8%D8%A7%D8%B1%D9%87-%D8%A8%D9%87-%D9%85%D8%B3%DB%8C%D8%B1-%D8%B5%D8%B9%D9%88%D8%AF-%D9%82%DB%8C%D9%85%D8%AA-%D8%A7%D9%81%D8%AA%D8%A7%D8%AF": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-39",
+      "query": "dollar exchange rate against the toman",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1116851-%D8%A2%D8%AE%D8%B1%DB%8C%D9%86-%D9%82%DB%8C%D9%85%D8%AA-%D8%AF%D9%84%D8%A7%D8%B1-%D8%B7%D9%84%D8%A7-%D8%B3%DA%A9%D9%87-%D8%B4%D8%A8%D8%A7%D9%86%DA%AF%D8%A7%D9%87-%DA%86%D9%87%D8%A7%D8%B1%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%AF%D9%84%D8%A7%D8%B1-%D8%AF%D9%88%D8%A8%D8%A7%D8%B1%D9%87-%D8%A8%D9%87-%D9%85%D8%B3%DB%8C%D8%B1-%D8%B5%D8%B9%D9%88%D8%AF-%D9%82%DB%8C%D9%85%D8%AA-%D8%A7%D9%81%D8%AA%D8%A7%D8%AF": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1115362-%D9%82%DB%8C%D9%85%D8%AA-%D8%B3%DA%A9%D9%87-%D8%B7%D9%84%D8%A7-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D9%BE%D9%86%D8%AC%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%B3%DA%A9%D9%87-%D8%A7%D9%85%D8%A7%D9%85%DB%8C-%DA%86%D9%86%D8%AF-%D8%AC%D8%AF%D9%88%D9%84": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-40",
+      "query": "how many seats did the poll give Eisenkot's party",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.haaretz.co.il/news/elections/2026-07-27/ty-article/.premium/0000019f-a4cc-d641-a1df-e7ce05000000": 3,
+        "https://www.haaretz.co.il/news/elections/2026-08-09/ty-article/.premium/0000019f-e79e-d86b-a59f-e7be1e940000": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-41",
+      "query": "how many reserved slots did Netanyahu get",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.haaretz.co.il/news/elections/2026-07-27/ty-article/0000019f-a1bc-df92-a7ff-a7bee7470000": 3,
+        "https://www.ynet.co.il/news/article/bjzm4mshgx": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-42",
+      "query": "British contract for 105 and 155 mm gun barrels for Ukraine",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1052879/%DB%B1%DB%B5%DB%B0-%D9%82%D8%A8%D8%B6%D9%87-%D9%84%D9%88%D9%84%D9%87-%D8%AA%D9%88%D9%BE-%DB%B1%DB%B0%DB%B5-%D9%88-%DB%B1%DB%B5%DB%B5-%D9%85%DB%8C%D9%84%DB%8C%D9%85%D8%AA%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%B1%D8%A7%D9%87-%D8%AE%D8%A8%D8%B1-%D9%85%D9%87%D9%85-%D8%A7%D9%86%DA%AF%D9%84%DB%8C%D8%B3": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-43",
+      "query": "share of ninth graders reaching a satisfactory level on the Meitzav exams",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.haaretz.co.il/opinions/2026-07-09/ty-article-opinion/.premium/0000019f-412d-d2da-adbf-4f2f67370000": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-44",
+      "query": "which minister was dismissed before the Ukrainian protests",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334632/اعتراض-اوکراینی-ها-به-تغییرات-پی-درپی-در-دولت": 3
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-45",
+      "query": "Iran ties reopening the Strait of Hormuz to a change in American behaviour",
+      "category": "hormuz_discriminative",
+      "relevance": {
+        "https://www.sharghdaily.com/fa/tiny/news-1120345": 3,
+        "https://www.hamshahrionline.ir/news/1050808/%D8%B4%D9%81%D8%A7%D9%81-%D8%A8%DA%AF%D9%88%DB%8C%D9%85-%D8%A8%D8%B2%D9%86%DB%8C%D8%AF-%D9%85%DB%8C-%D8%AE%D9%88%D8%B1%DB%8C%D8%AF-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2-%D9%81%D9%82%D8%B7-%D8%A8%D8%A7-%D8%AA%D8%B1%D8%AA%DB%8C%D8%A8%D8%A7%D8%AA-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C": 3,
+        "https://kayhan.ir/fa/news/334957/هیچ-وقت-با-آمریکا-به-تفاهم-نمی-رسیم-تنگه-هرمز-قله-اقتدار-ایران-است": 2,
+        "https://www.hamshahrionline.ir/news/1059498/%D8%B1%D8%A7%D8%B2-%D8%AF%D8%B3%D8%AA-%D8%A8%D8%B1%D8%AA%D8%B1-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%A7%D8%A8%D8%B1-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%B7%D8%B9%D9%86%D9%87-%D8%A8%D9%87-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D9%85%D9%86%D8%AA%D8%B8%D8%B1-%D8%AA%D8%B3%D9%84%DB%8C%D9%85": 2,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114356-%D8%AA%D9%88%D8%B6%DB%8C%D8%AD-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%B3%D9%81%D8%B1-%D8%A8%D9%87-%D8%B9%D9%85%D8%A7%D9%86": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-46",
+      "query": "technical negotiations with Oman to redraw shipping lanes",
+      "category": "hormuz_discriminative",
+      "relevance": {
+        "https://www.sharghdaily.com/fa/tiny/news-1120345": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114356-%D8%AA%D9%88%D8%B6%DB%8C%D8%AD-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%B3%D9%81%D8%B1-%D8%A8%D9%87-%D8%B9%D9%85%D8%A7%D9%86": 3,
+        "https://www.hamshahrionline.ir/news/1050808/%D8%B4%D9%81%D8%A7%D9%81-%D8%A8%DA%AF%D9%88%DB%8C%D9%85-%D8%A8%D8%B2%D9%86%DB%8C%D8%AF-%D9%85%DB%8C-%D8%AE%D9%88%D8%B1%DB%8C%D8%AF-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2-%D9%81%D9%82%D8%B7-%D8%A8%D8%A7-%D8%AA%D8%B1%D8%AA%DB%8C%D8%A8%D8%A7%D8%AA-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-47",
+      "query": "navy warns vessels that routes bypassing the strait are dangerous",
+      "category": "hormuz_discriminative",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1116856-%D8%A7%D8%AE%D8%B7%D8%A7%D8%B1-%D8%AC%D8%AF%DB%8C%D8%AF-%D9%86%DB%8C%D8%B1%D9%88%DB%8C-%D8%AF%D8%B1%DB%8C%D8%A7%DB%8C%DB%8C-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2": 3,
+        "https://kayhan.ir/fa/news/334957/هیچ-وقت-با-آمریکا-به-تفاهم-نمی-رسیم-تنگه-هرمز-قله-اقتدار-ایران-است": 1,
+        "https://www.sharghdaily.com/fa/tiny/news-1120345": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-48",
+      "query": "Trump is focused on the strait rather than the nuclear programme",
+      "category": "hormuz_discriminative",
+      "relevance": {
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-16/ty-article/.premium/0000019f-66a5-dc96-afdf-6eb55ec80000": 3,
+        "https://www.ynet.co.il/news/article/rynzbnr7me": 2
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-49",
+      "query": "an Iranian outlet denying that an explosion took place",
+      "category": "iran_strikes_discriminative",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114070-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AE%D8%A7%D8%B1%DA%AF-%D8%B5%D8%AD%D8%AA-%D9%86%D8%AF%D8%A7%D8%B1%D8%AF": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 1,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-50",
+      "query": "loud blasts heard in the city of Jask",
+      "category": "iran_strikes_discriminative",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 1,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114070-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AE%D8%A7%D8%B1%DA%AF-%D8%B5%D8%AD%D8%AA-%D9%86%D8%AF%D8%A7%D8%B1%D8%AF": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-51",
+      "query": "projectiles hitting Abu Musa and Sirik in Hormozgan",
+      "category": "iran_strikes_discriminative",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-52",
+      "query": "Shin Bet chief cut the legal adviser out of decisions",
+      "category": "detail_lookup",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.premium/0000019f-4274-df3a-afbf-6e7defbf0000": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 1
+      },
+      "judged_by": "human"
+    },
+    {
+      "id": "search-v3-001",
+      "query": "Omer Lubton WhatsApp",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.ynet.co.il/news/article/yokra14826942",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/yokra14826942": 3
+      }
+    },
+    {
+      "id": "search-v3-002",
+      "query": "Yair Golan primaries",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.ynet.co.il/news/article/yokra14826942",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/yokra14826942": 3,
+        "https://www.ynet.co.il/news/article/yokra14827470": 0,
+        "https://www.haaretz.co.il/news/elections/2026-07-27/ty-article/.premium/0000019f-a4cc-d641-a1df-e7ce05000000": 0,
+        "https://www.ynet.co.il/news/article/bjzm4mshgx": 0,
+        "https://www.haaretz.co.il/news/elections/2026-07-27/ty-article/0000019f-a1bc-df92-a7ff-a7bee7470000": 0,
+        "https://www.haaretz.co.il/news/elections/2026-08-09/ty-article/.premium/0000019f-e79e-d86b-a59f-e7be1e940000": 0,
+        "https://www.haaretz.co.il/opinions/2026-07-09/ty-article-opinion/.premium/0000019f-412d-d2da-adbf-4f2f67370000": 1,
+        "https://www.ynet.co.il/news/120andone/article/bk2gcbmvgg": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 0
+      }
+    },
+    {
+      "id": "search-v3-003",
+      "query": "BAE Systems tubes",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1052879/%DB%B1%DB%B5%DB%B0-%D9%82%D8%A8%D8%B6%D9%87-%D9%84%D9%88%D9%84%D9%87-%D8%AA%D9%88%D9%BE-%DB%B1%DB%B0%DB%B5-%D9%88-%DB%B1%DB%B5%DB%B5-%D9%85%DB%8C%D9%84%DB%8C%D9%85%D8%AA%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%B1%D8%A7%D9%87-%D8%AE%D8%A8%D8%B1-%D9%85%D9%87%D9%85-%D8%A7%D9%86%DA%AF%D9%84%DB%8C%D8%B3",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1052879/%DB%B1%DB%B5%DB%B0-%D9%82%D8%A8%D8%B6%D9%87-%D9%84%D9%88%D9%84%D9%87-%D8%AA%D9%88%D9%BE-%DB%B1%DB%B0%DB%B5-%D9%88-%DB%B1%DB%B5%DB%B5-%D9%85%DB%8C%D9%84%DB%8C%D9%85%D8%AA%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%B1%D8%A7%D9%87-%D8%AE%D8%A8%D8%B1-%D9%85%D9%87%D9%85-%D8%A7%D9%86%DA%AF%D9%84%DB%8C%D8%B3": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115355-%D8%B3%D9%BE%D8%A7%D9%87-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%DA%A9%D8%B1%D8%AF-%D8%A7%D9%86%D9%87%D8%AF%D8%A7%D9%85-%DB%8C%DA%A9-%D9%81%D8%B1%D9%88%D9%86%D8%AF-%D9%BE%D9%87%D9%BE%D8%A7%D8%AF-mq-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%AF%D8%B1-%D8%A2%D8%B3%D9%85%D8%A7%D9%86-%D8%A7%D9%86%D8%AF%DB%8C%D9%85%D8%B4%DA%A9": 0,
+        "https://www.hamshahrionline.ir/news/1050807/%D9%84%D8%AD%D8%B8%D8%A7%D8%AA-%D8%A7%D8%B5%D8%A7%D8%A8%D8%AA-%D9%85%D9%88%D8%B4%DA%A9-%D9%87%D8%A7%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D8%A8%D9%87-%D9%BE%D8%A7%DB%8C%DA%AF%D8%A7%D9%87-%D9%87%D8%A7%DB%8C-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%DA%A9%D9%88%DB%8C%D8%AA-%D9%88-%D8%A8%D8%AD%D8%B1%DB%8C%D9%86": 0,
+        "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت": 0,
+        "https://www.israelhayom.co.il/opinions/article/20990470": 0,
+        "https://kayhan.ir/fa/news/333927/تغییر-هواپیمای-ترامپ-در-بازگشت-از-ترکیه-از-ترس-انتقام-ایران": 0,
+        "https://www.ynet.co.il/news/article/rynzbnr7me": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21041042": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115359-%D8%AE%D8%A8%D8%B1-%D8%B3%D9%86%D8%AA%DA%A9%D8%A7%D9%85-%D8%A7%D8%B2-%D9%BE%D8%A7%DB%8C%D8%A7%D9%86-%D9%85%D9%88%D8%AC-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%B9%D9%84%DB%8C%D9%87-%D8%A8%D9%87-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D9%85%D9%88%D8%A7%D8%B6%D8%B9-%D8%AF%D9%81%D8%A7%D8%B9-%D8%B3%D8%A7%D8%AD%D9%84%DB%8C-%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D9%87%D8%A7%DB%8C-%D9%85%D9%88%D8%B4%DA%A9-%DA%A9%D8%B1%D9%88%D8%B2-%D8%AF%D8%B1-%D8%AC%D8%B2%DB%8C%D8%B1%D9%87-%D8%AA%D9%86%D8%A8-%D8%A8%D8%B2%D8%B1%DA%AF-%D8%B1%D8%A7-%D9%87%D8%AF%D9%81-%D9%82%D8%B1%D8%A7%D8%B1-%D8%AF%D8%A7%D8%AF%DB%8C%D9%85": 0
+      }
+    },
+    {
+      "id": "search-v3-004",
+      "query": "Ukraine cannon barrels",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1052879/%DB%B1%DB%B5%DB%B0-%D9%82%D8%A8%D8%B6%D9%87-%D9%84%D9%88%D9%84%D9%87-%D8%AA%D9%88%D9%BE-%DB%B1%DB%B0%DB%B5-%D9%88-%DB%B1%DB%B5%DB%B5-%D9%85%DB%8C%D9%84%DB%8C%D9%85%D8%AA%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%B1%D8%A7%D9%87-%D8%AE%D8%A8%D8%B1-%D9%85%D9%87%D9%85-%D8%A7%D9%86%DA%AF%D9%84%DB%8C%D8%B3",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1052879/%DB%B1%DB%B5%DB%B0-%D9%82%D8%A8%D8%B6%D9%87-%D9%84%D9%88%D9%84%D9%87-%D8%AA%D9%88%D9%BE-%DB%B1%DB%B0%DB%B5-%D9%88-%DB%B1%DB%B5%DB%B5-%D9%85%DB%8C%D9%84%DB%8C%D9%85%D8%AA%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%B1%D8%A7%D9%87-%D8%AE%D8%A8%D8%B1-%D9%85%D9%87%D9%85-%D8%A7%D9%86%DA%AF%D9%84%DB%8C%D8%B3": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1114361-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AA%D8%AD%D8%B1%DB%8C%D9%85-%D8%B1%D9%88%D8%B3%DB%8C%D9%87-%D8%B1%D8%A7-%D8%AA%D8%B4%D8%AF%DB%8C%D8%AF-%D9%85%DB%8C-%DA%A9%D9%86%D8%AF": 0,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article/.premium/trump-says-iran-cease-fire-is-over-but-isnt-galloping-toward-all-out-war/0000019f-433b-d913-abff-df7b368a0000": 0
+      }
+    },
+    {
+      "id": "search-v3-005",
+      "query": "Guardian Council funeral",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/333929/بدرقه-تاریخی-رهبر-شهید-اراده-ملت-ایران-را-به-رخ-جهان-کشید",
+      "relevance": {
+        "https://kayhan.ir/fa/news/333929/بدرقه-تاریخی-رهبر-شهید-اراده-ملت-ایران-را-به-رخ-جهان-کشید": 3,
+        "https://www.hamshahrionline.ir/news/1056210/%DA%86%D9%87-%D8%B4%D8%AF-%DA%A9%D9%87-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-%DA%AF%D8%B0%D8%A7%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%AD%D8%AC%D8%A7%D8%A8-%D9%86%D8%A7%D8%AA%D9%85%D8%A7%D9%85-%D9%85%D8%A7%D9%86%D8%AF": 0,
+        "https://kayhan.ir/fa/news/333928/راه-امام-شهید-انقلاب-را-با-قدرت-ادامه-می‌دهیم": 1,
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0,
+        "https://www.sharghdaily.com/fa/tiny/news-1120373": 0,
+        "https://www.israelhayom.co.il/news/education/article/21073344": 0,
+        "https://www.ynet.co.il/news/article/hjkw63rmzg": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://www.sharghdaily.com/fa/tiny/news-1120330": 0
+      }
+    },
+    {
+      "id": "search-v3-006",
+      "query": "Iran Iraq procession",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/333929/بدرقه-تاریخی-رهبر-شهید-اراده-ملت-ایران-را-به-رخ-جهان-کشید",
+      "relevance": {
+        "https://kayhan.ir/fa/news/333929/بدرقه-تاریخی-رهبر-شهید-اراده-ملت-ایران-را-به-رخ-جهان-کشید": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114356-%D8%AA%D9%88%D8%B6%DB%8C%D8%AD-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%B3%D9%81%D8%B1-%D8%A8%D9%87-%D8%B9%D9%85%D8%A7%D9%86": 0,
+        "https://www.hamshahrionline.ir/news/1050804/%D9%81%D9%88%D8%B1%DB%8C-%D8%A8%DB%8C%D8%A7%D9%86%DB%8C%D9%87-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%A7%D8%B3%D8%AE-%D8%A8%D9%87-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D8%A7%DB%8C%D9%86-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D8%AE%D8%AA-%D9%87%D8%A7": 0,
+        "https://www.hamshahrionline.ir/news/1051082/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%AA%D9%87%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%A7%D8%AF%D8%B9%D8%A7%DB%8C-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0,
+        "https://www.hamshahrionline.ir/news/1059508/%D9%87%D8%B4%D8%AF%D8%A7%D8%B1-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%B1%D9%88%DA%98%D9%87-%D8%AE%D8%A8%DB%8C%D8%AB%D8%A7%D9%86%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%D8%B9%D8%B1%D8%A7%D9%82-%D8%A7%D9%81%D8%B4%D8%A7%DB%8C-%D8%AF%D8%B3%D8%AA-%D9%87%D8%A7%DB%8C-%D9%BE%D8%B4%D8%AA": 1,
+        "https://www.ynet.co.il/news/article/yokra14827470": 0,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 0,
+        "https://kayhan.ir/fa/news/334956/سفر-نتانیاهو-به-واشنگتن-تلاشی-برای-حفظ-حمایت-ترامپ-در-جنگ-با-ایران": 0,
+        "https://www.hamshahrionline.ir/news/1059498/%D8%B1%D8%A7%D8%B2-%D8%AF%D8%B3%D8%AA-%D8%A8%D8%B1%D8%AA%D8%B1-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%A7%D8%A8%D8%B1-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%B7%D8%B9%D9%86%D9%87-%D8%A8%D9%87-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D9%85%D9%86%D8%AA%D8%B8%D8%B1-%D8%AA%D8%B3%D9%84%DB%8C%D9%85": 0,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 0,
+        "https://www.hamshahrionline.ir/news/1056219/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D9%87%D8%A7-%D8%B1%D8%A7-%D9%86%D9%85%DB%8C-%D8%AA%D9%88%D8%A7%D9%86-%D8%A8%D8%A7-%D8%B1%D8%B4%D9%88%D9%87-%D8%AA%D8%B7%D9%85%DB%8C%D8%B9-%DA%A9%D8%B1%D8%AF-%D8%A8%D8%A7-%D9%86%D8%AA%D8%A7%D9%86%DB%8C%D8%A7%D9%87%D9%88": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://kayhan.ir/fa/news/333878/با-ترامپ-جنایتکار-و-قاتل-باید-با-زبان-خودش-صحبت-کرد-ظاهراً-زبان-زور-را-بهتر-می‌فهمد": 0
+      }
+    },
+    {
+      "id": "search-v3-007",
+      "query": "Jask explosion",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114070-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AE%D8%A7%D8%B1%DA%AF-%D8%B5%D8%AD%D8%AA-%D9%86%D8%AF%D8%A7%D8%B1%D8%AF": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 0
+      }
+    },
+    {
+      "id": "search-v3-008",
+      "query": "Jask County blasts",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 0
+      }
+    },
+    {
+      "id": "search-v3-009",
+      "query": "Maduro Brooklyn trial",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1116852-%D8%AA%D8%A7%D8%B1%DB%8C%D8%AE-%D9%85%D8%AD%D8%A7%DA%A9%D9%85%D9%87-%D9%85%D8%A7%D8%AF%D9%88%D8%B1%D9%88-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%D8%B4%D8%AF",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1116852-%D8%AA%D8%A7%D8%B1%DB%8C%D8%AE-%D9%85%D8%AD%D8%A7%DA%A9%D9%85%D9%87-%D9%85%D8%A7%D8%AF%D9%88%D8%B1%D9%88-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%D8%B4%D8%AF": 3
+      }
+    },
+    {
+      "id": "search-v3-010",
+      "query": "Cilia Flores detention",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1116852-%D8%AA%D8%A7%D8%B1%DB%8C%D8%AE-%D9%85%D8%AD%D8%A7%DA%A9%D9%85%D9%87-%D9%85%D8%A7%D8%AF%D9%88%D8%B1%D9%88-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%D8%B4%D8%AF",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1116852-%D8%AA%D8%A7%D8%B1%DB%8C%D8%AE-%D9%85%D8%AD%D8%A7%DA%A9%D9%85%D9%87-%D9%85%D8%A7%D8%AF%D9%88%D8%B1%D9%88-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%D8%B4%D8%AF": 3,
+        "https://www.ynet.co.il/news/article/hjkw63rmzg": 0,
+        "https://www.ynet.co.il/news/article/skej2zsrme": 0,
+        "https://www.israelhayom.co.il/news/defense/article/20992355": 0
+      }
+    },
+    {
+      "id": "search-v3-011",
+      "query": "Anutin gun control",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/world/asia/2026-08-09/ty-article-magazine/.premium/0000019f-e782-daec-a7bf-e78bddbc0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/world/asia/2026-08-09/ty-article-magazine/.premium/0000019f-e782-daec-a7bf-e78bddbc0000": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1116856-%D8%A7%D8%AE%D8%B7%D8%A7%D8%B1-%D8%AC%D8%AF%DB%8C%D8%AF-%D9%86%DB%8C%D8%B1%D9%88%DB%8C-%D8%AF%D8%B1%DB%8C%D8%A7%DB%8C%DB%8C-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2": 0,
+        "https://kayhan.ir/fa/news/334957/هیچ-وقت-با-آمریکا-به-تفاهم-نمی-رسیم-تنگه-هرمز-قله-اقتدار-ایران-است": 0,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-16/ty-article/.premium/0000019f-66a5-dc96-afdf-6eb55ec80000": 0,
+        "https://kayhan.ir/fa/news/334241/روایت-سی‌ان‌ان-از-خطاهای-ترامپ-در-مقابل-ایران": 0,
+        "https://www.israelhayom.co.il/opinions/article/20990470": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0,
+        "https://www.ynet.co.il/news/article/syjlbavszg": 0,
+        "https://www.ynet.co.il/news/article/yokra14827470": 0
+      }
+    },
+    {
+      "id": "search-v3-012",
+      "query": "Thailand mass shooting",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/world/asia/2026-08-09/ty-article-magazine/.premium/0000019f-e782-daec-a7bf-e78bddbc0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/world/asia/2026-08-09/ty-article-magazine/.premium/0000019f-e782-daec-a7bf-e78bddbc0000": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0
+      }
+    },
+    {
+      "id": "search-v3-013",
+      "query": "doctor fired antisemitism",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/world-news/europe/article/20954182",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/world-news/europe/article/20954182": 3,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 0,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article/.premium/trump-says-iran-cease-fire-is-over-but-isnt-galloping-toward-all-out-war/0000019f-433b-d913-abff-df7b368a0000": 0,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article-live/u-s-strikes-targets-in-iran-for-second-night-in-a-row/0000019f-449e-d269-af9f-46df98160000": 0
+      }
+    },
+    {
+      "id": "search-v3-014",
+      "query": "cursed Jew doctor",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/world-news/europe/article/20954182",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/world-news/europe/article/20954182": 3,
+        "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000": 0
+      }
+    },
+    {
+      "id": "search-v3-015",
+      "query": "Ceuta Morocco migration",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.ynet.co.il/news/theheadline/article/7e94dw5ts",
+      "relevance": {
+        "https://www.ynet.co.il/news/theheadline/article/7e94dw5ts": 3
+      }
+    },
+    {
+      "id": "search-v3-016",
+      "query": "Spain Ceuta incursion",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.ynet.co.il/news/theheadline/article/7e94dw5ts",
+      "relevance": {
+        "https://www.ynet.co.il/news/theheadline/article/7e94dw5ts": 3
+      }
+    },
+    {
+      "id": "search-v3-017",
+      "query": "Lindsey Graham sanctions",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1114361-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AA%D8%AD%D8%B1%DB%8C%D9%85-%D8%B1%D9%88%D8%B3%DB%8C%D9%87-%D8%B1%D8%A7-%D8%AA%D8%B4%D8%AF%DB%8C%D8%AF-%D9%85%DB%8C-%DA%A9%D9%86%D8%AF",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1114361-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AA%D8%AD%D8%B1%DB%8C%D9%85-%D8%B1%D9%88%D8%B3%DB%8C%D9%87-%D8%B1%D8%A7-%D8%AA%D8%B4%D8%AF%DB%8C%D8%AF-%D9%85%DB%8C-%DA%A9%D9%86%D8%AF": 3,
+        "https://kayhan.ir/fa/news/333878/با-ترامپ-جنایتکار-و-قاتل-باید-با-زبان-خودش-صحبت-کرد-ظاهراً-زبان-زور-را-بهتر-می‌فهمد": 1,
+        "https://www.hamshahrionline.ir/news/1056219/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D9%87%D8%A7-%D8%B1%D8%A7-%D9%86%D9%85%DB%8C-%D8%AA%D9%88%D8%A7%D9%86-%D8%A8%D8%A7-%D8%B1%D8%B4%D9%88%D9%87-%D8%AA%D8%B7%D9%85%DB%8C%D8%B9-%DA%A9%D8%B1%D8%AF-%D8%A8%D8%A7-%D9%86%D8%AA%D8%A7%D9%86%DB%8C%D8%A7%D9%87%D9%88": 1,
+        "https://kayhan.ir/fa/news/333872/دوره-قلدری-و-باج‌گیری-آمریکا-تمام-شد": 0,
+        "https://www.ynet.co.il/news/article/rynzbnr7me": 1
+      }
+    },
+    {
+      "id": "search-v3-018",
+      "query": "Zelensky Ankara meeting",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1114361-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AA%D8%AD%D8%B1%DB%8C%D9%85-%D8%B1%D9%88%D8%B3%DB%8C%D9%87-%D8%B1%D8%A7-%D8%AA%D8%B4%D8%AF%DB%8C%D8%AF-%D9%85%DB%8C-%DA%A9%D9%86%D8%AF",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1114361-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AA%D8%AD%D8%B1%DB%8C%D9%85-%D8%B1%D9%88%D8%B3%DB%8C%D9%87-%D8%B1%D8%A7-%D8%AA%D8%B4%D8%AF%DB%8C%D8%AF-%D9%85%DB%8C-%DA%A9%D9%86%D8%AF": 1,
+        "https://kayhan.ir/fa/news/334632/اعتراض-اوکراینی-ها-به-تغییرات-پی-درپی-در-دولت": 1,
+        "https://www.ynet.co.il/news/article/yokra14827470": 0,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article/.premium/trump-says-iran-cease-fire-is-over-but-isnt-galloping-toward-all-out-war/0000019f-433b-d913-abff-df7b368a0000": 1,
+        "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 0
+      }
+    },
+    {
+      "id": "search-v3-019",
+      "query": "Susya rifle snatch",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.ynet.co.il/news/article/skej2zsrme",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/skej2zsrme": 3
+      }
+    },
+    {
+      "id": "search-v3-020",
+      "query": "Hebron soldier gun",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.ynet.co.il/news/article/skej2zsrme",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/skej2zsrme": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-16/ty-article-magazine/.premium/0000019f-6682-df91-a7df-ef923adf0000": 0,
+        "https://www.haaretz.co.il/news/world/asia/2026-08-09/ty-article-magazine/.premium/0000019f-e782-daec-a7bf-e78bddbc0000": 0,
+        "https://www.ynet.co.il/news/article/bkcn8fr4fl": 0,
+        "https://www.israelhayom.co.il/news/local/article/21040912": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5f-df3a-afbf-6c5fd5e80000": 0,
+        "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0
+      }
+    },
+    {
+      "id": "search-v3-021",
+      "query": "Tehran shelters proposal",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/fa/tiny/news-1120330",
+      "relevance": {
+        "https://www.sharghdaily.com/fa/tiny/news-1120330": 3,
+        "https://www.haaretz.co.il/opinions/zafrir/2026-07-22/ty-article-opinion/.premium/0000019f-89be-dc4a-a1ff-cbbfead70000": 0,
+        "https://www.ynet.co.il/news/article/r1r0mrs4me": 0,
+        "https://www.ynet.co.il/news/article/bjzm4mshgx": 0,
+        "https://www.hamshahrionline.ir/news/1051082/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%AA%D9%87%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%A7%D8%AF%D8%B9%D8%A7%DB%8C-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7": 0,
+        "https://www.hamshahrionline.ir/news/1056219/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D9%87%D8%A7-%D8%B1%D8%A7-%D9%86%D9%85%DB%8C-%D8%AA%D9%88%D8%A7%D9%86-%D8%A8%D8%A7-%D8%B1%D8%B4%D9%88%D9%87-%D8%AA%D8%B7%D9%85%DB%8C%D8%B9-%DA%A9%D8%B1%D8%AF-%D8%A8%D8%A7-%D9%86%D8%AA%D8%A7%D9%86%DB%8C%D8%A7%D9%87%D9%88": 0,
+        "https://www.sharghdaily.com/fa/tiny/news-1120345": 0,
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 0,
+        "https://www.hamshahrionline.ir/news/1052878/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%DB%8C%DA%A9-%D8%B2%D9%86-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%B1%D8%A7-%D8%A2%D8%B2%D8%A7%D8%AF-%DA%A9%D8%B1%D8%AF%D9%87-%D8%A7%D8%B3%D8%AA-%D8%A7%D8%B2-%D8%AD%D8%B3%D9%86-%D9%86%DB%8C%D8%AA-%D8%AA%D9%87%D8%B1%D8%A7%D9%86": 0,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article-live/u-s-strikes-targets-in-iran-for-second-night-in-a-row/0000019f-449e-d269-af9f-46df98160000": 0
+      }
+    },
+    {
+      "id": "search-v3-022",
+      "query": "metro stations shelters",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/fa/tiny/news-1120330",
+      "relevance": {
+        "https://www.sharghdaily.com/fa/tiny/news-1120330": 3
+      }
+    },
+    {
+      "id": "search-v3-023",
+      "query": "Saudi oil attacks",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1056220/%D9%87%D8%B1%DA%AF%D9%88%D9%86%D9%87-%D8%A7%D9%82%D8%AF%D8%A7%D9%85-%D8%B3%D8%B9%D9%88%D8%AF%DB%8C-%D9%87%D8%A7-%D8%A8%D8%A7-%D9%BE%D8%A7%D8%B3%D8%AE%DB%8C-%D9%BE%D8%B4%DB%8C%D9%85%D8%A7%D9%86-%DA%A9%D9%86%D9%86%D8%AF%D9%87-%D8%B1%D9%88%D8%A8%D9%87-%D8%B1%D9%88-%D9%85%DB%8C-%D8%B4%D9%88%D8%AF",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1056220/%D9%87%D8%B1%DA%AF%D9%88%D9%86%D9%87-%D8%A7%D9%82%D8%AF%D8%A7%D9%85-%D8%B3%D8%B9%D9%88%D8%AF%DB%8C-%D9%87%D8%A7-%D8%A8%D8%A7-%D9%BE%D8%A7%D8%B3%D8%AE%DB%8C-%D9%BE%D8%B4%DB%8C%D9%85%D8%A7%D9%86-%DA%A9%D9%86%D9%86%D8%AF%D9%87-%D8%B1%D9%88%D8%A8%D9%87-%D8%B1%D9%88-%D9%85%DB%8C-%D8%B4%D9%88%D8%AF": 3,
+        "https://www.hamshahrionline.ir/news/1059508/%D9%87%D8%B4%D8%AF%D8%A7%D8%B1-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%B1%D9%88%DA%98%D9%87-%D8%AE%D8%A8%DB%8C%D8%AB%D8%A7%D9%86%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%D8%B9%D8%B1%D8%A7%D9%82-%D8%A7%D9%81%D8%B4%D8%A7%DB%8C-%D8%AF%D8%B3%D8%AA-%D9%87%D8%A7%DB%8C-%D9%BE%D8%B4%D8%AA": 2,
+        "https://kayhan.ir/fa/news/334631/مقام-سابق-پنتاگون-آمریکا-حالا-مجبور-است-قدرت-خود-را-بین-خلیج-فارس-و-دریای-سرخ-تقسیم-کند": 2,
+        "https://www.hamshahrionline.ir/news/1050807/%D9%84%D8%AD%D8%B8%D8%A7%D8%AA-%D8%A7%D8%B5%D8%A7%D8%A8%D8%AA-%D9%85%D9%88%D8%B4%DA%A9-%D9%87%D8%A7%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D8%A8%D9%87-%D9%BE%D8%A7%DB%8C%DA%AF%D8%A7%D9%87-%D9%87%D8%A7%DB%8C-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%DA%A9%D9%88%DB%8C%D8%AA-%D9%88-%D8%A8%D8%AD%D8%B1%DB%8C%D9%86": 0,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-22/ty-article/.premium/0000019f-8b2b-df92-a7ff-afaba9580000": 0,
+        "https://www.ynet.co.il/news/article/r1r0mrs4me": 0,
+        "https://www.hamshahrionline.ir/news/1050804/%D9%81%D9%88%D8%B1%DB%8C-%D8%A8%DB%8C%D8%A7%D9%86%DB%8C%D9%87-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%A7%D8%B3%D8%AE-%D8%A8%D9%87-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D8%A7%DB%8C%D9%86-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D8%AE%D8%AA-%D9%87%D8%A7": 0,
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21041042": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163273": 0,
+        "https://kayhan.ir/fa/news/333872/دوره-قلدری-و-باج‌گیری-آمریکا-تمام-شد": 0,
+        "https://www.hamshahrionline.ir/news/1054893/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%A8%D9%87-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AD%D9%85%D9%84%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D9%86%DB%8C%D8%B1%D9%88%DA%AF%D8%A7%D9%87-%D9%87%D8%A7-%D9%88": 0,
+        "https://www.israelhayom.co.il/magazine/shishabat/article/20989166": 0
+      }
+    },
+    {
+      "id": "search-v3-024",
+      "query": "Yemen blockade Saudi",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1056220/%D9%87%D8%B1%DA%AF%D9%88%D9%86%D9%87-%D8%A7%D9%82%D8%AF%D8%A7%D9%85-%D8%B3%D8%B9%D9%88%D8%AF%DB%8C-%D9%87%D8%A7-%D8%A8%D8%A7-%D9%BE%D8%A7%D8%B3%D8%AE%DB%8C-%D9%BE%D8%B4%DB%8C%D9%85%D8%A7%D9%86-%DA%A9%D9%86%D9%86%D8%AF%D9%87-%D8%B1%D9%88%D8%A8%D9%87-%D8%B1%D9%88-%D9%85%DB%8C-%D8%B4%D9%88%D8%AF",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1056220/%D9%87%D8%B1%DA%AF%D9%88%D9%86%D9%87-%D8%A7%D9%82%D8%AF%D8%A7%D9%85-%D8%B3%D8%B9%D9%88%D8%AF%DB%8C-%D9%87%D8%A7-%D8%A8%D8%A7-%D9%BE%D8%A7%D8%B3%D8%AE%DB%8C-%D9%BE%D8%B4%DB%8C%D9%85%D8%A7%D9%86-%DA%A9%D9%86%D9%86%D8%AF%D9%87-%D8%B1%D9%88%D8%A8%D9%87-%D8%B1%D9%88-%D9%85%DB%8C-%D8%B4%D9%88%D8%AF": 3,
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 3,
+        "https://kayhan.ir/fa/news/334631/مقام-سابق-پنتاگون-آمریکا-حالا-مجبور-است-قدرت-خود-را-بین-خلیج-فارس-و-دریای-سرخ-تقسیم-کند": 1,
+        "https://www.hamshahrionline.ir/news/1059508/%D9%87%D8%B4%D8%AF%D8%A7%D8%B1-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%B1%D9%88%DA%98%D9%87-%D8%AE%D8%A8%DB%8C%D8%AB%D8%A7%D9%86%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%D8%B9%D8%B1%D8%A7%D9%82-%D8%A7%D9%81%D8%B4%D8%A7%DB%8C-%D8%AF%D8%B3%D8%AA-%D9%87%D8%A7%DB%8C-%D9%BE%D8%B4%D8%AA": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163273": 0,
+        "https://www.ynet.co.il/news/article/rynzbnr7me": 0,
+        "https://kayhan.ir/fa/news/334242/جان-مرشایمر-ایرانی‌ها-هرگز-تسلیم-نخواهند-شد": 0
+      }
+    },
+    {
+      "id": "search-v3-025",
+      "query": "Avichai Mandelblit",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/education/article/21073344",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/education/article/21073344": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 1,
+        "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.premium/0000019f-4274-df3a-afbf-6e7defbf0000": 0,
+        "https://www.ynet.co.il/news/article/yokra14827470": 0,
+        "https://www.ynet.co.il/news/120andone/article/bk2gcbmvgg": 0,
+        "https://www.ynet.co.il/news/article/bjzm4mshgx": 0,
+        "https://www.haaretz.co.il/news/elections/2026-08-09/ty-article/.premium/0000019f-e79e-d86b-a59f-e7be1e940000": 0
+      }
+    },
+    {
+      "id": "search-v3-026",
+      "query": "Pentagon budget vote",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115316-%D8%A8%D9%86-%D8%A8%D8%B3%D8%AA-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%B1%D8%B3%DB%8C-%D8%A8%D9%88%D8%AF%D8%AC%D9%87-%D9%BE%D9%86%D8%AA%D8%A7%DA%AF%D9%88%D9%86",
+      "relevance": {
+        "https://kayhan.ir/fa/news/333870/ان‌بی‌سی-از-بحران-مالی-در-پنتاگون-پس-از-جنگ-با-ایران-خبر-داد": 1,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115316-%D8%A8%D9%86-%D8%A8%D8%B3%D8%AA-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%B1%D8%B3%DB%8C-%D8%A8%D9%88%D8%AF%D8%AC%D9%87-%D9%BE%D9%86%D8%AA%D8%A7%DA%AF%D9%88%D9%86": 3,
+        "https://www.ynet.co.il/news/article/bjzm4mshgx": 0,
+        "https://www.israelhayom.co.il/news/politics/article/21073333": 0,
+        "https://kayhan.ir/fa/news/334631/مقام-سابق-پنتاگون-آمریکا-حالا-مجبور-است-قدرت-خود-را-بین-خلیج-فارس-و-دریای-سرخ-تقسیم-کند": 0,
+        "https://www.haaretz.co.il/news/elections/2026-07-27/ty-article/0000019f-a1bc-df92-a7ff-a7bee7470000": 0,
+        "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت": 1,
+        "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا": 0
+      }
+    },
+    {
+      "id": "search-v3-027",
+      "query": "Israeli desalination nuclear",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/335800/انرژی-هسته‌ای-برای-شیرین-کردن-آب-در-پروژه-مشترک-اسرائیل-و-مصر",
+      "relevance": {
+        "https://kayhan.ir/fa/news/335800/انرژی-هسته‌ای-برای-شیرین-کردن-آب-در-پروژه-مشترک-اسرائیل-و-مصر": 3,
+        "https://www.ynet.co.il/news/article/b1lfpdrnfe": 0,
+        "https://www.israelhayom.co.il/opinions/article/20990470": 0,
+        "https://www.israelhayom.co.il/news/defense/article/20954567": 0,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-16/ty-article/.premium/0000019f-66a5-dc96-afdf-6eb55ec80000": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 0,
+        "https://www.ynet.co.il/news/article/rynzbnr7me": 0,
+        "https://www.ynet.co.il/news/article/skej2zsrme": 0,
+        "https://www.haaretz.com/opinion/2026-07-09/ty-article-opinion/.premium/power-to-change-rests-with-the-very-israelis-that-netanyahu-sees-as-statistics/0000019f-4309-d6c0-a9df-df9fa4030000": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-16/ty-article-magazine/.premium/0000019f-6682-df91-a7df-ef923adf0000": 0,
+        "https://www.israelhayom.co.il/news/education/article/21073344": 0,
+        "https://www.israelhayom.co.il/news/defense/article/21040975": 0,
+        "https://kayhan.ir/fa/news/334956/سفر-نتانیاهو-به-واشنگتن-تلاشی-برای-حفظ-حمایت-ترامپ-در-جنگ-با-ایران": 0
+      }
+    },
+    {
+      "id": "search-v3-028",
+      "query": "Egyptian criticism project",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/335800/انرژی-هسته‌ای-برای-شیرین-کردن-آب-در-پروژه-مشترک-اسرائیل-و-مصر",
+      "relevance": {
+        "https://kayhan.ir/fa/news/335800/انرژی-هسته‌ای-برای-شیرین-کردن-آب-در-پروژه-مشترک-اسرائیل-و-مصر": 3,
+        "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا": 0,
+        "https://www.hamshahrionline.ir/news/1059508/%D9%87%D8%B4%D8%AF%D8%A7%D8%B1-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%B1%D9%88%DA%98%D9%87-%D8%AE%D8%A8%DB%8C%D8%AB%D8%A7%D9%86%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%D8%B9%D8%B1%D8%A7%D9%82-%D8%A7%D9%81%D8%B4%D8%A7%DB%8C-%D8%AF%D8%B3%D8%AA-%D9%87%D8%A7%DB%8C-%D9%BE%D8%B4%D8%AA": 0,
+        "https://www.ynet.co.il/news/article/yokra14859746": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://www.ynet.co.il/news/article/b1lfpdrnfe": 0,
+        "https://www.israelhayom.co.il/news/politics/article/21073333": 0
+      }
+    },
+    {
+      "id": "search-v3-029",
+      "query": "Fedorov dismissal protest",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/334632/اعتراض-اوکراینی-ها-به-تغییرات-پی-درپی-در-دولت",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334632/اعتراض-اوکراینی-ها-به-تغییرات-پی-درپی-در-دولت": 2
+      }
+    },
+    {
+      "id": "search-v3-030",
+      "query": "Drapatii Syrskyi Ukraine",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/334632/اعتراض-اوکراینی-ها-به-تغییرات-پی-درپی-در-دولت",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334632/اعتراض-اوکراینی-ها-به-تغییرات-پی-درپی-در-دولت": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%AC%D9%87%D8%A7%D9%86-219/1114361-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AA%D8%AD%D8%B1%DB%8C%D9%85-%D8%B1%D9%88%D8%B3%DB%8C%D9%87-%D8%B1%D8%A7-%D8%AA%D8%B4%D8%AF%DB%8C%D8%AF-%D9%85%DB%8C-%DA%A9%D9%86%D8%AF": 0,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article/.premium/trump-says-iran-cease-fire-is-over-but-isnt-galloping-toward-all-out-war/0000019f-433b-d913-abff-df7b368a0000": 0,
+        "https://www.hamshahrionline.ir/news/1052879/%DB%B1%DB%B5%DB%B0-%D9%82%D8%A8%D8%B6%D9%87-%D9%84%D9%88%D9%84%D9%87-%D8%AA%D9%88%D9%BE-%DB%B1%DB%B0%DB%B5-%D9%88-%DB%B1%DB%B5%DB%B5-%D9%85%DB%8C%D9%84%DB%8C%D9%85%D8%AA%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%B1%D8%A7%D9%87-%D8%AE%D8%A8%D8%B1-%D9%85%D9%87%D9%85-%D8%A7%D9%86%DA%AF%D9%84%DB%8C%D8%B3": 1
+      }
+    },
+    {
+      "id": "search-v3-031",
+      "query": "David Warington",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1059507/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%AF%DB%8C%DA%AF%D8%B1-%D8%B1%D8%A7-%D8%A7%D8%B2-%DA%A9%D8%A7%D8%AE-%D8%B3%D9%81%DB%8C%D8%AF-%D8%A7%D8%AE%D8%B1%D8%A7%D8%AC-%DA%A9%D8%B1%D8%AF",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.premium/0000019f-4274-df3a-afbf-6e7defbf0000": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 0,
+        "https://www.israelhayom.co.il/news/world-news/usa/article/21163323": 3,
+        "https://www.ynet.co.il/news/article/yokra14827470": 0
+      }
+    },
+    {
+      "id": "search-v3-032",
+      "query": "Will Scharf White House",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1059507/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%AF%DB%8C%DA%AF%D8%B1-%D8%B1%D8%A7-%D8%A7%D8%B2-%DA%A9%D8%A7%D8%AE-%D8%B3%D9%81%DB%8C%D8%AF-%D8%A7%D8%AE%D8%B1%D8%A7%D8%AC-%DA%A9%D8%B1%D8%AF",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/world-news/usa/article/21163323": 3,
+        "https://www.hamshahrionline.ir/news/1059507/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%AF%DB%8C%DA%AF%D8%B1-%D8%B1%D8%A7-%D8%A7%D8%B2-%DA%A9%D8%A7%D8%AE-%D8%B3%D9%81%DB%8C%D8%AF-%D8%A7%D8%AE%D8%B1%D8%A7%D8%AC-%DA%A9%D8%B1%D8%AF": 3,
+        "https://kayhan.ir/fa/news/333870/ان‌بی‌سی-از-بحران-مالی-در-پنتاگون-پس-از-جنگ-با-ایران-خبر-داد": 0
+      }
+    },
+    {
+      "id": "search-v3-033",
+      "query": "Irving Kristol anthem",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا",
+      "relevance": {
+        "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا": 3
+      }
+    },
+    {
+      "id": "search-v3-034",
+      "query": "Pentagon open letter",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا",
+      "relevance": {
+        "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا": 1,
+        "https://kayhan.ir/fa/news/333870/ان‌بی‌سی-از-بحران-مالی-در-پنتاگون-پس-از-جنگ-با-ایران-خبر-داد": 0,
+        "https://www.hamshahrionline.ir/news/1050808/%D8%B4%D9%81%D8%A7%D9%81-%D8%A8%DA%AF%D9%88%DB%8C%D9%85-%D8%A8%D8%B2%D9%86%DB%8C%D8%AF-%D9%85%DB%8C-%D8%AE%D9%88%D8%B1%DB%8C%D8%AF-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2-%D9%81%D9%82%D8%B7-%D8%A8%D8%A7-%D8%AA%D8%B1%D8%AA%DB%8C%D8%A8%D8%A7%D8%AA-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C": 0,
+        "https://kayhan.ir/fa/news/334631/مقام-سابق-پنتاگون-آمریکا-حالا-مجبور-است-قدرت-خود-را-بین-خلیج-فارس-و-دریای-سرخ-تقسیم-کند": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 0,
+        "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163273": 0,
+        "https://www.sharghdaily.com/fa/tiny/news-1120345": 0,
+        "https://www.ynet.co.il/news/article/rynzbnr7me": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115316-%D8%A8%D9%86-%D8%A8%D8%B3%D8%AA-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%B1%D8%B3%DB%8C-%D8%A8%D9%88%D8%AF%D8%AC%D9%87-%D9%BE%D9%86%D8%AA%D8%A7%DA%AF%D9%88%D9%86": 2,
+        "https://www.ynet.co.il/news/article/yokra14826942": 0
+      }
+    },
+    {
+      "id": "search-v3-035",
+      "query": "AP wounded Iran",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت": 3,
+        "https://www.hamshahrionline.ir/news/1052880/%D8%B3%D9%BE%D8%A7%D9%87-%D9%85%DB%8C-%D8%AE%D9%88%D8%A7%D9%87%D8%AF-%DA%86%D9%87-%DA%A9%D8%A7%D8%B1-%DA%A9%D9%86%D8%AF-%D9%BE%DB%8C%D8%A7%D9%85-%D9%85%D8%B9%D9%86%D8%A7%D8%AF%D8%A7%D8%B1-%D8%B3%D8%AE%D9%86%DA%AF%D9%88-%D8%AE%D8%B7%D8%A7%D8%A8-%D8%A8%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7": 0,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0,
+        "https://www.ynet.co.il/news/article/r1r0mrs4me": 0,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 0,
+        "https://www.hamshahrionline.ir/news/1054859/%D8%AF%D9%84%DB%8C%D9%84-%D9%86%D8%A7%D9%85%D8%AD%D8%A8%D9%88%D8%A8-%D8%A8%D9%88%D8%AF%D9%86-%D8%AC%D9%86%DA%AF-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%DA%A9%D9%88%D8%AA%D8%A7%D9%87-%D8%AA%D8%B1%DB%8C%D9%86-%D8%B2%D9%85%D8%A7%D9%86": 0,
+        "https://kayhan.ir/fa/news/334242/جان-مرشایمر-ایرانی‌ها-هرگز-تسلیم-نخواهند-شد": 0,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article-live/u-s-strikes-targets-in-iran-for-second-night-in-a-row/0000019f-449e-d269-af9f-46df98160000": 0,
+        "https://www.hamshahrionline.ir/news/1054893/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%A8%D9%87-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AD%D9%85%D9%84%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D9%86%DB%8C%D8%B1%D9%88%DA%AF%D8%A7%D9%87-%D9%87%D8%A7-%D9%88": 0,
+        "https://www.hamshahrionline.ir/news/1050804/%D9%81%D9%88%D8%B1%DB%8C-%D8%A8%DB%8C%D8%A7%D9%86%DB%8C%D9%87-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%A7%D8%B3%D8%AE-%D8%A8%D9%87-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D8%A7%DB%8C%D9%86-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D8%AE%D8%AA-%D9%87%D8%A7": 0,
+        "https://www.hamshahrionline.ir/news/1059498/%D8%B1%D8%A7%D8%B2-%D8%AF%D8%B3%D8%AA-%D8%A8%D8%B1%D8%AA%D8%B1-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%A7%D8%A8%D8%B1-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%B7%D8%B9%D9%86%D9%87-%D8%A8%D9%87-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D9%85%D9%86%D8%AA%D8%B8%D8%B1-%D8%AA%D8%B3%D9%84%DB%8C%D9%85": 0,
+        "https://www.israelhayom.co.il/news/defense/article/20942303": 0,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 0,
+        "https://kayhan.ir/fa/news/334956/سفر-نتانیاهو-به-واشنگتن-تلاشی-برای-حفظ-حمایت-ترامپ-در-جنگ-با-ایران": 0,
+        "https://www.hamshahrionline.ir/news/1056219/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D9%87%D8%A7-%D8%B1%D8%A7-%D9%86%D9%85%DB%8C-%D8%AA%D9%88%D8%A7%D9%86-%D8%A8%D8%A7-%D8%B1%D8%B4%D9%88%D9%87-%D8%AA%D8%B7%D9%85%DB%8C%D8%B9-%DA%A9%D8%B1%D8%AF-%D8%A8%D8%A7-%D9%86%D8%AA%D8%A7%D9%86%DB%8C%D8%A7%D9%87%D9%88": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://kayhan.ir/fa/news/333878/با-ترامپ-جنایتکار-و-قاتل-باید-با-زبان-خودش-صحبت-کرد-ظاهراً-زبان-زور-را-بهتر-می‌فهمد": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0,
+        "https://kayhan.ir/fa/news/333870/ان‌بی‌سی-از-بحران-مالی-در-پنتاگون-پس-از-جنگ-با-ایران-خبر-داد": 0
+      }
+    },
+    {
+      "id": "search-v3-036",
+      "query": "Pentagon casualty system",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت",
+      "relevance": {
+        "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت": 2,
+        "https://kayhan.ir/fa/news/333870/ان‌بی‌سی-از-بحران-مالی-در-پنتاگون-پس-از-جنگ-با-ایران-خبر-داد": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 0,
+        "https://kayhan.ir/fa/news/334631/مقام-سابق-پنتاگون-آمریکا-حالا-مجبور-است-قدرت-خود-را-بین-خلیج-فارس-و-دریای-سرخ-تقسیم-کند": 0,
+        "https://www.hamshahrionline.ir/news/1054859/%D8%AF%D9%84%DB%8C%D9%84-%D9%86%D8%A7%D9%85%D8%AD%D8%A8%D9%88%D8%A8-%D8%A8%D9%88%D8%AF%D9%86-%D8%AC%D9%86%DA%AF-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%DA%A9%D9%88%D8%AA%D8%A7%D9%87-%D8%AA%D8%B1%DB%8C%D9%86-%D8%B2%D9%85%D8%A7%D9%86": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115355-%D8%B3%D9%BE%D8%A7%D9%87-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%DA%A9%D8%B1%D8%AF-%D8%A7%D9%86%D9%87%D8%AF%D8%A7%D9%85-%DB%8C%DA%A9-%D9%81%D8%B1%D9%88%D9%86%D8%AF-%D9%BE%D9%87%D9%BE%D8%A7%D8%AF-mq-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%AF%D8%B1-%D8%A2%D8%B3%D9%85%D8%A7%D9%86-%D8%A7%D9%86%D8%AF%DB%8C%D9%85%D8%B4%DA%A9": 0,
+        "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا": 0,
+        "https://www.hamshahrionline.ir/news/1050807/%D9%84%D8%AD%D8%B8%D8%A7%D8%AA-%D8%A7%D8%B5%D8%A7%D8%A8%D8%AA-%D9%85%D9%88%D8%B4%DA%A9-%D9%87%D8%A7%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D8%A8%D9%87-%D9%BE%D8%A7%DB%8C%DA%AF%D8%A7%D9%87-%D9%87%D8%A7%DB%8C-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%DA%A9%D9%88%DB%8C%D8%AA-%D9%88-%D8%A8%D8%AD%D8%B1%DB%8C%D9%86": 0,
+        "https://www.israelhayom.co.il/opinions/article/20990470": 0,
+        "https://kayhan.ir/fa/news/333927/تغییر-هواپیمای-ترامپ-در-بازگشت-از-ترکیه-از-ترس-انتقام-ایران": 0,
+        "https://www.ynet.co.il/news/article/rynzbnr7me": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21041042": 0
+      }
+    },
+    {
+      "id": "search-v3-037",
+      "query": "Bnei Brak elders",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 0,
+        "https://www.israelhayom.co.il/news/defense/article/20992355": 1
+      }
+    },
+    {
+      "id": "search-v3-038",
+      "query": "nine days Temple film",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000": 3,
+        "https://www.haaretz.co.il/news/politics/2026-08-09/ty-article/.premium/0000019f-e740-d86b-a59f-e77644760000": 0,
+        "https://kayhan.ir/fa/news/333927/تغییر-هواپیمای-ترامپ-در-بازگشت-از-ترکیه-از-ترس-انتقام-ایران": 0,
+        "https://www.ynet.co.il/news/article/rynzbnr7me": 0
+      }
+    },
+    {
+      "id": "search-v3-039",
+      "query": "Imami coin price",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1115362-%D9%82%DB%8C%D9%85%D8%AA-%D8%B3%DA%A9%D9%87-%D8%B7%D9%84%D8%A7-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D9%BE%D9%86%D8%AC%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%B3%DA%A9%D9%87-%D8%A7%D9%85%D8%A7%D9%85%DB%8C-%DA%86%D9%86%D8%AF-%D8%AC%D8%AF%D9%88%D9%84",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1115362-%D9%82%DB%8C%D9%85%D8%AA-%D8%B3%DA%A9%D9%87-%D8%B7%D9%84%D8%A7-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D9%BE%D9%86%D8%AC%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%B3%DA%A9%D9%87-%D8%A7%D9%85%D8%A7%D9%85%DB%8C-%DA%86%D9%86%D8%AF-%D8%AC%D8%AF%D9%88%D9%84": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1116851-%D8%A2%D8%AE%D8%B1%DB%8C%D9%86-%D9%82%DB%8C%D9%85%D8%AA-%D8%AF%D9%84%D8%A7%D8%B1-%D8%B7%D9%84%D8%A7-%D8%B3%DA%A9%D9%87-%D8%B4%D8%A8%D8%A7%D9%86%DA%AF%D8%A7%D9%87-%DA%86%D9%87%D8%A7%D8%B1%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%AF%D9%84%D8%A7%D8%B1-%D8%AF%D9%88%D8%A8%D8%A7%D8%B1%D9%87-%D8%A8%D9%87-%D9%85%D8%B3%DB%8C%D8%B1-%D8%B5%D8%B9%D9%88%D8%AF-%D9%82%DB%8C%D9%85%D8%AA-%D8%A7%D9%81%D8%AA%D8%A7%D8%AF": 2,
+        "https://kayhan.ir/fa/news/334241/روایت-سی‌ان‌ان-از-خطاهای-ترامپ-در-مقابل-ایران": 0
+      }
+    },
+    {
+      "id": "search-v3-040",
+      "query": "Iran gold table",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1115362-%D9%82%DB%8C%D9%85%D8%AA-%D8%B3%DA%A9%D9%87-%D8%B7%D9%84%D8%A7-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D9%BE%D9%86%D8%AC%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%B3%DA%A9%D9%87-%D8%A7%D9%85%D8%A7%D9%85%DB%8C-%DA%86%D9%86%D8%AF-%D8%AC%D8%AF%D9%88%D9%84",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1115362-%D9%82%DB%8C%D9%85%D8%AA-%D8%B3%DA%A9%D9%87-%D8%B7%D9%84%D8%A7-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D9%BE%D9%86%D8%AC%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%B3%DA%A9%D9%87-%D8%A7%D9%85%D8%A7%D9%85%DB%8C-%DA%86%D9%86%D8%AF-%D8%AC%D8%AF%D9%88%D9%84": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF%DB%8C-12/1116851-%D8%A2%D8%AE%D8%B1%DB%8C%D9%86-%D9%82%DB%8C%D9%85%D8%AA-%D8%AF%D9%84%D8%A7%D8%B1-%D8%B7%D9%84%D8%A7-%D8%B3%DA%A9%D9%87-%D8%B4%D8%A8%D8%A7%D9%86%DA%AF%D8%A7%D9%87-%DA%86%D9%87%D8%A7%D8%B1%D8%B4%D9%86%D8%A8%D9%87-%D8%AA%DB%8C%D8%B1-%D8%AF%D9%84%D8%A7%D8%B1-%D8%AF%D9%88%D8%A8%D8%A7%D8%B1%D9%87-%D8%A8%D9%87-%D9%85%D8%B3%DB%8C%D8%B1-%D8%B5%D8%B9%D9%88%D8%AF-%D9%82%DB%8C%D9%85%D8%AA-%D8%A7%D9%81%D8%AA%D8%A7%D8%AF": 3,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-16/ty-article/.premium/0000019f-66a5-dc96-afdf-6eb55ec80000": 0,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 0,
+        "https://kayhan.ir/fa/news/334956/سفر-نتانیاهو-به-واشنگتن-تلاشی-برای-حفظ-حمایت-ترامپ-در-جنگ-با-ایران": 0,
+        "https://www.hamshahrionline.ir/news/1059498/%D8%B1%D8%A7%D8%B2-%D8%AF%D8%B3%D8%AA-%D8%A8%D8%B1%D8%AA%D8%B1-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%A7%D8%A8%D8%B1-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%B7%D8%B9%D9%86%D9%87-%D8%A8%D9%87-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D9%85%D9%86%D8%AA%D8%B8%D8%B1-%D8%AA%D8%B3%D9%84%DB%8C%D9%85": 0,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 0,
+        "https://www.hamshahrionline.ir/news/1056219/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D9%87%D8%A7-%D8%B1%D8%A7-%D9%86%D9%85%DB%8C-%D8%AA%D9%88%D8%A7%D9%86-%D8%A8%D8%A7-%D8%B1%D8%B4%D9%88%D9%87-%D8%AA%D8%B7%D9%85%DB%8C%D8%B9-%DA%A9%D8%B1%D8%AF-%D8%A8%D8%A7-%D9%86%D8%AA%D8%A7%D9%86%DB%8C%D8%A7%D9%87%D9%88": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://kayhan.ir/fa/news/333878/با-ترامپ-جنایتکار-و-قاتل-باید-با-زبان-خودش-صحبت-کرد-ظاهراً-زبان-زور-را-بهتر-می‌فهمد": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0,
+        "https://kayhan.ir/fa/news/333870/ان‌بی‌سی-از-بحران-مالی-در-پنتاگون-پس-از-جنگ-با-ایران-خبر-داد": 0
+      }
+    },
+    {
+      "id": "search-v3-041",
+      "query": "Trump plane reporters",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/world-news/usa/article/20942492",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/world-news/usa/article/20942492": 3,
+        "https://kayhan.ir/fa/news/333927/تغییر-هواپیمای-ترامپ-در-بازگشت-از-ترکیه-از-ترس-انتقام-ایران": 0,
+        "https://www.hamshahrionline.ir/news/1054894/%D9%BE%DB%8C%D8%A7%D9%85-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%B3%DB%8C%D8%AF%D9%85%D8%AC%DB%8C%D8%AF-%D9%85%D9%88%D8%B3%D9%88%DB%8C-%D8%A8%D8%B9%D8%AF-%D8%A7%D8%B2-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE": 0,
+        "https://www.hamshahrionline.ir/news/1059507/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%AF%DB%8C%DA%AF%D8%B1-%D8%B1%D8%A7-%D8%A7%D8%B2-%DA%A9%D8%A7%D8%AE-%D8%B3%D9%81%DB%8C%D8%AF-%D8%A7%D8%AE%D8%B1%D8%A7%D8%AC-%DA%A9%D8%B1%D8%AF": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.highlight/0000019f-431d-d6c0-a9df-df9f44810000": 0,
+        "https://kayhan.ir/fa/news/334241/روایت-سی‌ان‌ان-از-خطاهای-ترامپ-در-مقابل-ایران": 0,
+        "https://www.hamshahrionline.ir/news/1059498/%D8%B1%D8%A7%D8%B2-%D8%AF%D8%B3%D8%AA-%D8%A8%D8%B1%D8%AA%D8%B1-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%A7%D8%A8%D8%B1-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%B7%D8%B9%D9%86%D9%87-%D8%A8%D9%87-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D9%85%D9%86%D8%AA%D8%B8%D8%B1-%D8%AA%D8%B3%D9%84%DB%8C%D9%85": 0,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 0,
+        "https://www.ynet.co.il/news/article/r1r0mrs4me": 0,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 0,
+        "https://www.hamshahrionline.ir/news/1056219/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D9%87%D8%A7-%D8%B1%D8%A7-%D9%86%D9%85%DB%8C-%D8%AA%D9%88%D8%A7%D9%86-%D8%A8%D8%A7-%D8%B1%D8%B4%D9%88%D9%87-%D8%AA%D8%B7%D9%85%DB%8C%D8%B9-%DA%A9%D8%B1%D8%AF-%D8%A8%D8%A7-%D9%86%D8%AA%D8%A7%D9%86%DB%8C%D8%A7%D9%87%D9%88": 0
+      }
+    },
+    {
+      "id": "search-v3-042",
+      "query": "presidential press pool",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/world-news/usa/article/20942492",
+      "relevance": {
+        "https://www.israelhayom.co.il/opinions/article/20990470": 0,
+        "https://www.israelhayom.co.il/news/world-news/usa/article/20942492": 1,
+        "https://kayhan.ir/fa/news/334630/آسوشیتدپرس-شمار-نظامیان-زخمی-آمریکا-در-جنگ-با-ایران-از-500-نفر-فراتر-رفت": 0,
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 0,
+        "https://www.israelhayom.co.il/news/world-news/usa/article/21163323": 0,
+        "https://kayhan.ir/fa/news/334242/جان-مرشایمر-ایرانی‌ها-هرگز-تسلیم-نخواهند-شد": 0
+      }
+    },
+    {
+      "id": "search-v3-043",
+      "query": "Iran foreign ministry",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1051082/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%AA%D9%87%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%A7%D8%AF%D8%B9%D8%A7%DB%8C-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 3,
+        "https://www.hamshahrionline.ir/news/1051082/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%AA%D9%87%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%A7%D8%AF%D8%B9%D8%A7%DB%8C-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114356-%D8%AA%D9%88%D8%B6%DB%8C%D8%AD-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%B3%D9%81%D8%B1-%D8%A8%D9%87-%D8%B9%D9%85%D8%A7%D9%86": 3,
+        "https://www.hamshahrionline.ir/news/1054893/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%A8%D9%87-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AD%D9%85%D9%84%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D9%86%DB%8C%D8%B1%D9%88%DA%AF%D8%A7%D9%87-%D9%87%D8%A7-%D9%88": 2,
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 0,
+        "https://www.hamshahrionline.ir/news/1050804/%D9%81%D9%88%D8%B1%DB%8C-%D8%A8%DB%8C%D8%A7%D9%86%DB%8C%D9%87-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%A7%D8%B3%D8%AE-%D8%A8%D9%87-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D8%A7%DB%8C%D9%86-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D8%AE%D8%AA-%D9%87%D8%A7": 0,
+        "https://www.hamshahrionline.ir/news/1050808/%D8%B4%D9%81%D8%A7%D9%81-%D8%A8%DA%AF%D9%88%DB%8C%D9%85-%D8%A8%D8%B2%D9%86%DB%8C%D8%AF-%D9%85%DB%8C-%D8%AE%D9%88%D8%B1%DB%8C%D8%AF-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2-%D9%81%D9%82%D8%B7-%D8%A8%D8%A7-%D8%AA%D8%B1%D8%AA%DB%8C%D8%A8%D8%A7%D8%AA-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0,
+        "https://www.hamshahrionline.ir/news/1054894/%D9%BE%DB%8C%D8%A7%D9%85-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%B3%DB%8C%D8%AF%D9%85%D8%AC%DB%8C%D8%AF-%D9%85%D9%88%D8%B3%D9%88%DB%8C-%D8%A8%D8%B9%D8%AF-%D8%A7%D8%B2-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE": 0,
+        "https://kayhan.ir/fa/news/333872/دوره-قلدری-و-باج‌گیری-آمریکا-تمام-شد": 0,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 0,
+        "https://kayhan.ir/fa/news/333878/با-ترامپ-جنایتکار-و-قاتل-باید-با-زبان-خودش-صحبت-کرد-ظاهراً-زبان-زور-را-بهتر-می‌فهمد": 1,
+        "https://kayhan.ir/fa/news/334954/ایران-قدرت-برتر-منطقه-و-رقیب-قدرت-های-جهانی-شده-است": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163273": 0,
+        "https://www.israelhayom.co.il/business/article/20942115": 0,
+        "https://www.israelhayom.co.il/news/local/article/21073319": 0,
+        "https://www.haaretz.co.il/opinions/2026-07-09/ty-article-opinion/.premium/0000019f-412d-d2da-adbf-4f2f67370000": 0,
+        "https://kayhan.ir/fa/news/335801/ماهیت-و-ویژگی‌های-انقلاب-اسلامی": 0,
+        "https://kayhan.ir/fa/news/335800/انرژی-هسته‌ای-برای-شیرین-کردن-آب-در-پروژه-مشترک-اسرائیل-و-مصر": 0
+      }
+    },
+    {
+      "id": "search-v3-044",
+      "query": "Bumosi Sirik strikes",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 3,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 2,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article-live/u-s-strikes-targets-in-iran-for-second-night-in-a-row/0000019f-449e-d269-af9f-46df98160000": 0,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-16/ty-article/.premium/0000019f-66a5-dc96-afdf-6eb55ec80000": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4bcc-df3a-afbf-6fddddb90000": 0,
+        "https://www.hamshahrionline.ir/news/1054893/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%A8%D9%87-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AD%D9%85%D9%84%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D9%86%DB%8C%D8%B1%D9%88%DA%AF%D8%A7%D9%87-%D9%87%D8%A7-%D9%88": 0,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 0,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 0,
+        "https://www.ynet.co.il/news/article/r1r0mrs4me": 0,
+        "https://www.ynet.co.il/news/article/yokra14859550": 0,
+        "https://www.hamshahrionline.ir/news/1050804/%D9%81%D9%88%D8%B1%DB%8C-%D8%A8%DB%8C%D8%A7%D9%86%DB%8C%D9%87-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%A7%D8%B3%D8%AE-%D8%A8%D9%87-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D8%A7%DB%8C%D9%86-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D8%AE%D8%AA-%D9%87%D8%A7": 0
+      }
+    },
+    {
+      "id": "search-v3-045",
+      "query": "Hormozgan projectiles",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0,
+        "https://www.hamshahrionline.ir/news/1050808/%D8%B4%D9%81%D8%A7%D9%81-%D8%A8%DA%AF%D9%88%DB%8C%D9%85-%D8%A8%D8%B2%D9%86%DB%8C%D8%AF-%D9%85%DB%8C-%D8%AE%D9%88%D8%B1%DB%8C%D8%AF-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2-%D9%81%D9%82%D8%B7-%D8%A8%D8%A7-%D8%AA%D8%B1%D8%AA%DB%8C%D8%A8%D8%A7%D8%AA-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C": 0,
+        "https://www.ynet.co.il/news/article/r1r0mrs4me": 0,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114356-%D8%AA%D9%88%D8%B6%DB%8C%D8%AD-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%B3%D9%81%D8%B1-%D8%A8%D9%87-%D8%B9%D9%85%D8%A7%D9%86": 0
+      }
+    },
+    {
+      "id": "search-v3-046",
+      "query": "MI6 DGSE ranking",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.ynet.co.il/news/article/yokra14859746",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/yokra14859746": 3,
+        "https://www.ynet.co.il/news/article/yokra14827470": 0
+      }
+    },
+    {
+      "id": "search-v3-047",
+      "query": "Yossi Cohen Mossad",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.ynet.co.il/news/article/yokra14859746",
+      "relevance": {
+        "https://www.ynet.co.il/news/article/yokra14859746": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 0
+      }
+    },
+    {
+      "id": "search-v3-048",
+      "query": "Eisenkot poll",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/elections/2026-08-09/ty-article/.premium/0000019f-e79e-d86b-a59f-e7be1e940000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/elections/2026-08-09/ty-article/.premium/0000019f-e79e-d86b-a59f-e7be1e940000": 3,
+        "https://www.haaretz.co.il/news/elections/2026-07-27/ty-article/.premium/0000019f-a4cc-d641-a1df-e7ce05000000": 3
+      }
+    },
+    {
+      "id": "search-v3-049",
+      "query": "Kan 11 mandates",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/elections/2026-08-09/ty-article/.premium/0000019f-e79e-d86b-a59f-e7be1e940000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/elections/2026-08-09/ty-article/.premium/0000019f-e79e-d86b-a59f-e7be1e940000": 3
+      }
+    },
+    {
+      "id": "search-v3-050",
+      "query": "Jaffa arnona hike",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/local/2026-07-22/ty-article/.premium/0000019f-8966-de9f-afdf-a966410d0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/local/2026-07-22/ty-article/.premium/0000019f-8966-de9f-afdf-a966410d0000": 3
+      }
+    },
+    {
+      "id": "search-v3-051",
+      "query": "Neve Mamaronim tax",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/local/2026-07-22/ty-article/.premium/0000019f-8966-de9f-afdf-a966410d0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/local/2026-07-22/ty-article/.premium/0000019f-8966-de9f-afdf-a966410d0000": 3
+      }
+    },
+    {
+      "id": "search-v3-052",
+      "query": "Majdal Shams disaster",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/local/article/21073319",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/local/article/21073319": 3
+      }
+    },
+    {
+      "id": "search-v3-053",
+      "query": "Druze task force",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/local/article/21073319",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/local/article/21073319": 3,
+        "https://www.haaretz.co.il/news/politics/2026-08-09/ty-article/.premium/0000019f-e740-d86b-a59f-e77644760000": 0,
+        "https://kayhan.ir/fa/news/334631/مقام-سابق-پنتاگون-آمریکا-حالا-مجبور-است-قدرت-خود-را-بین-خلیج-فارس-و-دریای-سرخ-تقسیم-کند": 0,
+        "https://kayhan.ir/fa/news/333878/با-ترامپ-جنایتکار-و-قاتل-باید-با-زبان-خودش-صحبت-کرد-ظاهراً-زبان-زور-را-بهتر-می‌فهمد": 0,
+        "https://www.ynet.co.il/news/article/bkcn8fr4fl": 0,
+        "https://www.ynet.co.il/news/article/skej2zsrme": 0,
+        "https://kayhan.ir/fa/news/334242/جان-مرشایمر-ایرانی‌ها-هرگز-تسلیم-نخواهند-شد": 0,
+        "https://www.hamshahrionline.ir/news/1054893/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%A8%D9%87-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AD%D9%85%D9%84%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D9%86%DB%8C%D8%B1%D9%88%DA%AF%D8%A7%D9%87-%D9%87%D8%A7-%D9%88": 0,
+        "https://www.israelhayom.co.il/news/defense/article/21040975": 0,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-16/ty-article/.premium/0000019f-66a5-dc96-afdf-6eb55ec80000": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0,
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 0,
+        "https://kayhan.ir/fa/news/333927/تغییر-هواپیمای-ترامپ-در-بازگشت-از-ترکیه-از-ترس-انتقام-ایران": 0
+      }
+    },
+    {
+      "id": "search-v3-054",
+      "query": "Iran hijab law",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1056210/%DA%86%D9%87-%D8%B4%D8%AF-%DA%A9%D9%87-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-%DA%AF%D8%B0%D8%A7%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%AD%D8%AC%D8%A7%D8%A8-%D9%86%D8%A7%D8%AA%D9%85%D8%A7%D9%85-%D9%85%D8%A7%D9%86%D8%AF",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1056210/%DA%86%D9%87-%D8%B4%D8%AF-%DA%A9%D9%87-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-%DA%AF%D8%B0%D8%A7%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%AD%D8%AC%D8%A7%D8%A8-%D9%86%D8%A7%D8%AA%D9%85%D8%A7%D9%85-%D9%85%D8%A7%D9%86%D8%AF": 3,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1116856-%D8%A7%D8%AE%D8%B7%D8%A7%D8%B1-%D8%AC%D8%AF%DB%8C%D8%AF-%D9%86%DB%8C%D8%B1%D9%88%DB%8C-%D8%AF%D8%B1%DB%8C%D8%A7%DB%8C%DB%8C-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2": 0,
+        "https://www.ynet.co.il/news/article/syww6pr4ge": 0,
+        "https://www.israelhayom.co.il/news/education/article/21073344": 0,
+        "https://www.israelhayom.co.il/news/defense/article/20992355": 0,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 0,
+        "https://kayhan.ir/fa/news/334956/سفر-نتانیاهو-به-واشنگتن-تلاشی-برای-حفظ-حمایت-ترامپ-در-جنگ-با-ایران": 0,
+        "https://www.hamshahrionline.ir/news/1059498/%D8%B1%D8%A7%D8%B2-%D8%AF%D8%B3%D8%AA-%D8%A8%D8%B1%D8%AA%D8%B1-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1-%D8%A8%D8%B1%D8%A7%D8%A8%D8%B1-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%B7%D8%B9%D9%86%D9%87-%D8%A8%D9%87-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D9%85%D9%86%D8%AA%D8%B8%D8%B1-%D8%AA%D8%B3%D9%84%DB%8C%D9%85": 0,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 0,
+        "https://www.hamshahrionline.ir/news/1056219/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D9%87%D8%A7-%D8%B1%D8%A7-%D9%86%D9%85%DB%8C-%D8%AA%D9%88%D8%A7%D9%86-%D8%A8%D8%A7-%D8%B1%D8%B4%D9%88%D9%87-%D8%AA%D8%B7%D9%85%DB%8C%D8%B9-%DA%A9%D8%B1%D8%AF-%D8%A8%D8%A7-%D9%86%D8%AA%D8%A7%D9%86%DB%8C%D8%A7%D9%87%D9%88": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://kayhan.ir/fa/news/333878/با-ترامپ-جنایتکار-و-قاتل-باید-با-زبان-خودش-صحبت-کرد-ظاهراً-زبان-زور-را-بهتر-می‌فهمد": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0
+      }
+    },
+    {
+      "id": "search-v3-055",
+      "query": "Guardian Council hijab",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.hamshahrionline.ir/news/1056210/%DA%86%D9%87-%D8%B4%D8%AF-%DA%A9%D9%87-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-%DA%AF%D8%B0%D8%A7%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%AD%D8%AC%D8%A7%D8%A8-%D9%86%D8%A7%D8%AA%D9%85%D8%A7%D9%85-%D9%85%D8%A7%D9%86%D8%AF",
+      "relevance": {
+        "https://www.hamshahrionline.ir/news/1056210/%DA%86%D9%87-%D8%B4%D8%AF-%DA%A9%D9%87-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-%DA%AF%D8%B0%D8%A7%D8%B1%DB%8C-%D8%AF%D8%B1-%D8%AD%D8%AC%D8%A7%D8%A8-%D9%86%D8%A7%D8%AA%D9%85%D8%A7%D9%85-%D9%85%D8%A7%D9%86%D8%AF": 3,
+        "https://kayhan.ir/fa/news/333929/بدرقه-تاریخی-رهبر-شهید-اراده-ملت-ایران-را-به-رخ-جهان-کشید": 0,
+        "https://www.hamshahrionline.ir/news/1051081/%D8%B4%DA%A9%D8%A7%DB%8C%D8%AA-%D8%AF%D9%88%D9%84%D8%AA-%D9%88%D8%A7%D8%A8%D8%B3%D8%AA%D9%87-%D8%A8%D9%87-%D8%B9%D8%B1%D8%A8%D8%B3%D8%AA%D8%A7%D9%86-%D8%A7%D8%B2-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%B4%D9%88%D8%B1%D8%A7%DB%8C-%D8%A7%D9%85%D9%86%DB%8C%D8%AA": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0,
+        "https://www.sharghdaily.com/fa/tiny/news-1120373": 0,
+        "https://www.israelhayom.co.il/news/education/article/21073344": 0,
+        "https://www.ynet.co.il/news/article/hjkw63rmzg": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://www.sharghdaily.com/fa/tiny/news-1120330": 0
+      }
+    },
+    {
+      "id": "search-v3-056",
+      "query": "Bint Jbeil stadium",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/politics/2026-07-16/ty-article-magazine/.premium/0000019f-6682-df91-a7df-ef923adf0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-16/ty-article-magazine/.premium/0000019f-6682-df91-a7df-ef923adf0000": 3
+      }
+    },
+    {
+      "id": "search-v3-057",
+      "query": "Nasrallah Spider Web",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/politics/2026-07-16/ty-article-magazine/.premium/0000019f-6682-df91-a7df-ef923adf0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-16/ty-article-magazine/.premium/0000019f-6682-df91-a7df-ef923adf0000": 3
+      }
+    },
+    {
+      "id": "search-v3-058",
+      "query": "ultra-Orthodox men",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/business/article/20942115",
+      "relevance": {
+        "https://www.israelhayom.co.il/business/article/20942115": 3,
+        "https://www.israelhayom.co.il/news/defense/article/20992355": 3,
+        "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000": 1,
+        "https://www.israelhayom.co.il/news/local/article/21040912": 3,
+        "https://www.ynet.co.il/news/120andone/article/bk2gcbmvgg": 1,
+        "https://www.israelhayom.co.il/news/politics/article/21073333": 1,
+        "https://www.hamshahrionline.ir/news/1059507/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%AF%DB%8C%DA%AF%D8%B1-%D8%B1%D8%A7-%D8%A7%D8%B2-%DA%A9%D8%A7%D8%AE-%D8%B3%D9%81%DB%8C%D8%AF-%D8%A7%D8%AE%D8%B1%D8%A7%D8%AC-%DA%A9%D8%B1%D8%AF": 0,
+        "https://www.ynet.co.il/news/article/yokra14859550": 0
+      }
+    },
+    {
+      "id": "search-v3-059",
+      "query": "Ministry Labor report",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/business/article/20942115",
+      "relevance": {
+        "https://www.israelhayom.co.il/business/article/20942115": 3,
+        "https://kayhan.ir/fa/news/335800/انرژی-هسته‌ای-برای-شیرین-کردن-آب-در-پروژه-مشترک-اسرائیل-و-مصر": 0,
+        "https://www.israelhayom.co.il/news/local/article/21073319": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114356-%D8%AA%D9%88%D8%B6%DB%8C%D8%AD-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%B3%D9%81%D8%B1-%D8%A8%D9%87-%D8%B9%D9%85%D8%A7%D9%86": 0,
+        "https://www.haaretz.co.il/opinions/2026-07-09/ty-article-opinion/.premium/0000019f-412d-d2da-adbf-4f2f67370000": 0,
+        "https://www.hamshahrionline.ir/news/1051082/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%AA%D9%87%D8%B1%D8%A7%D9%86-%D8%A8%D9%87-%D8%A7%D8%AF%D8%B9%D8%A7%DB%8C-%D8%A7%D9%85%D8%B1%D9%88%D8%B2-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7": 0,
+        "https://kayhan.ir/fa/news/334954/ایران-قدرت-برتر-منطقه-و-رقیب-قدرت-های-جهانی-شده-است": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114070-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AE%D8%A7%D8%B1%DA%AF-%D8%B5%D8%AD%D8%AA-%D9%86%D8%AF%D8%A7%D8%B1%D8%AF": 0,
+        "https://www.hamshahrionline.ir/news/1050807/%D9%84%D8%AD%D8%B8%D8%A7%D8%AA-%D8%A7%D8%B5%D8%A7%D8%A8%D8%AA-%D9%85%D9%88%D8%B4%DA%A9-%D9%87%D8%A7%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D8%A8%D9%87-%D9%BE%D8%A7%DB%8C%DA%AF%D8%A7%D9%87-%D9%87%D8%A7%DB%8C-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%DA%A9%D9%88%DB%8C%D8%AA-%D9%88-%D8%A8%D8%AD%D8%B1%DB%8C%D9%86": 0
+      }
+    },
+    {
+      "id": "search-v3-060",
+      "query": "Andimeshk MQ9",
+      "category": "event_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115355-%D8%B3%D9%BE%D8%A7%D9%87-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%DA%A9%D8%B1%D8%AF-%D8%A7%D9%86%D9%87%D8%AF%D8%A7%D9%85-%DB%8C%DA%A9-%D9%81%D8%B1%D9%88%D9%86%D8%AF-%D9%BE%D9%87%D9%BE%D8%A7%D8%AF-mq-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%AF%D8%B1-%D8%A2%D8%B3%D9%85%D8%A7%D9%86-%D8%A7%D9%86%D8%AF%DB%8C%D9%85%D8%B4%DA%A9",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115355-%D8%B3%D9%BE%D8%A7%D9%87-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%DA%A9%D8%B1%D8%AF-%D8%A7%D9%86%D9%87%D8%AF%D8%A7%D9%85-%DB%8C%DA%A9-%D9%81%D8%B1%D9%88%D9%86%D8%AF-%D9%BE%D9%87%D9%BE%D8%A7%D8%AF-mq-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%AF%D8%B1-%D8%A2%D8%B3%D9%85%D8%A7%D9%86-%D8%A7%D9%86%D8%AF%DB%8C%D9%85%D8%B4%DA%A9": 3
+      }
+    },
+    {
+      "id": "search-v3-061",
+      "query": "IRGC drone down",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115355-%D8%B3%D9%BE%D8%A7%D9%87-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%DA%A9%D8%B1%D8%AF-%D8%A7%D9%86%D9%87%D8%AF%D8%A7%D9%85-%DB%8C%DA%A9-%D9%81%D8%B1%D9%88%D9%86%D8%AF-%D9%BE%D9%87%D9%BE%D8%A7%D8%AF-mq-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%AF%D8%B1-%D8%A2%D8%B3%D9%85%D8%A7%D9%86-%D8%A7%D9%86%D8%AF%DB%8C%D9%85%D8%B4%DA%A9",
+      "relevance": {
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115355-%D8%B3%D9%BE%D8%A7%D9%87-%D8%A7%D8%B9%D9%84%D8%A7%D9%85-%DA%A9%D8%B1%D8%AF-%D8%A7%D9%86%D9%87%D8%AF%D8%A7%D9%85-%DB%8C%DA%A9-%D9%81%D8%B1%D9%88%D9%86%D8%AF-%D9%BE%D9%87%D9%BE%D8%A7%D8%AF-mq-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7%DB%8C%DB%8C-%D8%AF%D8%B1-%D8%A2%D8%B3%D9%85%D8%A7%D9%86-%D8%A7%D9%86%D8%AF%DB%8C%D9%85%D8%B4%DA%A9": 3,
+        "https://www.hamshahrionline.ir/news/1050804/%D9%81%D9%88%D8%B1%DB%8C-%D8%A8%DB%8C%D8%A7%D9%86%DB%8C%D9%87-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%A7%D8%B3%D8%AE-%D8%A8%D9%87-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D8%A7%DB%8C%D9%86-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D8%AE%D8%AA-%D9%87%D8%A7": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0,
+        "https://www.ynet.co.il/news/article/r1r0mrs4me": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21041042": 0,
+        "https://www.ynet.co.il/news/article/ryjmrka7fx": 0,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 0,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-22/ty-article/.premium/0000019f-8b2b-df92-a7ff-afaba9580000": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1116856-%D8%A7%D8%AE%D8%B7%D8%A7%D8%B1-%D8%AC%D8%AF%DB%8C%D8%AF-%D9%86%DB%8C%D8%B1%D9%88%DB%8C-%D8%AF%D8%B1%DB%8C%D8%A7%DB%8C%DB%8C-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AA%D9%86%DA%AF%D9%87-%D9%87%D8%B1%D9%85%D8%B2": 0,
+        "https://www.haaretz.com/israel-news/israel-security/2026-07-09/ty-article-live/u-s-strikes-targets-in-iran-for-second-night-in-a-row/0000019f-449e-d269-af9f-46df98160000": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1115359-%D8%AE%D8%A8%D8%B1-%D8%B3%D9%86%D8%AA%DA%A9%D8%A7%D9%85-%D8%A7%D8%B2-%D9%BE%D8%A7%DB%8C%D8%A7%D9%86-%D9%85%D9%88%D8%AC-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%B9%D9%84%DB%8C%D9%87-%D8%A8%D9%87-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D9%85%D9%88%D8%A7%D8%B6%D8%B9-%D8%AF%D9%81%D8%A7%D8%B9-%D8%B3%D8%A7%D8%AD%D9%84%DB%8C-%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D9%87%D8%A7%DB%8C-%D9%85%D9%88%D8%B4%DA%A9-%DA%A9%D8%B1%D9%88%D8%B2-%D8%AF%D8%B1-%D8%AC%D8%B2%DB%8C%D8%B1%D9%87-%D8%AA%D9%86%D8%A8-%D8%A8%D8%B2%D8%B1%DA%AF-%D8%B1%D8%A7-%D9%87%D8%AF%D9%81-%D9%82%D8%B1%D8%A7%D8%B1-%D8%AF%D8%A7%D8%AF%DB%8C%D9%85": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21163351": 0
+      }
+    },
+    {
+      "id": "search-v3-062",
+      "query": "Herzog Haredi soldiers",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/local/article/21040912",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/local/article/21040912": 3,
+        "https://www.israelhayom.co.il/news/defense/article/20992355": 2,
+        "https://www.ynet.co.il/news/article/skej2zsrme": 0,
+        "https://www.haaretz.co.il/news/law/2026-07-16/ty-article-magazine/.premium/0000019f-6731-d0b9-ab9f-7779d89a0000": 0,
+        "https://www.ynet.co.il/news/article/bkcn8fr4fl": 0,
+        "https://www.israelhayom.co.il/news/politics/article/21073333": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5f-df3a-afbf-6c5fd5e80000": 0,
+        "https://www.israelhayom.co.il/news/local/article/21073319": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-16/ty-article-magazine/.premium/0000019f-6682-df91-a7df-ef923adf0000": 0,
+        "https://www.ynet.co.il/news/article/syww6pr4ge": 0,
+        "https://kayhan.ir/fa/news/335799/بی‌توجهی-سربازان-به-سرود-ملی-آمریکا": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0
+      }
+    },
+    {
+      "id": "search-v3-063",
+      "query": "Hasmonean brigade",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/local/article/21040912",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/local/article/21040912": 3
+      }
+    },
+    {
+      "id": "search-v3-064",
+      "query": "Hebrew University fence",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/magazine/2026-07-27/ty-article-magazine/.premium/0000019f-9d6b-df92-a7ff-bfeba56d0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/magazine/2026-07-27/ty-article-magazine/.premium/0000019f-9d6b-df92-a7ff-bfeba56d0000": 3,
+        "https://www.ynet.co.il/news/article/syww6pr4ge": 0,
+        "https://www.haaretz.co.il/opinions/zafrir/2026-07-22/ty-article-opinion/.premium/0000019f-89be-dc4a-a1ff-cbbfead70000": 0
+      }
+    },
+    {
+      "id": "search-v3-065",
+      "query": "Jerusalem light rail barrier",
+      "category": "topic_browse",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/magazine/2026-07-27/ty-article-magazine/.premium/0000019f-9d6b-df92-a7ff-bfeba56d0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/magazine/2026-07-27/ty-article-magazine/.premium/0000019f-9d6b-df92-a7ff-bfeba56d0000": 3,
+        "https://www.ynet.co.il/news/article/syjlbavszg": 0,
+        "https://www.ynet.co.il/news/article/syww6pr4ge": 0
+      }
+    },
+    {
+      "id": "search-v3-066",
+      "query": "damaged nuclear sites",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/news/defense/article/20954567",
+      "relevance": {
+        "https://www.israelhayom.co.il/news/defense/article/20954567": 3,
+        "https://www.israelhayom.co.il/opinions/article/20990470": 0,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-16/ty-article/.premium/0000019f-66a5-dc96-afdf-6eb55ec80000": 2,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114071-%D8%B5%D8%AF%D8%A7%DB%8C-%D8%A7%D9%86%D9%81%D8%AC%D8%A7%D8%B1-%D8%AF%D8%B1-%D8%AC%D8%A7%D8%B3%DA%A9-%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4-%D8%B4%D8%AF": 0,
+        "https://kayhan.ir/fa/news/335800/انرژی-هسته‌ای-برای-شیرین-کردن-آب-در-پروژه-مشترک-اسرائیل-و-مصر": 2,
+        "https://www.hamshahrionline.ir/news/1051085/%D8%B3%DB%8C%D8%AF-%D8%B9%D9%84%DB%8C-%D8%AE%D9%85%DB%8C%D9%86%DB%8C-%D9%86%D9%85%DB%8C-%D8%B4%D9%88%D8%AF-%D9%85%D8%AC%D9%84%D8%B3%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D8%B1%D9%87%D8%A8%D8%B1-%D8%B4%D9%87%DB%8C%D8%AF-%D8%A8%D8%B1%D9%82%D8%B1%D8%A7%D8%B1-%D8%B4%D9%88%D8%AF-%D9%88-%D9%85%D8%B1%DA%AF": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%A7-246/1114072-%D8%A8%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D9%86-%D8%A8%D9%88%D9%85%D9%88%D8%B3%DB%8C-%D8%B3%DB%8C%D8%B1%DB%8C%DA%A9": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-16/ty-article-magazine/.premium/0000019f-6682-df91-a7df-ef923adf0000": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 1,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0,
+        "https://www.hamshahrionline.ir/news/1059508/%D9%87%D8%B4%D8%AF%D8%A7%D8%B1-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%B1%D9%88%DA%98%D9%87-%D8%AE%D8%A8%DB%8C%D8%AB%D8%A7%D9%86%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%D8%B9%D8%B1%D8%A7%D9%82-%D8%A7%D9%81%D8%B4%D8%A7%DB%8C-%D8%AF%D8%B3%D8%AA-%D9%87%D8%A7%DB%8C-%D9%BE%D8%B4%D8%AA": 0,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 2
+      }
+    },
+    {
+      "id": "search-v3-067",
+      "query": "Yoav Kisch education",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/opinions/2026-07-09/ty-article-opinion/.premium/0000019f-412d-d2da-adbf-4f2f67370000",
+      "relevance": {
+        "https://www.haaretz.co.il/opinions/2026-07-09/ty-article-opinion/.premium/0000019f-412d-d2da-adbf-4f2f67370000": 3,
+        "https://www.israelhayom.co.il/news/politics/article/21073333": 2,
+        "https://www.israelhayom.co.il/news/education/article/21073344": 0
+      }
+    },
+    {
+      "id": "search-v3-068",
+      "query": "Mitzav exams ninth",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/opinions/2026-07-09/ty-article-opinion/.premium/0000019f-412d-d2da-adbf-4f2f67370000",
+      "relevance": {
+        "https://www.haaretz.co.il/opinions/2026-07-09/ty-article-opinion/.premium/0000019f-412d-d2da-adbf-4f2f67370000": 3
+      }
+    },
+    {
+      "id": "search-v3-069",
+      "query": "David Zini Shin Bet",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.premium/0000019f-4274-df3a-afbf-6e7defbf0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.premium/0000019f-4274-df3a-afbf-6e7defbf0000": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 3,
+        "https://www.israelhayom.co.il/news/defense/article/21040975": 0,
+        "https://www.ynet.co.il/news/article/skej2zsrme": 0,
+        "https://www.israelhayom.co.il/news/world-news/usa/article/21163323": 0,
+        "https://www.ynet.co.il/news/article/yokra14827470": 0
+      }
+    },
+    {
+      "id": "search-v3-070",
+      "query": "Shin Bet legal adviser",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.premium/0000019f-4274-df3a-afbf-6e7defbf0000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-09/ty-article/.premium/0000019f-4274-df3a-afbf-6e7defbf0000": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 1,
+        "https://www.israelhayom.co.il/news/education/article/21073344": 0,
+        "https://www.israelhayom.co.il/news/defense/article/20992355": 0,
+        "https://www.israelhayom.co.il/news/defense/article/21040975": 0,
+        "https://www.ynet.co.il/news/article/skej2zsrme": 0,
+        "https://kayhan.ir/fa/news/333927/تغییر-هواپیمای-ترامپ-در-بازگشت-از-ترکیه-از-ترس-انتقام-ایران": 0,
+        "https://www.israelhayom.co.il/news/world-news/usa/article/21163323": 0,
+        "https://www.hamshahrionline.ir/news/1059507/%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%AF%DB%8C%DA%AF%D8%B1-%D8%B1%D8%A7-%D8%A7%D8%B2-%DA%A9%D8%A7%D8%AE-%D8%B3%D9%81%DB%8C%D8%AF-%D8%A7%D8%AE%D8%B1%D8%A7%D8%AC-%DA%A9%D8%B1%D8%AF": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/1114358-%D8%A8%D9%82%D8%A7%D8%A6%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86-%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%DB%8C-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%85%D8%B0%D8%A7%DA%A9%D8%B1%D9%87-%D8%A8%D8%A7-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D9%86%D8%AF%D8%A7%D8%B4%D8%AA": 0,
+        "https://kayhan.ir/fa/news/335801/ماهیت-و-ویژگی‌های-انقلاب-اسلامی": 0,
+        "https://kayhan.ir/fa/news/333878/با-ترامپ-جنایتکار-و-قاتل-باید-با-زبان-خودش-صحبت-کرد-ظاهراً-زبان-زور-را-بهتر-می‌فهمد": 0
+      }
+    },
+    {
+      "id": "search-v3-071",
+      "query": "Ahmad Nasser Salem",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5f-df3a-afbf-6c5fd5e80000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5f-df3a-afbf-6c5fd5e80000": 3
+      }
+    },
+    {
+      "id": "search-v3-072",
+      "query": "Rafah aid driver",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5f-df3a-afbf-6c5fd5e80000",
+      "relevance": {
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5f-df3a-afbf-6c5fd5e80000": 3,
+        "https://www.ynet.co.il/news/article/b1lfpdrnfe": 0,
+        "https://www.sharghdaily.com/fa/tiny/news-1120373": 0,
+        "https://www.israelhayom.co.il/news/defense/article/20992355": 0
+      }
+    },
+    {
+      "id": "search-v3-073",
+      "query": "Yael Sharoni bus",
+      "category": "entity_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/magazine/shishabat/article/20989166",
+      "relevance": {
+        "https://www.israelhayom.co.il/magazine/shishabat/article/20989166": 3
+      }
+    },
+    {
+      "id": "search-v3-074",
+      "query": "bus attack Sharoni",
+      "category": "detail_lookup",
+      "judged_by": "llm",
+      "seed_article": "https://www.israelhayom.co.il/magazine/shishabat/article/20989166",
+      "relevance": {
+        "https://www.israelhayom.co.il/magazine/shishabat/article/20989166": 3,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4c5a-d6c0-a9df-dddf52d50000": 0,
+        "https://www.haaretz.co.il/news/world/middle-east/2026-07-22/ty-article/.premium/0000019f-8b2b-df92-a7ff-afaba9580000": 0,
+        "https://www.hamshahrionline.ir/news/1050804/%D9%81%D9%88%D8%B1%DB%8C-%D8%A8%DB%8C%D8%A7%D9%86%DB%8C%D9%87-%D8%B3%D9%BE%D8%A7%D9%87-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D9%BE%D8%A7%D8%B3%D8%AE-%D8%A8%D9%87-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D8%A7%DB%8C%D9%86-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D8%AE%D8%AA-%D9%87%D8%A7": 0,
+        "https://www.hamshahrionline.ir/news/1054893/%D9%BE%D8%A7%D8%B3%D8%AE-%D8%B9%D8%B1%D8%A7%D9%82%DA%86%DB%8C-%D8%A8%D9%87-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE-%D8%AF%D8%B1%D8%A8%D8%A7%D8%B1%D9%87-%D8%AD%D9%85%D9%84%D9%87-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%A8%D9%87-%D9%86%DB%8C%D8%B1%D9%88%DA%AF%D8%A7%D9%87-%D9%87%D8%A7-%D9%88": 0,
+        "https://www.ynet.co.il/news/article/s1mkfmh7ge": 0,
+        "https://www.hamshahrionline.ir/news/1050807/%D9%84%D8%AD%D8%B8%D8%A7%D8%AA-%D8%A7%D8%B5%D8%A7%D8%A8%D8%AA-%D9%85%D9%88%D8%B4%DA%A9-%D9%87%D8%A7%DB%8C-%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%DB%8C-%D8%A8%D9%87-%D9%BE%D8%A7%DB%8C%DA%AF%D8%A7%D9%87-%D9%87%D8%A7%DB%8C-%D8%A2%D9%85%D8%B1%DB%8C%DA%A9%D8%A7-%D8%AF%D8%B1-%DA%A9%D9%88%DB%8C%D8%AA-%D9%88-%D8%A8%D8%AD%D8%B1%DB%8C%D9%86": 0,
+        "https://www.ynet.co.il/news/article/hkwgefavmg": 0,
+        "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B1%D9%88%D8%B2%D9%86%D8%A7%D9%85%D9%87-100/1115308-%D8%B4%D9%84%DB%8C%DA%A9-%D8%A8%D9%87-%D8%AE%D9%88%D8%A7%D8%A8%DA%AF%D8%A7%D9%87-%D8%B3%D8%B1%D8%A8%D8%A7%D8%B2%D8%A7%D9%86": 0,
+        "https://www.israelhayom.co.il/news/world-news/middle-east/article/21041042": 0,
+        "https://www.haaretz.co.il/news/politics/2026-07-10/ty-article/.premium/0000019f-4bcc-df3a-afbf-6fddddb90000": 0,
+        "https://www.hamshahrionline.ir/news/1054894/%D9%BE%DB%8C%D8%A7%D9%85-%D8%AC%D8%AF%DB%8C%D8%AF-%D8%B3%DB%8C%D8%AF%D9%85%D8%AC%DB%8C%D8%AF-%D9%85%D9%88%D8%B3%D9%88%DB%8C-%D8%A8%D8%B9%D8%AF-%D8%A7%D8%B2-%D8%AA%D9%87%D8%AF%DB%8C%D8%AF-%D8%AA%D8%B1%D8%A7%D9%85%D9%BE": 0,
+        "https://www.hamshahrionline.ir/news/1056220/%D9%87%D8%B1%DA%AF%D9%88%D9%86%D9%87-%D8%A7%D9%82%D8%AF%D8%A7%D9%85-%D8%B3%D8%B9%D9%88%D8%AF%DB%8C-%D9%87%D8%A7-%D8%A8%D8%A7-%D9%BE%D8%A7%D8%B3%D8%AE%DB%8C-%D9%BE%D8%B4%DB%8C%D9%85%D8%A7%D9%86-%DA%A9%D9%86%D9%86%D8%AF%D9%87-%D8%B1%D9%88%D8%A8%D9%87-%D8%B1%D9%88-%D9%85%DB%8C-%D8%B4%D9%88%D8%AF": 0
+      }
+    }
+  ]
+}

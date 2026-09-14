@@ -1,7 +1,3 @@
 .env
 .idea
-/evals/results/classification.json
-/evals/results/search.json
-/evals/results/summary.json
-/evals/results/translation.json
-/evals/results/dates.json
+/evals/results/
