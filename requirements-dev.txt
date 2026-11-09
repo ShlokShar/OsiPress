@@ -1,0 +1,17 @@
+# Development and test dependencies.
+#
+# Production installs requirements.txt only -- the server has no business
+# installing a test framework. Install this locally instead:
+#
+#     pip install -r requirements-dev.txt
+#
+# It pulls in requirements.txt too, so this is the only command you need.
+
+-r requirements.txt
+
+# evals/test_translation.py is written against pytest: it uses the
+# monkeypatch fixture and pytest.raises, and its tests are module-level
+# functions rather than a TestCase subclass, so `python -m unittest` cannot
+# collect them. pytest also runs the three unittest-style files, so one
+# command covers the whole suite.
+pytest==8.4.2

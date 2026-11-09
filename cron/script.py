@@ -23,10 +23,16 @@ from cron.util.log import add_log
 from cron.util.translation import (
     translate_references
 )
+from cron.util.url import normalize_article_url
 from shared.models import (
     Articles,
     Countries,
-    Sources
+    Sources,
+    add_canonical_article,
+    complete_ingestion_run,
+    fail_ingestion_run,
+    find_article_by_url,
+    start_ingestion_run,
 )
 from shared.search_service import SearchService
 
@@ -240,9 +246,15 @@ def get_article_info(
         references = processed_article.references_for_translation
         tags = processed_article.tags
 
-        references_translated = translate_references(
-            references
-        )
+        try:
+            references_translated = translate_references(references)
+        except Exception as exception:
+            add_log(
+                f"{headline}: reference translation failed "
+                f"({type(exception).__name__}): {exception}; saving article "
+                f"with untranslated references"
+            )
+            references_translated = references_original.copy()
 
         article_overview = (
             f"{translated_headline}:{summary}"
@@ -278,93 +290,161 @@ def get_article_info(
 
 def main() -> None:
     ai_service, vector_service, run_time, data = setup()
+    run_id = start_ingestion_run(run_time)
+    appearances: list[tuple[int, int, int]] = []
+    all_sources_succeeded = True
+    configured_sources = sum(len(sources) for sources in data.values())
+    successful_sources = 0
 
-    for country, sources in data.items():
-        country_object = get_country(country)
-        if not country_object:
-            continue
+    try:
+        for country, sources in data.items():
+            country_object = get_country(country)
+            if not country_object:
+                all_sources_succeeded = False
+                continue
 
-        for source, config in sources.items():
-            source_result = get_source(
-                country_object,
-                country,
-                source,
-                config,
+            for source, config in sources.items():
+                source_result = get_source(
+                    country_object,
+                    country,
+                    source,
+                    config,
+                )
+                if not source_result:
+                    all_sources_succeeded = False
+                    continue
+
+                source_object, source_name, url = source_result
+                feed = validate_feed(url, country, source_name)
+                if not feed:
+                    all_sources_succeeded = False
+                    continue
+
+                selected_articles = 0
+                selected_urls: set[str] = set()
+
+                for entry in feed.entries:
+                    if selected_articles >= MAX_ARTICLES:
+                        break
+
+                    headline = getattr(entry, "title", "Unknown headline")
+                    link = getattr(entry, "link", "")
+                    try:
+                        normalized_url = normalize_article_url(link)
+                    except ValueError as exception:
+                        add_log(
+                            f"{country} / {source_name} / {headline}: "
+                            f"invalid URL ({exception})"
+                        )
+                        continue
+
+                    if normalized_url in selected_urls:
+                        continue
+
+                    try:
+                        article = find_article_by_url(normalized_url, link)
+                    except Exception as exception:
+                        add_log(
+                            f"{country} / {source_name} / {headline}: URL "
+                            f"cache lookup failed "
+                            f"({type(exception).__name__}): {exception}"
+                        )
+                        continue
+
+                    if article is None:
+                        article_info = get_article_info(
+                            entry,
+                            ai_service,
+                            vector_service,
+                        )
+                        if not article_info:
+                            continue
+
+                        (
+                            headline,
+                            translated_headline,
+                            link,
+                            summary,
+                            references,
+                            translated,
+                            tags,
+                            vector,
+                        ) = article_info
+
+                        article = Articles(
+                            source_id=source_object.id,
+                            headline=headline,
+                            translated_headline=translated_headline,
+                            link=link,
+                            summary=summary,
+                            references_original=references,
+                            references_translated=translated,
+                            tags=tags,
+                            embedding=vector,
+                            captured_at=run_time,
+                        )
+
+                        try:
+                            article = add_canonical_article(
+                                article,
+                                normalized_url,
+                            )
+                        except Exception as exception:
+                            add_log(
+                                f"{country} / {source_name} / {headline}: "
+                                f"save failed ({type(exception).__name__}): "
+                                f"{exception}"
+                            )
+                            continue
+
+                        # Postgres is the source of truth, so a failed upsert
+                        # leaves the article available for a later repair.
+                        try:
+                            upsert_article(article, vector_service)
+                        except Exception as exception:
+                            add_log(
+                                f"{country} / {source_name} / {headline}: "
+                                f"Qdrant upsert failed "
+                                f"({type(exception).__name__}): {exception}"
+                            )
+
+                    appearances.append((
+                        source_object.id,
+                        article.id,
+                        selected_articles,
+                    ))
+                    selected_urls.add(normalized_url)
+                    selected_articles += 1
+
+                if selected_articles == 0:
+                    all_sources_succeeded = False
+                    add_log(
+                        f"{country} / {source_name}: selected no articles; "
+                        f"run will not be published"
+                    )
+                else:
+                    successful_sources += 1
+
+                if selected_articles < MAX_ARTICLES:
+                    add_log(
+                        f"{country} / {source_name}: selected "
+                        f"{selected_articles}/{MAX_ARTICLES} articles"
+                    )
+
+        if (
+            not all_sources_succeeded
+            or configured_sources == 0
+            or successful_sources != configured_sources
+        ):
+            raise RuntimeError(
+                f"Ingestion run incomplete: {successful_sources}/"
+                f"{configured_sources} sources contributed articles"
             )
-            if not source_result:
-                continue
 
-            source_object, source_name, url = source_result
-            feed = validate_feed(url, country, source_name)
-            if not feed:
-                continue
-
-            saved_articles = 0
-
-            for entry in feed.entries:
-                if saved_articles >= MAX_ARTICLES:
-                    break
-
-                article_info = get_article_info(
-                    entry,
-                    ai_service,
-                    vector_service
-                )
-                if not article_info:
-                    continue
-
-                (
-                    headline,
-                    translated_headline,
-                    link,
-                    summary,
-                    references,
-                    translated,
-                    tags,
-                    vector
-                ) = article_info
-
-                article = Articles(
-                    source_id=source_object.id,
-                    headline=headline,
-                    translated_headline=translated_headline,
-                    link=link,
-                    summary=summary,
-                    references_original=references,
-                    references_translated=translated,
-                    tags=tags,
-                    embedding=vector,
-                    captured_at=run_time,
-                )
-
-                try:
-                    article = Articles.add_article(article)
-                except Exception as exception:
-                    add_log(
-                        f"{country} / {source_name} / {headline}: save failed "
-                        f"({type(exception).__name__}): {exception}"
-                    )
-                    continue
-
-                saved_articles += 1
-
-                # Postgres is the source of truth, so a failed upsert is logged
-                # and the article stays saved. It is invisible to search until
-                # the next backfill_vectors() run repairs it.
-                try:
-                    upsert_article(article, vector_service)
-                except Exception as exception:
-                    add_log(
-                        f"{country} / {source_name} / {headline}: Qdrant "
-                        f"upsert failed ({type(exception).__name__}): "
-                        f"{exception}"
-                    )
-
-            if saved_articles < MAX_ARTICLES:
-                add_log(
-                    f"{country} / {source_name}: saved {saved_articles}/"
-                    f"{MAX_ARTICLES} articles"
-                )
+        complete_ingestion_run(run_id, appearances)
+    except Exception:
+        fail_ingestion_run(run_id)
+        raise
 
 
 if __name__ == "__main__":

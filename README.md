@@ -67,16 +67,21 @@ The script runs twice a day. It:
 3. extracts the text from each article with Trafilatura
 4. translates the headline into English
 5. creates a short summary with supporting quotes
-6. saves everything to PostgreSQL
+6. saves each URL once as a canonical article
+7. publishes a daily appearance for that article in an atomic ingestion run
 
-Each article is processed separately, so one broken feed or article should not 
-stop the other sources from being collected. Article URLs and redirects are 
-also checked before they are downloaded.
+Canonical articles are reused when a URL appears in a later feed, avoiding all
+repeat AI, translation, extraction, and embedding work. A broken individual
+article does not stop its source from trying later feed entries. If a configured
+source contributes no articles, however, the whole run stays unpublished and
+the site continues showing the latest successful run. Article URLs and
+redirects are checked before they are downloaded.
 
-The Flask application reads the latest collection for each source from the 
-database. `/today` displays the most recent articles, while `/archive` lets the 
-user view a previous date. If today's collection is empty, the website can fall 
-back up to three days instead of showing a blank page.
+The Flask application reads the latest successful atomic run from the database.
+`/today` displays the most recent articles, while `/archive` lets the user view
+a previous date. If today's collection is empty, the website can fall back up
+to three days instead of showing a blank page. Editions created before the
+run/appearance schema continue to use the legacy archive query.
 
 In production, the Flask application runs through Gunicorn behind Nginx. A 
 systemd timer runs the ingestion script at 06:00 and 18:00 UTC.
@@ -114,11 +119,16 @@ DATABASE_URL=postgresql://osipress:your_password@localhost:5432/osipress
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-Create the database tables:
+Create the database tables by running the migrations:
 
 ```bash
-python -c "from shared.database import Base, engine; import shared.models; Base.metadata.create_all(engine)"
+alembic upgrade head
 ```
+
+This also installs the `pgvector` extension, which the `articles.embedding`
+column needs. On a managed Postgres provider you may have to enable the
+`vector` extension through their console first, since `CREATE EXTENSION`
+requires elevated privileges.
 
 Then add the countries and sources expected by `cron/sources.json`. Feel 
 free to change the sources to desired RSS feeds:
@@ -166,3 +176,80 @@ flask --app main run
 
 The landing page will be available at `http://127.0.0.1:5000`, with the latest 
 collection at `/today` and previous collections at `/archive`.
+
+## Migrations
+
+The PostgreSQL schema is versioned with Alembic in `migrations/`. The models in
+`shared/models.py` are the desired state; the revisions in
+`migrations/versions/` are how a database gets there.
+
+```bash
+alembic current          # which revision this database is on
+alembic history          # the revision chain
+alembic upgrade head     # apply everything outstanding
+alembic downgrade -1     # step back one revision
+```
+
+`migrations/env.py` takes the database URL from `shared.database.DATABASE_URL`,
+the same value the application uses, so there is one source of truth. To run
+against a different database without touching `.env`, pass it explicitly:
+
+```bash
+alembic -x url="postgresql://postgres:pw@localhost:5432/scratch" upgrade head
+```
+
+**Checking for drift.** If the models and the database agree, autogenerate
+produces an empty revision. That is the test:
+
+```bash
+alembic revision --autogenerate -m "drift check"
+# upgrade() should be `pass` -- then delete the generated file
+```
+
+### Adopting an existing database
+
+A database that predates Alembic already has the tables in revision `0001`, so
+it must be **stamped**, not upgraded. `stamp` records the version without
+running any DDL:
+
+```bash
+alembic stamp 0001_baseline_prod_schema
+alembic current    # confirm it says 0001_baseline_prod_schema
+alembic upgrade head
+```
+
+Use `./scripts/introspect_db.sh "<url>" OUTDIR` first to confirm what that
+database actually contains; it is read-only.
+
+### Deploying a schema change
+
+```bash
+# 1. stop the ingestion timer so no run lands mid-migration
+systemctl stop <osipress-cron>.timer
+
+# 2. back up -- this is the rollback plan
+pg_dump -Fc -d "<url>" -f ~/osipress-$(date +%F-%H%M).dump
+
+# 3. upload the code, then install any new dependencies
+pip install -r requirements.txt
+
+# 4. migrate
+alembic current
+alembic upgrade head
+alembic current
+
+# 5. restart gunicorn -- each worker builds its engine at import, so workers
+#    must be recycled before they see the new schema
+systemctl restart <gunicorn-unit>
+
+# 6. resume ingestion
+systemctl start <osipress-cron>.timer
+```
+
+Never run `alembic stamp` to get past a migration that failed: that marks it
+applied without applying it, and every later revision then builds on a schema
+that does not exist. Restore from the dump instead.
+
+Note that Qdrant is **not** covered by any of this. Its collection is created
+imperatively in `cron/util/backfill_vectors.py`, and its point ids mirror
+`articles.id` — which is why no migration may ever renumber that primary key.
