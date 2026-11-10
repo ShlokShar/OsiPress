@@ -131,13 +131,8 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
 
 const resultList = document.querySelector('.results:not([aria-hidden="true"])');
 const rows = resultList ? Array.from(resultList.querySelectorAll(':scope > .story')) : [];
-const pageSize = Number(resultList && resultList.dataset.pageSize) || 6;
-const moreContainer = document.querySelector('.more');
-const moreButton = document.getElementById('show-more-results');
-const revealStatus = document.getElementById('result-reveal-status');
 
 const filters = { countries: new Set(), outlets: new Set(), sort: 'relevance' };
-let revealedCount = pageSize;
 
 const SORTS = [
   { id: 'relevance', label: 'Relevance' },
@@ -166,24 +161,16 @@ function matches(row){
   return true;
 }
 
-function resetPagination(){
-  revealedCount = pageSize;
-}
-
-function updateMoreButton(total, shown){
-  if (!moreContainer || !moreButton) return;
-
-  const remaining = total - shown;
-  moreContainer.hidden = remaining <= 0;
-  if (remaining > 0){
-    const count = Math.min(pageSize, remaining);
-    moreButton.textContent = 'Show ' + count + ' more result' +
-      (count === 1 ? '' : 's');
-  }
-}
-
 function applyFilters(){
-  const ordered = rows.filter(matches);
+  const visible = [];
+  rows.forEach(row => {
+    const show = matches(row);
+    row.hidden = !show;
+    row.classList.remove('first-visible');
+    if (show) visible.push(row);
+  });
+
+  const ordered = visible.slice();
   if (filters.sort === 'relevance'){
     ordered.sort((a, b) => Number(a.dataset.rank) - Number(b.dataset.rank));
   } else {
@@ -194,25 +181,14 @@ function applyFilters(){
   // separator from DOM order, so visual-only reordering misplaces it.
   ordered.forEach(row => resultList.appendChild(row));
 
-  rows.forEach(row => {
-    row.hidden = true;
-    row.classList.remove('first-visible');
-  });
-
-  const shown = ordered.slice(0, revealedCount);
-  shown.forEach(row => { row.hidden = false; });
-
   // A hidden first row would otherwise leave its separator on the row below.
-  if (shown.length) shown[0].classList.add('first-visible');
+  if (ordered.length) ordered[0].classList.add('first-visible');
 
   const emptyNote = document.getElementById('filter-empty');
   if (emptyNote) emptyNote.hidden = ordered.length > 0;
 
-  updateMoreButton(ordered.length, shown.length);
   syncControls();
   syncUrl();
-
-  return { total: ordered.length, shown: shown.length };
 }
 
 function syncUrl(){
@@ -253,7 +229,6 @@ function buildChips(container, values, selected){
     chip.addEventListener('click', () => {
       if (selected.has(value)) selected.delete(value);
       else selected.add(value);
-      resetPagination();
       applyFilters();
     });
     container.appendChild(chip);
@@ -278,7 +253,6 @@ function buildOptions(panel, values, onPick, isChecked, role){
     option.append(box, label);
     option.addEventListener('click', () => {
       onPick(value);
-      resetPagination();
       applyFilters();
     });
     panel.appendChild(option);
@@ -389,15 +363,4 @@ if (rows.length){
   wireDropdown(sortPicker, document.getElementById('sort-toggle'), sortPanel);
 
   applyFilters();
-
-  if (moreButton){
-    moreButton.addEventListener('click', () => {
-      revealedCount += pageSize;
-      const state = applyFilters();
-      if (revealStatus){
-        revealStatus.textContent = 'Showing ' + state.shown + ' of ' +
-          state.total + ' results.';
-      }
-    });
-  }
 }

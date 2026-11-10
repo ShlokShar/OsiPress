@@ -18,7 +18,7 @@ def _article(index: int) -> SimpleNamespace:
     )
 
 
-def test_search_renders_all_ranked_results_once(monkeypatch):
+def test_search_renders_all_ranked_results(monkeypatch):
     ranked = [(index, _article(index)) for index in range(1, 8)]
     calls = []
 
@@ -46,5 +46,5 @@ def test_search_renders_all_ranked_results_once(monkeypatch):
     assert response.status_code == 200
     assert calls == ["energy"]
     assert page.count('class="story"') == 7
-    assert 'id="show-more-results"' in page
+    assert 'id="show-more-results"' not in page
     assert "limit=" not in page

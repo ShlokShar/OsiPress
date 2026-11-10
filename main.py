@@ -9,7 +9,6 @@ from shared.models import (
 )
 from shared.search_helpers import (
     ARCHIVE_START_LABEL,
-    SEARCH_PAGE_SIZE,
     build_result,
     get_search_service
 )
@@ -88,7 +87,6 @@ def search():
         "results": [],
         "total": 0,
         "suggestions": [],
-        "page_size": SEARCH_PAGE_SIZE,
     }
 
     if not query:
@@ -112,7 +110,6 @@ def search():
     context["results"] = [
         build_result(rank, article, sources) for rank, article in ranked
     ]
-    context["total"] = len(ranked)
 
     return flask.render_template("search.html", state="results", **context)
 
