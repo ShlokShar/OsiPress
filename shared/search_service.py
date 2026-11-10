@@ -232,9 +232,9 @@ class SearchService:
         round trip, so results appearing highly in either search receive a
         combined score and are ordered from most to least relevant.
 
-        Qdrant fuses with k=1 rather than the k=60 used by the Postgres
-        fallback, which weighs a top placement in one arm more heavily than
-        appearing in both.
+        Qdrant uses zero-based ranks while the Postgres fallback uses one-based
+        ranks. Its RRF constant is therefore one higher so both paths apply
+        the same 1 / (RRF_K + rank) scoring formula.
 
         Falls back to searching Postgres directly when Qdrant cannot be
         reached, since this path serves live user search.
@@ -259,7 +259,9 @@ class SearchService:
                         limit=PREFETCH_LIMIT,
                     ),
                 ],
-                query=models.FusionQuery(fusion=models.Fusion.RRF),
+                query=models.RrfQuery(
+                    rrf=models.Rrf(k=RRF_K + 1),
+                ),
                 limit=RESULT_LIMIT,
             ).points
 
