@@ -88,7 +88,7 @@ def search():
         "results": [],
         "total": 0,
         "suggestions": [],
-        "next_limit": SEARCH_PAGE_SIZE,
+        "page_size": SEARCH_PAGE_SIZE,
     }
 
     if not query:
@@ -107,16 +107,12 @@ def search():
     if not ranked:
         return flask.render_template("search.html", state="none", **context)
 
-    limit = flask.request.args.get("limit", type=int) or SEARCH_PAGE_SIZE
-    limit = max(1, min(limit, len(ranked)))
-
     sources = get_sources_by_ids([article.source_id for _, article in ranked])
 
     context["results"] = [
-        build_result(rank, article, sources) for rank, article in ranked[:limit]
+        build_result(rank, article, sources) for rank, article in ranked
     ]
     context["total"] = len(ranked)
-    context["next_limit"] = min(limit + SEARCH_PAGE_SIZE, len(ranked))
 
     return flask.render_template("search.html", state="results", **context)
 

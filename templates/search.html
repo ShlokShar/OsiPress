@@ -90,7 +90,7 @@
                 --------------------------------------------------------- #}
 
                 {% if state == 'results' %}
-                <div class="results">
+                <div class="results" id="search-results" data-page-size="{{ page_size }}">
                     {% for r in results %}
                     <details class="story" data-outlet="{{ r.outlet }}" data-country="{{ r.country }}" data-published="{{ r.published }}" data-rank="{{ r.rank }}">
                         <summary class="story-row">
@@ -136,10 +136,12 @@
                     {% endfor %}
                 </div>
                 <p class="empty" id="filter-empty" hidden>No results match these filters.</p>
-                {% if results|length < total %}
+                {% if results|length > page_size %}
                 <div class="more">
-                    <a class="btn" href="{{ url_for('search', q=query, limit=next_limit) }}">Show more results</a>
+                    <button class="btn" id="show-more-results" type="button" aria-controls="search-results">Show more results</button>
                 </div>
+                <p class="vh" id="result-reveal-status" aria-live="polite"></p>
+                <noscript><style>.more { display: none; }</style></noscript>
                 {% endif %}
 
                 {% elif state == 'none' %}
