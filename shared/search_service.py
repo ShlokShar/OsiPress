@@ -195,7 +195,11 @@ class SearchService:
         return self._deduplicate(search_result)
 
 
-    def semantic_search(self, text: str) -> list[tuple[Articles, float]]:
+    def semantic_search(
+            self,
+            text: str,
+            query_vector: list[float] | None = None,
+    ) -> list[tuple[Articles, float]]:
         """
         Searches for articles that are semantically similar to the provided
         text. The query is embedded and compared against stored article
@@ -203,10 +207,12 @@ class SearchService:
         least similar.
 
         :param text: the query to compare against article embeddings
+        :param query_vector: an already-created embedding, when available
         :return: the 50 closest articles and their cosine distances
         """
 
-        query_vector = self.embed(text)
+        if query_vector is None:
+            query_vector = self.embed(text)
         distance = Articles.embedding.cosine_distance(query_vector)
         search_result = None
 
@@ -243,18 +249,21 @@ class SearchService:
         :return: the ranked result positions and their corresponding articles
         """
 
+        query_vector = self.embed(text)
+        sparse_vector = self.sparse_embed(text)
+
         try:
             search_result = self.qdrant.query_points(
                 COLLECTION,
                 prefetch=[
                     models.Prefetch(
-                        query=self.embed(text),
+                        query=query_vector,
                         using=DENSE_VECTOR,
                         limit=PREFETCH_LIMIT,
                         score_threshold=MIN_SEMANTIC_SIMILARITY,
                     ),
                     models.Prefetch(
-                        query=self.sparse_embed(text),
+                        query=sparse_vector,
                         using=SPARSE_VECTOR,
                         limit=PREFETCH_LIMIT,
                     ),
@@ -267,7 +276,7 @@ class SearchService:
 
         except Exception:
             logger.exception("Qdrant search failed, falling back to Postgres")
-            return self.hybrid_search_backup(text)
+            return self.hybrid_search_backup(text, query_vector)
 
         return [
             (rank, article)
@@ -276,17 +285,25 @@ class SearchService:
             )
         ]
 
-    def hybrid_search_backup(self, text: str) -> list[tuple[int, Articles]]:
+    def hybrid_search_backup(
+            self,
+            text: str,
+            query_vector: list[float] | None = None,
+    ) -> list[tuple[int, Articles]]:
         """
         Fuses the Postgres lexical and semantic arms in Python using reciprocal
         rank fusion. Only used when Qdrant is unreachable.
 
         :param text: the query to search for across stored articles
+        :param query_vector: an already-created embedding, when available
         :return: the ranked result positions and their corresponding articles
         """
 
         lexical_search = self.lexical_search(text)
-        semantic_search = self.semantic_search(text)
+        if query_vector is None:
+            semantic_search = self.semantic_search(text)
+        else:
+            semantic_search = self.semantic_search(text, query_vector)
 
         scores = {}
 
