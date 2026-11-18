@@ -20,11 +20,11 @@ from sqlalchemy import (
     Index,
     Integer,
     func,
-    inspect,
     String,
     Text,
     text,
 )
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import (
     Mapped,
     mapped_column
@@ -33,7 +33,6 @@ from sqlalchemy.orm import (
 from shared.database import (
     Base,
     SessionLocal,
-    engine,
 )
 
 
@@ -293,17 +292,34 @@ def find_article_by_url(
 def add_canonical_article(article: Articles, normalized_url: str) -> Articles:
     """Save a processed article and claim its normalized URL atomically."""
 
+    url_hash = hashlib.sha256(normalized_url.encode("utf-8")).hexdigest()
     with SessionLocal() as session:
-        session.add(article)
-        session.flush()
-        session.add(ArticleURLs(
-            url_hash=hashlib.sha256(
-                normalized_url.encode("utf-8")
-            ).hexdigest(),
-            url=normalized_url,
-            article_id=article.id,
-        ))
-        session.commit()
+        try:
+            session.add(article)
+            session.flush()
+            session.add(ArticleURLs(
+                url_hash=url_hash,
+                url=normalized_url,
+                article_id=article.id,
+            ))
+            session.commit()
+        except IntegrityError:
+            # Another ingestion worker may have claimed this normalized URL
+            # between find_article_by_url() and this insert. Its transaction
+            # wins; return that canonical article rather than failing the run.
+            session.rollback()
+            article = (
+                session.query(Articles)
+                .join(ArticleURLs, ArticleURLs.article_id == Articles.id)
+                .filter(
+                    ArticleURLs.url_hash == url_hash,
+                    ArticleURLs.url == normalized_url,
+                )
+                .first()
+            )
+            if article is None:
+                raise
+
         session.refresh(article)
         return article
 
@@ -360,9 +376,6 @@ def _get_run_headlines(
     end: datetime,
 ) -> Optional[list[tuple[str, str, str, Articles]]]:
     """Return the latest successful atomic run, or None for legacy data."""
-
-    if not inspect(engine).has_table(IngestionRuns.__tablename__):
-        return None
 
     first_run_at = session.query(func.min(IngestionRuns.started_at)).scalar()
     run_id = (

@@ -27,8 +27,13 @@ target_metadata = Base.metadata
 # Alembic does not compare index sort order, and expressing the DESC as a
 # sa.text() expression makes autogenerate propose a spurious drop/create pair
 # on every run. The index is owned by revision 0001 and declared in
-# shared/models.py for humans to see.
-UNMANAGED_INDEXES = {"idx_articles_source_captured"}
+# shared/models.py for humans to see. The search indexes in revision 0003 are
+# SQL expressions and are similarly excluded from fragile autogenerate diffs.
+UNMANAGED_INDEXES = {
+    "idx_articles_source_captured",
+    "idx_articles_embedding_hnsw",
+    "idx_articles_search_fts",
+}
 
 
 def get_url() -> str:
@@ -100,8 +105,8 @@ COMMON = dict(
     compare_type=compare_type,
     render_item=render_item,
     # Left off deliberately. articles.captured_at carries server_default=now()
-    # and revision 0003 adds '{}'::text[] to articles.tags; Postgres echoes
-    # both back in a normalised form that never string-matches the model, so
+    # and articles.tags has a default; Postgres echoes both back in a
+    # normalised form that never string-matches the model, so
     # turning this on produces permanent unfixable noise.
     compare_server_default=False,
     # Each revision gets its own transaction, so a failure part-way through a

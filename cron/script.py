@@ -1,5 +1,6 @@
 
 import json
+import time
 from datetime import (
     datetime,
     timezone
@@ -11,6 +12,7 @@ from typing import (
 )
 
 import feedparser
+import requests
 from feedparser.util import FeedParserDict
 
 from cron.ai.service import AIService
@@ -60,6 +62,8 @@ ArticleInfo = tuple[
 
 MAX_ARTICLES = 3
 SOURCES_PATH = Path(__file__).resolve().parent / "sources.json"
+FEED_TIMEOUT = (5, 20)
+FEED_ATTEMPTS = 2
 
 
 def setup() -> SetupResult:
@@ -179,22 +183,54 @@ def validate_feed(
     :return: the feed object, or None if not found
     """
 
-    try:
-        feed = feedparser.parse(url)
-    except Exception as exception:
-        add_log(
-            f"{country} / {source_name}: feed failed to load "
-            f"({type(exception).__name__}): {exception}"
-        )
-        return None
+    for attempt in range(1, FEED_ATTEMPTS + 1):
+        try:
+            response = requests.get(
+                url,
+                headers={"User-Agent": "OsiPress/1.0"},
+                timeout=FEED_TIMEOUT,
+            )
+        except requests.RequestException as exception:
+            if attempt == FEED_ATTEMPTS:
+                add_log(
+                    f"{country} / {source_name}: feed failed to load "
+                    f"({type(exception).__name__}): {exception}"
+                )
+                return None
+            add_log(
+                f"{country} / {source_name}: feed request failed; retrying "
+                f"({type(exception).__name__}): {exception}"
+            )
+            time.sleep(1)
+            continue
 
-    feed_status = getattr(feed, "status", None)
-    if feed_status != 200:
-        add_log(
-            f"{country} / {source_name}: feed returned status "
-            f"{feed_status}"
-        )
-        return None
+        try:
+            if response.status_code == 200:
+                try:
+                    feed = feedparser.parse(response.content)
+                except Exception as exception:
+                    add_log(
+                        f"{country} / {source_name}: feed failed to parse "
+                        f"({type(exception).__name__}): {exception}"
+                    )
+                    return None
+                break
+
+            if response.status_code < 500 or attempt == FEED_ATTEMPTS:
+                add_log(
+                    f"{country} / {source_name}: feed returned status "
+                    f"{response.status_code}"
+                )
+                return None
+
+            add_log(
+                f"{country} / {source_name}: feed returned status "
+                f"{response.status_code}; retrying"
+            )
+        finally:
+            response.close()
+
+        time.sleep(1)
 
     if not feed.entries:
         add_log(f"{country} / {source_name}: feed returned no articles")
@@ -292,7 +328,6 @@ def main() -> None:
     ai_service, vector_service, run_time, data = setup()
     run_id = start_ingestion_run(run_time)
     appearances: list[tuple[int, int, int]] = []
-    all_sources_succeeded = True
     configured_sources = sum(len(sources) for sources in data.values())
     successful_sources = 0
 
@@ -300,7 +335,6 @@ def main() -> None:
         for country, sources in data.items():
             country_object = get_country(country)
             if not country_object:
-                all_sources_succeeded = False
                 continue
 
             for source, config in sources.items():
@@ -311,13 +345,11 @@ def main() -> None:
                     config,
                 )
                 if not source_result:
-                    all_sources_succeeded = False
                     continue
 
                 source_object, source_name, url = source_result
                 feed = validate_feed(url, country, source_name)
                 if not feed:
-                    all_sources_succeeded = False
                     continue
 
                 selected_articles = 0
@@ -417,10 +449,9 @@ def main() -> None:
                     selected_articles += 1
 
                 if selected_articles == 0:
-                    all_sources_succeeded = False
                     add_log(
                         f"{country} / {source_name}: selected no articles; "
-                        f"run will not be published"
+                        f"source will be omitted from this edition"
                     )
                 else:
                     successful_sources += 1

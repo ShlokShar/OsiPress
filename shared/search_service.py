@@ -7,6 +7,7 @@ from openai import OpenAI
 from qdrant_client import QdrantClient, models
 from sqlalchemy import (
     func,
+    literal_column,
     select
 )
 
@@ -172,14 +173,15 @@ class SearchService:
         :return: up to 50 matching articles and their lexical relevance scores
         """
 
-        article_text = func.concat(
-            Articles.translated_headline,
-            " ",
-            Articles.summary
-        )
+        # Keep this expression identical to ix_articles_search_fts. Postgres
+        # can use an expression index only when the query uses that expression.
+        article_text = Articles.translated_headline.op("||")(
+            literal_column("' '")
+        ).op("||")(Articles.summary)
 
-        search_vector = func.to_tsvector("english", article_text)
-        search_query = func.websearch_to_tsquery("english", text)
+        config = literal_column("'english'::regconfig")
+        search_vector = func.to_tsvector(config, article_text)
+        search_query = func.websearch_to_tsquery(config, text)
         search_result = None
 
         with SessionLocal() as session:
