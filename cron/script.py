@@ -431,13 +431,16 @@ def main() -> None:
                         f"{selected_articles}/{MAX_ARTICLES} articles"
                     )
 
-        if (
-            not all_sources_succeeded
-            or configured_sources == 0
-            or successful_sources != configured_sources
-        ):
+        if configured_sources == 0 or successful_sources == 0:
             raise RuntimeError(
-                f"Ingestion run incomplete: {successful_sources}/"
+                "Ingestion run has no articles: "
+                f"{successful_sources}/{configured_sources} sources "
+                "contributed articles"
+            )
+
+        if successful_sources != configured_sources:
+            add_log(
+                f"Publishing partial edition: {successful_sources}/"
                 f"{configured_sources} sources contributed articles"
             )
 
