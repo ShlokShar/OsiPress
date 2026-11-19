@@ -24,3 +24,7 @@ class Base(DeclarativeBase):
 
 
 SessionLocal = sessionmaker(bind=engine)
+
+
+def session_factory(database_url: str):
+    return sessionmaker(bind=create_engine(database_url, echo=False))

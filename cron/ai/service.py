@@ -1,4 +1,5 @@
 
+import json
 import os
 from pathlib import Path
 from typing import Optional
@@ -9,10 +10,14 @@ from openai.types.shared_params import Reasoning
 
 from cron.ai.prompts import (
     CLASSIFY_INSTRUCTIONS,
+    EVENT_JUDGE_INSTRUCTIONS,
+    EVENT_TITLE_INSTRUCTIONS,
     SUMMARIZE_INSTRUCTIONS,
     TRANSLATE_INSTRUCTIONS
 )
 from cron.ai.schemas import (
+    EventJudge,
+    EventTitle,
     HeadlineClassifier,
     Parsed,
     TranslatedHeadline
@@ -130,6 +135,40 @@ class AIService:
                 parsed.references_for_translation[i] = parsed.references[i]
 
         return parsed
+
+    def judge_event(self, fact: str, candidates: list[dict]) -> Optional[int]:
+        error = None
+        for _ in range(2):
+            try:
+                response = self.client.responses.parse(
+                    model=self.model,
+                    instructions=EVENT_JUDGE_INSTRUCTIONS,
+                    input=json.dumps({"article_fact": fact, "candidates": candidates}),
+                    text_format=EventJudge,
+                )
+                parsed = response.output_parsed
+                if parsed:
+                    return parsed.event_id
+            except Exception as exception:
+                error = exception
+        raise ValueError("Event judge returned no structured output") from error
+
+    def title_event(self, facts: list[dict], topics: list[dict]) -> EventTitle:
+        error = None
+        for _ in range(2):
+            try:
+                response = self.client.responses.parse(
+                    model=self.model,
+                    instructions=EVENT_TITLE_INSTRUCTIONS,
+                    input=json.dumps({"facts": facts, "topics": topics}),
+                    text_format=EventTitle,
+                )
+                parsed = response.output_parsed
+                if parsed:
+                    return parsed
+            except Exception as exception:
+                error = exception
+        raise ValueError("Event title call returned no structured output") from error
 
 if __name__ == "__main__":
     ai_service = AIService()

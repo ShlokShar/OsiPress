@@ -47,6 +47,15 @@ class NeutralFact(BaseModel):
     fact: str
 
 
+class EventJudge(BaseModel):
+    event_id: int | None
+
+
+class EventTitle(BaseModel):
+    title: str
+    topic_id: int | None
+
+
 class Parsed(DateModel):
     references: list[str] = Field(
         description="a list of quotes from the article that are used for the summary"

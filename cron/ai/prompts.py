@@ -210,3 +210,14 @@ Mixed-precision examples:
 If the article cannot be summarized, set summary to 'This article cannot be \
 summarized.' and leave references, references_for_translation, references_dates,
 tags, and dates empty."""
+
+EVENT_JUDGE_INSTRUCTIONS = """Decide whether the article fact belongs to one
+of the candidate events. Events represent one specific development, not a broad
+topic. Return a candidate event_id only when the facts describe the same
+development. Otherwise return null. Do not infer facts absent from the input."""
+
+EVENT_TITLE_INSTRUCTIONS = """Write a short neutral English title for the
+specific development shared by the supplied facts from multiple countries. State
+only what the reporting agrees happened. Do not summarize, explain, assign
+blame, or use loaded language. Select topic_id only from the supplied topics;
+otherwise return null."""
