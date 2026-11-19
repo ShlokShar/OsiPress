@@ -20,6 +20,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 EMBEDDING_SIZE = 1536
 BATCH_SIZE = 128
+FACT_VECTOR = "fact"
 
 
 def get_client() -> QdrantClient:
@@ -47,6 +48,18 @@ def create_collection(client: QdrantClient, reset: bool = False) -> None:
     if reset:
         client.delete_collection(COLLECTION)
     elif client.collection_exists(COLLECTION):
+        vectors = client.get_collection(COLLECTION).config.params.vectors
+        if not isinstance(vectors, dict) or FACT_VECTOR not in vectors:
+            client.create_vector_name(
+                COLLECTION,
+                FACT_VECTOR,
+                models.DenseVectorNameConfig(
+                    dense=models.DenseVectorConfig(
+                        size=EMBEDDING_SIZE,
+                        distance=models.Distance.COSINE,
+                    ),
+                ),
+            )
         return
 
     client.create_collection(
@@ -55,7 +68,11 @@ def create_collection(client: QdrantClient, reset: bool = False) -> None:
             "dense": models.VectorParams(
                 size=EMBEDDING_SIZE,
                 distance=models.Distance.COSINE,
-            )
+            ),
+            FACT_VECTOR: models.VectorParams(
+                size=EMBEDDING_SIZE,
+                distance=models.Distance.COSINE,
+            ),
         },
         sparse_vectors_config={
             "sparse": models.SparseVectorParams(
@@ -91,16 +108,21 @@ def build_points(
         if dense is None:
             dense = search_service.embed(text)
 
+        fact = (article.neutral_fact or {}).get("fact")
+        vectors = {
+            "dense": list(dense),
+            "sparse": models.SparseVector(
+                indices=sparse.indices.tolist(),
+                values=sparse.values.tolist(),
+            ),
+        }
+        if fact:
+            vectors[FACT_VECTOR] = search_service.embed(fact)
+
         points.append(
             models.PointStruct(
                 id=article.id,
-                vector={
-                    "dense": list(dense),
-                    "sparse": models.SparseVector(
-                        indices=sparse.indices.tolist(),
-                        values=sparse.values.tolist(),
-                    ),
-                },
+                vector=vectors,
                 payload={
                     "link": article.link,
                     "source_id": article.source_id,

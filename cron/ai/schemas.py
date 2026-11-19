@@ -38,6 +38,15 @@ class HeadlineClassifier(BaseModel):
     political: bool = Field(description="whether a headline is political")
 
 
+class NeutralFact(BaseModel):
+    actors: list[str]
+    action: str
+    target: str | None
+    location: str | None
+    date: str | None
+    fact: str
+
+
 class Parsed(DateModel):
     references: list[str] = Field(
         description="a list of quotes from the article that are used for the summary"
@@ -60,6 +69,7 @@ class Parsed(DateModel):
         description="a list of tags from the article"
     )
     summary: str = Field(description="Summary of the article")
+    neutral_fact: NeutralFact
 
 
 class TranslatedHeadline(DateModel):

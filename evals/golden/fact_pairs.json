@@ -1,0 +1,112 @@
+{
+  "events": [
+    {
+      "name": "Mosque arson near Afula/Dahi",
+      "article_ids": [4058, 4055]
+    },
+    {
+      "name": "Trump and Putin bilateral meeting at APEC",
+      "article_ids": [4052, 4050, 4063]
+    },
+    {
+      "name": "ICJ ruling on Myanmar and the Rohingya",
+      "article_ids": [4056, 4043]
+    },
+    {
+      "name": "Pressure for renewed United States action against Iran",
+      "article_ids": [4059, 4023, 3735, 3741, 3755]
+    },
+    {
+      "name": "Iran-United States escalation and diplomacy",
+      "article_ids": [4064, 4060]
+    },
+    {
+      "name": "Mosque arson in Qusra and related West Bank attacks",
+      "article_ids": [505, 510, 513, 728]
+    },
+    {
+      "name": "Mosque arson in the southern Hebron Hills",
+      "article_ids": [274, 277]
+    },
+    {
+      "name": "Iranian strategy to force United States concessions",
+      "article_ids": [867, 884]
+    },
+    {
+      "name": "Strait of Hormuz technical negotiations",
+      "article_ids": [819, 895]
+    }
+  ],
+  "different_event_pairs": [
+    {
+      "left_id": 4058,
+      "right_id": 4073,
+      "note": "Israeli domestic incidents, but different events"
+    },
+    {
+      "left_id": 4050,
+      "right_id": 4072,
+      "note": "Both involve Putin, but one is APEC diplomacy and one Crimea bridge strikes"
+    },
+    {
+      "left_id": 4056,
+      "right_id": 4070,
+      "note": "Both involve Rohingya/genocide language, but different developments"
+    },
+    {
+      "left_id": 4059,
+      "right_id": 4066,
+      "note": "Both concern Iran and Israel, but different developments"
+    },
+    {
+      "left_id": 4064,
+      "right_id": 4065,
+      "note": "Both concern Iran security policy, but different developments"
+    },
+    {
+      "left_id": 4058,
+      "right_id": 274,
+      "note": "Both are mosque arsons, but distinct incidents months apart"
+    },
+    {
+      "left_id": 505,
+      "right_id": 274,
+      "note": "Both are West Bank mosque arsons, but distinct incidents"
+    },
+    {
+      "left_id": 4050,
+      "right_id": 3489,
+      "note": "Both concern Putin and Ukraine diplomacy, but distinct meetings"
+    },
+    {
+      "left_id": 867,
+      "right_id": 562,
+      "note": "Both concern Iranian leverage over the United States, but distinct claims"
+    },
+    {
+      "left_id": 819,
+      "right_id": 2335,
+      "note": "Both concern Hormuz diplomacy, but distinct stages of negotiations"
+    },
+    {
+      "left_id": 4059,
+      "right_id": 697,
+      "note": "Both concern possible renewed strikes, but separate reporting cycles"
+    },
+    {
+      "left_id": 4056,
+      "right_id": 2455,
+      "note": "Both concern the ICJ, but different cases and legal questions"
+    },
+    {
+      "left_id": 4064,
+      "right_id": 2245,
+      "note": "Both concern Iran-US talks and Hormuz, but separate developments"
+    },
+    {
+      "left_id": 4052,
+      "right_id": 3969,
+      "note": "Both concern Trump at an Asian summit, but different meetings"
+    }
+  ]
+}

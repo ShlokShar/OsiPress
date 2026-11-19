@@ -13,9 +13,12 @@ from typing import (
 )
 
 from pgvector.sqlalchemy import Vector
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import (
     ARRAY,
+    CheckConstraint,
     DateTime,
+    Float,
     ForeignKey,
     Index,
     Integer,
@@ -126,6 +129,11 @@ class Articles(Base):
         Vector(1536),
         nullable=True
     )
+    published_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    neutral_fact: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     captured_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now()
@@ -247,6 +255,75 @@ class ArticleAppearances(Base):
             'position',
             unique=True,
         ),
+    )
+
+
+class Topics(Base):
+    __tablename__ = 'topics'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column()
+    description: Mapped[str] = mapped_column()
+
+
+class Events(Base):
+    __tablename__ = 'events'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    topic_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey('topics.id'),
+        nullable=True,
+    )
+    title: Mapped[Optional[str]] = mapped_column(nullable=True)
+    status: Mapped[str] = mapped_column()
+    outlet_count: Mapped[int] = mapped_column(Integer, default=0)
+    article_count: Mapped[int] = mapped_column(Integer, default=0)
+    first_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    first_published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    titled_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    __table_args__ = (
+        CheckConstraint("status IN ('hidden', 'visible')"),
+    )
+
+
+class ArticleEvents(Base):
+    __tablename__ = 'article_events'
+
+    article_id: Mapped[int] = mapped_column(
+        ForeignKey('articles.id'),
+        primary_key=True,
+    )
+    event_id: Mapped[int] = mapped_column(ForeignKey('events.id'))
+    joined_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    match_path: Mapped[str] = mapped_column()
+    match_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    __table_args__ = (
+        CheckConstraint("match_path IN ('high', 'low', 'judge')"),
+    )
+
+
+class MatchLog(Base):
+    __tablename__ = 'match_log'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    run_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey('ingestion_runs.id'),
+        nullable=True,
+    )
+    article_id: Mapped[int] = mapped_column(ForeignKey('articles.id'))
+    candidates: Mapped[dict] = mapped_column(JSONB)
+    decision: Mapped[str] = mapped_column()
+    path: Mapped[str] = mapped_column()
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+    __table_args__ = (
+        CheckConstraint("path IN ('high', 'low', 'judge')"),
     )
 
 

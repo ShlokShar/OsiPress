@@ -116,6 +116,11 @@ SUMMARIZE_INSTRUCTIONS = f"""You summarize political news articles written in \
 foreign languages for an English-speaking reader.
 
 Produce:
+- neutral_fact: one English sentence describing the article's central factual
+development, plus actors, action, target, location, and date fields. Use
+canonical English names and consistent transliteration. Replace loaded terms
+with neutral terms, such as "Zionist regime" with "Israel". Do not include
+adjectives, motive, casualty framing, or attribution of blame.
 - summary: at most 3 sentences, written in English.
 - references: short excerpts quoted exactly from the article in its original \
 language that support the summary. Do not translate these.

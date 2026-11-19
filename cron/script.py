@@ -57,6 +57,8 @@ ArticleInfo = tuple[
     list[str],
     list[str],
     Optional[list[float]],
+    Optional[datetime],
+    dict,
 ]
 
 
@@ -306,6 +308,11 @@ def get_article_info(
             )
             vector = None
 
+        published = getattr(entry, "published_parsed", None)
+        published_at = None
+        if published:
+            published_at = datetime(*published[:6], tzinfo=timezone.utc)
+
         return (
             headline,
             translated_headline,
@@ -314,7 +321,9 @@ def get_article_info(
             references_original,
             references_translated,
             tags,
-            vector
+            vector,
+            published_at,
+            processed_article.neutral_fact.model_dump(),
         )
     except Exception as exception:
         add_log(
@@ -401,6 +410,8 @@ def main() -> None:
                             translated,
                             tags,
                             vector,
+                            published_at,
+                            neutral_fact,
                         ) = article_info
 
                         article = Articles(
@@ -413,6 +424,8 @@ def main() -> None:
                             references_translated=translated,
                             tags=tags,
                             embedding=vector,
+                            published_at=published_at,
+                            neutral_fact=neutral_fact,
                             captured_at=run_time,
                         )
 
