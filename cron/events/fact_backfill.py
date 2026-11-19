@@ -42,7 +42,14 @@ def backfill_facts() -> int:
                     continue
                 if content == "empty article.":
                     continue
-                parsed = ai_service.summarize(article.headline, content)
+                try:
+                    parsed = ai_service.summarize(article.headline, content)
+                except Exception as exception:
+                    add_log(
+                        f"fact backfill article {article.id}: summarization failed "
+                        f"({type(exception).__name__}): {exception}"
+                    )
+                    continue
                 if not parsed:
                     continue
                 article.neutral_fact = parsed.neutral_fact.model_dump()
