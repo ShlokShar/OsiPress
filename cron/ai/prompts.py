@@ -212,9 +212,12 @@ summarized.' and leave references, references_for_translation, references_dates,
 tags, and dates empty."""
 
 EVENT_JUDGE_INSTRUCTIONS = """Decide whether the article fact belongs to one
-of the candidate events. Events represent one specific development, not a broad
-topic. Return a candidate event_id only when the facts describe the same
-development. Otherwise return null. Do not infer facts absent from the input."""
+of the candidate events. Events represent one specific development or a
+continuing episode, not a broad topic. A new location, target, official claim,
+or reported action does not by itself make a new event when it is another
+installment of the same episode described by a candidate. Return a candidate
+event_id when the facts share that episode; return null only when the factual
+development is distinct. Do not infer facts absent from the input."""
 
 EVENT_TITLE_INSTRUCTIONS = """Write a short neutral English title for the
 specific development shared by the supplied facts from multiple countries. State
