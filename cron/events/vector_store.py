@@ -29,6 +29,11 @@ class EventVectorStore:
                 ),
             },
         )
+        self.client.create_payload_index(
+            self.collection,
+            "last_seen",
+            models.PayloadSchemaType.DATETIME,
+        )
 
     def candidates(
         self,
