@@ -102,7 +102,7 @@ def report(session, clusterer: EventClusterer, summary: dict) -> dict:
 
 def export_labels(session, run_id: int) -> list[dict]:
     records = session.execute(
-        select(MatchLog, Countries.name, Sources.name)
+        select(MatchLog, Countries.name, Sources.name, Articles.neutral_fact)
         .join(Articles, Articles.id == MatchLog.article_id)
         .join(Sources, Sources.id == Articles.source_id)
         .join(Countries, Countries.id == Sources.country_id)
@@ -110,12 +110,13 @@ def export_labels(session, run_id: int) -> list[dict]:
         .order_by(MatchLog.id)
     ).all()
     groups = {"judge": [], "high": [], "low": []}
-    for log, country, source in records:
+    for log, country, source, article_fact in records:
         groups[log.path].append({
             "match_log_id": log.id,
             "article_id": log.article_id,
             "country": country,
             "source": source,
+            "article_fact": (article_fact or {}).get("fact"),
             "candidates": log.candidates,
             "decision": log.decision,
             "path": log.path,
