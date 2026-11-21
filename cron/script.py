@@ -1,5 +1,6 @@
 
 import json
+import os
 import time
 from datetime import (
     datetime,
@@ -16,6 +17,9 @@ import requests
 from feedparser.util import FeedParserDict
 
 from cron.ai.service import AIService
+from cron.events.cluster import EventClusterer, ReplayArticle
+from cron.events.config import EVENTS_COLLECTION
+from cron.events.vector_store import EventVectorStore
 from cron.util.article import (
     get_article_content,
     is_safe_article_url
@@ -26,6 +30,7 @@ from cron.util.translation import (
     translate_references
 )
 from cron.util.url import normalize_article_url
+from shared.database import SessionLocal
 from shared.models import (
     Articles,
     Countries,
@@ -66,6 +71,7 @@ MAX_ARTICLES = 3
 SOURCES_PATH = Path(__file__).resolve().parent / "sources.json"
 FEED_TIMEOUT = (5, 20)
 FEED_ATTEMPTS = 2
+EVENT_CLUSTERING_ENABLED = os.getenv("EVENT_CLUSTERING_ENABLED") == "1"
 
 
 def setup() -> SetupResult:
@@ -333,12 +339,66 @@ def get_article_info(
         return None
 
 
+def setup_event_clusterer(
+    ai_service: AIService,
+    run_id: int,
+) -> EventClusterer | None:
+    if not EVENT_CLUSTERING_ENABLED:
+        return None
+    try:
+        vectors = EventVectorStore(EVENTS_COLLECTION)
+        vectors.ensure()
+        session = SessionLocal()
+        return EventClusterer(session, vectors, ai_service, run_id)
+    except Exception as exception:
+        add_log(
+            f"event clustering failed to initialize "
+            f"({type(exception).__name__}): {exception}"
+        )
+        return None
+
+
+def cluster_new_article(
+    clusterer: EventClusterer,
+    article: Articles,
+    country: str,
+) -> None:
+    try:
+        fact = (article.neutral_fact or {}).get("fact")
+        vectors = clusterer.vectors.article_vectors([article.id])
+        vector = vectors.get(article.id)
+        if not fact or not vector:
+            add_log(
+                f"event clustering skipped article {article.id}: "
+                f"missing fact vector"
+            )
+            return
+        clusterer.process(ReplayArticle(
+            id=article.id,
+            source_id=article.source_id,
+            country=country,
+            fact=article.neutral_fact,
+            vector=vector,
+            observed_at=article.published_at or article.captured_at,
+        ))
+        clusterer.session.commit()
+    except Exception as exception:
+        clusterer.session.rollback()
+        add_log(
+            f"event clustering failed for article {article.id} "
+            f"({type(exception).__name__}): {exception}"
+        )
+
+
 def main() -> None:
     ai_service, vector_service, run_time, data = setup()
     run_id = start_ingestion_run(run_time)
     appearances: list[tuple[int, int, int]] = []
+    new_articles: list[tuple[Articles, str]] = []
     configured_sources = sum(len(sources) for sources in data.values())
     successful_sources = 0
+    event_clusterer = setup_event_clusterer(ai_service, run_id)
+    published = False
 
     try:
         for country, sources in data.items():
@@ -453,6 +513,9 @@ def main() -> None:
                                 f"({type(exception).__name__}): {exception}"
                             )
 
+                        if event_clusterer:
+                            new_articles.append((article, country))
+
                     appearances.append((
                         source_object.id,
                         article.id,
@@ -489,9 +552,25 @@ def main() -> None:
             )
 
         complete_ingestion_run(run_id, appearances)
+        published = True
     except Exception:
         fail_ingestion_run(run_id)
         raise
+    finally:
+        if event_clusterer and published:
+            try:
+                for article, country in new_articles:
+                    cluster_new_article(event_clusterer, article, country)
+                event_clusterer.finalize()
+                event_clusterer.session.commit()
+            except Exception as exception:
+                event_clusterer.session.rollback()
+                add_log(
+                    f"event clustering failed to finalize "
+                    f"({type(exception).__name__}): {exception}"
+                )
+        if event_clusterer:
+            event_clusterer.session.close()
 
 
 if __name__ == "__main__":

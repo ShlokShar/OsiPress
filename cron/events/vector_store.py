@@ -16,6 +16,11 @@ class EventVectorStore:
     def reset(self) -> None:
         if self.client.collection_exists(self.collection):
             self.client.delete_collection(self.collection)
+        self.ensure()
+
+    def ensure(self) -> None:
+        if self.client.collection_exists(self.collection):
+            return
         self.client.create_collection(
             self.collection,
             vectors_config={
