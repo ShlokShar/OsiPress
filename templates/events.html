@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>OsiPress &middot; Top stories</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Vazirmatn:wght@400;500;600&display=optional" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/osipress.css') }}">
+        <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    </head>
+    <body>
+        <div class="wrap">
+            <nav class="top">
+                <a href="/" class="brand"><span class="name">OsiPress</span></a>
+                <div class="navlinks"><a href="/about">About</a><a href="/today" class="active">Top stories</a><a href="/">All today</a><a href="/archive">Archive</a><a href="/search">Search</a></div>
+            </nav>
+            <main class="events-page">
+                <header class="events-head">
+                    <p class="events-kicker">Top stories</p>
+                    <h1>What outlets are covering together</h1>
+                    <p>Events become visible after coverage from at least two outlets across both countries.</p>
+                </header>
+                {% if events %}
+                <section class="event-list" aria-label="Top stories">
+                    {% for event in events %}
+                    <article class="event-card{% if loop.first %} event-card--lead{% endif %}" data-last-seen="{{ event.last_seen.isoformat() }}">
+                        <header class="event-card-head">
+                            <div>
+                                {% if event.topic %}<span class="event-topic">{{ event.topic }}</span>{% endif %}
+                                <h2>{{ event.title }}</h2>
+                                <p>Since {{ event.first_published_at.strftime('%d %b') }} &middot; {{ event.article_count }} articles &middot; {{ event.outlet_count }} outlets</p>
+                            </div>
+                            <span class="event-new" hidden>New</span>
+                        </header>
+                        <div class="event-countries">
+                            {% for country in event.countries %}
+                            <section class="event-country">
+                                <header class="event-country-head">
+                                    <h3>{{ country.country }}</h3>
+                                    <div class="coverage-dots" aria-label="{{ country.country }} outlet coverage">
+                                        {% for source in country.sources %}<span class="coverage-dot{% if source.covered %} coverage-dot--covered{% endif %}" title="{{ source.name }}: {% if source.covered %}covered{% else %}not found in feed{% endif %}"></span>{% endfor %}
+                                    </div>
+                                </header>
+                                <div class="event-articles">
+                                    {% for article in country.articles %}
+                                    <article class="event-article">
+                                        <div class="event-article-meta"><span>{{ article.source }}</span>{% if article.leaning %}<span class="tag {{ article.leaning|lower|replace(' ', '-') }}">{{ article.leaning }}</span>{% endif %}<time datetime="{{ article.published_at.isoformat() }}">{{ article.published_at.strftime('%H:%M UTC') }}</time></div>
+                                        <a href="{{ article.link }}" target="_blank" rel="noopener">{{ article.translated_headline }}</a>
+                                        {% if article.headline and article.headline != article.translated_headline %}<p dir="auto">{{ article.headline }}</p>{% endif %}
+                                    </article>
+                                    {% endfor %}
+                                    {% if country.more_count %}<p class="event-more">+{{ country.more_count }} more from {{ country.country }}</p>{% endif %}
+                                </div>
+                            </section>
+                            {% endfor %}
+                        </div>
+                    </article>
+                    {% endfor %}
+                </section>
+                {% else %}
+                <section class="events-empty">
+                    <h2>Top stories are forming.</h2>
+                    <p>OsiPress is waiting for the same development to be covered by multiple outlets in both countries.</p>
+                    <a class="btn" href="/">Read all of today&rsquo;s articles</a>
+                </section>
+                {% endif %}
+            </main>
+            <footer><p>Event grouping is automated. Headlines link to the original reporting; translations may contain errors.</p></footer>
+        </div>
+        <script src="{{ url_for('static', filename='js/events.js') }}"></script>
+    </body>
+</html>

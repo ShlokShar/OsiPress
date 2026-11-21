@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta, timezone
 import flask
 
 from shared.models import (
+    get_visible_events,
     get_headlines_by_country,
     get_sources_by_ids
 )
@@ -16,26 +17,10 @@ from shared.search_helpers import (
 app = flask.Flask(__name__)
 
 MAX_FALLBACK_DAYS = 3
-VISITED_COOKIE = "visited"
 ARCHIVE_MIN_DATE = date(2026, 7, 9)
 
 @app.route("/")
-def landing():
-    # First-time visitors see the landing page; returning visitors (who already
-    # carry the cookie) are sent straight to today's edition.
-    if flask.request.cookies.get(VISITED_COOKIE):
-        return flask.redirect(flask.url_for("today"))
-
-    response = flask.make_response(flask.render_template("landing.html"))
-    response.set_cookie(
-        VISITED_COOKIE, "1",
-        max_age=60 * 60 * 24 * 365,  # remember for a year
-        samesite="Lax",
-    )
-    return response
-
-@app.route("/today")
-def today():
+def all_today():
     today = datetime.now(timezone.utc).date()
     shown_date = today
     data = get_headlines_by_country(shown_date)
@@ -52,6 +37,15 @@ def today():
         shown_date=shown_date,
         is_today=(shown_date == today),
     )
+
+@app.route("/today")
+def today():
+    return flask.render_template("events.html", events=get_visible_events())
+
+
+@app.route("/about")
+def about():
+    return flask.render_template("landing.html")
 
 
 @app.route("/archive")

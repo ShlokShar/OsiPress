@@ -569,6 +569,123 @@ def get_headlines_by_country(
     return output
 
 
+def get_visible_events() -> list[dict[str, Any]]:
+    """Return visible cross-country events with their newest coverage."""
+
+    country_order = {"Iran": 0, "Israel": 1}
+    cutoff = datetime.now(timezone.utc) - timedelta(days=1)
+
+    with SessionLocal() as session:
+        sources_by_country = defaultdict(list)
+        for country, source in (
+            session.query(Countries.name, Sources)
+            .join(Sources, Sources.country_id == Countries.id)
+            .order_by(Countries.name, Sources.name)
+            .all()
+        ):
+            sources_by_country[country].append({
+                "id": source.id,
+                "name": source.name,
+            })
+
+        events = (
+            session.query(Events)
+            .filter(
+                Events.status == "visible",
+                Events.last_seen >= cutoff,
+            )
+            .order_by(Events.last_seen.desc())
+            .all()
+        )
+        if not events:
+            return []
+
+        topics = {
+            topic.id: topic.name
+            for topic in session.query(Topics).all()
+        }
+        event_ids = [event.id for event in events]
+        members_by_event = defaultdict(list)
+        for event_id, joined_at, article, source, country in (
+            session.query(
+                ArticleEvents.event_id,
+                ArticleEvents.joined_at,
+                Articles,
+                Sources,
+                Countries.name,
+            )
+            .join(Articles, Articles.id == ArticleEvents.article_id)
+            .join(Sources, Sources.id == Articles.source_id)
+            .join(Countries, Countries.id == Sources.country_id)
+            .filter(ArticleEvents.event_id.in_(event_ids))
+            .order_by(
+                ArticleEvents.event_id,
+                func.coalesce(Articles.published_at, Articles.captured_at).desc(),
+            )
+            .all()
+        ):
+            members_by_event[event_id].append({
+                "country": country,
+                "source_id": source.id,
+                "source": source.name,
+                "leaning": source.political_leaning,
+                "headline": article.headline,
+                "translated_headline": article.translated_headline,
+                "link": article.link,
+                "published_at": article.published_at or article.captured_at,
+                "joined_at": joined_at,
+            })
+
+    output = []
+    for event in events:
+        members = members_by_event[event.id]
+        countries = {member["country"] for member in members}
+        if len(countries) < 2:
+            continue
+
+        grouped = defaultdict(list)
+        recent_articles = 0
+        recent_sources = set()
+        for member in members:
+            grouped[member["country"]].append(member)
+            if member["joined_at"] >= cutoff:
+                recent_articles += 1
+                recent_sources.add(member["source_id"])
+
+        coverage = []
+        for country, articles in grouped.items():
+            newest = articles[:3]
+            covered = {article["source_id"] for article in articles}
+            coverage.append({
+                "country": country,
+                "articles": newest,
+                "more_count": max(0, len(articles) - len(newest)),
+                "sources": [
+                    {**source, "covered": source["id"] in covered}
+                    for source in sources_by_country[country]
+                ],
+            })
+        coverage.sort(key=lambda item: (country_order.get(item["country"], 99), item["country"]))
+
+        output.append({
+            "id": event.id,
+            "title": event.title or "Coverage event",
+            "topic": topics.get(event.topic_id),
+            "first_published_at": event.first_published_at,
+            "last_seen": event.last_seen,
+            "article_count": event.article_count,
+            "outlet_count": event.outlet_count,
+            "countries": coverage,
+            "recent_activity": recent_articles + len(recent_sources),
+        })
+
+    return sorted(
+        output,
+        key=lambda event: (event["recent_activity"], event["last_seen"]),
+        reverse=True,
+    )
+
+
 def get_sources_by_ids(source_ids: list[int]) -> dict[int, dict[str, str]]:
     """
     Returns the outlet and country details for the given source ids. Search

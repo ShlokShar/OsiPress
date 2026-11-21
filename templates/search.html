@@ -29,9 +29,8 @@
                     </svg>
                     <span class="name">OsiPress</span>
                 </a>
-                <div class="navlinks"><a href="/today">Today</a><a
-                    href="/archive">Archive</a><a href="/search"
-                    class="active">Search</a>
+                <div class="navlinks"><a href="/about">About</a><a href="/today">Top stories</a><a href="/">All today</a><a
+                    href="/archive">Archive</a><a href="/search" class="active">Search</a>
                 </div>
             </nav>
             <div class="toolbar">
@@ -152,7 +151,7 @@
                    it the query was simply rejected as too long. #}
                 <p class="empty" role="alert">
                     {%- if error_ref -%}
-                    Search is unavailable right now. <a href="{{ url_for('search', q=query) }}">Try again</a>, or read <a href="/today">today&rsquo;s articles</a>.
+                    Search is unavailable right now. <a href="{{ url_for('search', q=query) }}">Try again</a>, or read <a href="/">today&rsquo;s articles</a>.
                     {%- else -%}
                     That search is too long. Keep it under 200 characters.
                     {%- endif -%}

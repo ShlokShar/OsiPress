@@ -6,12 +6,12 @@
         <title>OsiPress | See what the rest of the world sees</title>
 
         <meta name="description" content="Read what news outlets in other countries publish for their own readers, translated into English. Every original is linked.">
-        <link rel="canonical" href="https://osipress.com/">
+        <link rel="canonical" href="https://osipress.com/about">
 
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="OsiPress">
         <meta property="og:locale" content="en_US">
-        <meta property="og:url" content="https://osipress.com/">
+        <meta property="og:url" content="https://osipress.com/about">
         <meta property="og:title" content="OsiPress | See what the rest of the world sees">
         <meta property="og:description" content="Read what news outlets in other countries publish for their own readers, translated into English. Every original is linked.">
         <meta property="og:image" content="https://osipress.com/static/img/osipress-social.png">
@@ -88,8 +88,9 @@
                                 <span id="brand-name" style="font-family: 'Rubik', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">OsiPress</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 26px;">
-                                <a href="#" style="font-size: 13.5px; font-weight: 600; color: #0f0a05; border-bottom: 2px solid #dd8338; padding-bottom: 2px;">About</a>
-                                <a href="{{ url_for('today') }}" style="font-size: 13.5px; font-weight: 500; color: #7a6a56;">Today</a>
+                                <a href="{{ url_for('about') }}" style="font-size: 13.5px; font-weight: 600; color: #0f0a05; border-bottom: 2px solid #dd8338; padding-bottom: 2px;">About</a>
+                                <a href="{{ url_for('today') }}" style="font-size: 13.5px; font-weight: 500; color: #7a6a56;">Top stories</a>
+                                <a href="{{ url_for('all_today') }}" style="font-size: 13.5px; font-weight: 500; color: #7a6a56;">All today</a>
                                 <a href="{{ url_for('archive') }}" style="font-size: 13.5px; font-weight: 500; color: #7a6a56;">Archive</a>
                                 <a href="{{ url_for('search') }}" style="font-size: 13.5px; font-weight: 500; color: #7a6a56;">Search</a>
                             </div>
@@ -109,7 +110,7 @@
                                 shows the two side by side in English.
                             </p>
                             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-                                <a id="cta-primary" href="{{ url_for('today') }}" style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #ffffff; background: #fa9744; padding: 11px 18px; border-radius: 5px;">Read today's articles <span aria-hidden="true" style="font-size: 15px;">&rarr;</span></a>
+                                <a id="cta-primary" href="{{ url_for('today') }}" style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #ffffff; background: #fa9744; padding: 11px 18px; border-radius: 5px;">Read top stories <span aria-hidden="true" style="font-size: 15px;">&rarr;</span></a>
                                 <a id="cta-secondary" href="{{ url_for('archive') }}" style="font-size: 13.5px; font-weight: 500; color: #7a6a56;">or start from the archive</a>
                             </div>
                             <!-- factual info row -->
