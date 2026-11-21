@@ -1,6 +1,7 @@
 
 from collections import defaultdict
 import hashlib
+import os
 from datetime import (
     date,
     datetime,
@@ -588,12 +589,12 @@ def get_visible_events() -> list[dict[str, Any]]:
                 "name": source.name,
             })
 
+        filters = [Events.status == "visible"]
+        if os.getenv("EVENTS_INCLUDE_HISTORY") != "1":
+            filters.append(Events.last_seen >= cutoff)
         events = (
             session.query(Events)
-            .filter(
-                Events.status == "visible",
-                Events.last_seen >= cutoff,
-            )
+            .filter(*filters)
             .order_by(Events.last_seen.desc())
             .all()
         )
