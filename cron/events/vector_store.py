@@ -54,7 +54,10 @@ class EventVectorStore:
                 must=[
                     models.FieldCondition(
                         key="last_seen",
-                        range=models.DatetimeRange(gte=since),
+                        range=models.DatetimeRange(
+                            gte=since,
+                            lte=observed_at,
+                        ),
                     ),
                 ],
             ),
