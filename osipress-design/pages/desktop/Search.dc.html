@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OsiPress — Search</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=Inter:wght@400;500;600&family=Vazirmatn:wght@400;500&family=Noto+Sans+Hebrew:wght@400;500&display=swap">
+<style>
+body{margin:0;background:#EEF1F3}
+a{color:#0B6570;text-decoration:none}a:hover{color:#06444B;text-decoration:underline}
+.o-fa{font-family:'Vazirmatn',Tahoma,sans-serif;line-height:1.7}
+.o-he{font-family:'Noto Sans Hebrew',Arial,sans-serif;line-height:1.5}
+input[type=search]::placeholder{color:#7E9EA3}
+input[type=search]:focus{outline:2px solid #7FD1C8;outline-offset:2px}
+</style>
+</helmet>
+<div style="font-family: 'Inter', Arial, sans-serif; color: #14191F; background: #EEF1F3; min-height: 100%">
+  <section style="background: #0A2F36; color: #FFFFFF">
+    <header style="background: #0A2F36; color: #FFFFFF; border-bottom: 1px solid #1E4E57">
+    <div style="max-width: 1344px; margin: 0 auto; padding: 0 48px; display: flex; align-items: stretch; justify-content: space-between; flex-wrap: wrap; gap: 16px; min-height: 80px">
+      <a href="Homepage.dc.html" aria-label="OsiPress" style="font-family: 'Newsreader', Georgia, serif; font-size: 34px; font-weight: 400; line-height: 1; color: #FFFFFF; text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; display: flex; align-items: center"><span aria-hidden="true"><span style="color: #7FD1C8; font-weight: 300">[</span>os<span style="position: relative; display: inline-block">ı<span aria-hidden="true" style="position: absolute; left: 50%; top: 0.035em; transform: translateX(-50%); font-size: 0.62em; line-height: 1; font-weight: 500; color: #7FD1C8">”</span></span><span style="color: #7FD1C8; font-weight: 300">]</span>press</span></a>
+      <nav aria-label="Site" style="display: flex; gap: 32px; font-size: 14px">
+        <a href="#" style="color: #C3D6D9; display: flex; align-items: center; border-bottom: 3px solid transparent; padding-top: 3px">About</a>
+        <a href="Today.dc.html" style="color: #C3D6D9; display: flex; align-items: center; border-bottom: 3px solid transparent; padding-top: 3px">Today</a>
+        <a href="Archive.dc.html" style="color: #C3D6D9; display: flex; align-items: center; border-bottom: 3px solid transparent; padding-top: 3px">Archive</a>
+        <a href="Search.dc.html" aria-current="page" style="color: #FFFFFF; font-weight: 600; display: flex; align-items: center; border-bottom: 3px solid #7FD1C8; padding-top: 3px">Search</a>
+      </nav>
+    </div>
+  </header>
+    <div style="max-width: 1344px; margin: 0 auto; padding: 72px 48px 56px; display: flex; flex-direction: column; gap: 22px">
+      <h1 style="font-family: 'Newsreader', Georgia, serif; font-size: 60px; line-height: 1; font-weight: 400; letter-spacing: -0.02em; margin: 0">Search the archive</h1>
+      <p style="font-size: 17px; line-height: 1.6; color: #C3D6D9; margin: 0; max-width: 680px">Look up a place, a person or a phrase across every edition. Matches come from the English translation and the original headline, so you can search in Persian or Hebrew too.</p>
+      <form role="search" onSubmit="{{submit}}" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; max-width: 900px">
+        <label for="osi-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search articles</label>
+        <input id="osi-q" type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Search articles, e.g. Hormuz, IAEA, تنگه هرمز" style="flex: 1 1 420px; min-width: 0; height: 60px; padding: 0 22px; border: 1px solid #2E7782; background: #FFFFFF; color: #14191F; font: 400 20px 'Inter', Arial, sans-serif; box-sizing: border-box">
+        <button type="submit" style="height: 60px; padding: 0 30px; border: 0; background: #7FD1C8; color: #0A2F36; font: 600 16px 'Inter', Arial, sans-serif; cursor: pointer">Search</button>
+      </form>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: #8FB3B8">
+        <span style="margin-right: 4px">Try</span>
+        <sc-for list="{{suggestions}}" as="s" hint-placeholder-count="6">
+          <button type="button" onClick="{{s.pick}}" style="height: 36px; padding: 0 14px; border: 1px solid #2E7782; background: transparent; color: #FFFFFF; font: 500 13px 'Inter', Arial, sans-serif; cursor: pointer">{{s.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <main style="max-width: 1344px; margin: 0 auto; padding: 40px 48px 96px; display: flex; flex-direction: column; gap: 32px">
+    <sc-if value="{{noQuery}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border: 1px solid #D5DADF; padding: 48px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+        <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 30px; font-weight: 400; margin: 0">Start with a word or a name.</h2>
+        <p style="font-size: 16px; line-height: 1.6; color: #2E353D; margin: 0; max-width: 620px">Results show who wrote about it, when, and from which side of each country’s politics, followed by every matching headline with its original.</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{noResults}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border: 1px solid #D5DADF; padding: 48px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+        <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 30px; font-weight: 400; margin: 0">Nothing matched {{queryLabel}}.</h2>
+        <p style="font-size: 16px; line-height: 1.6; color: #2E353D; margin: 0; max-width: 620px">Try a shorter word, a different spelling, or the term in Persian or Hebrew. Coverage starts in June 2026.</p>
+        <button type="button" onClick="{{clear}}" style="margin-top: 8px; height: 44px; padding: 0 18px; border: 1px solid #0A2F36; background: #FFFFFF; color: #0A2F36; font: 600 14px 'Inter', Arial, sans-serif; cursor: pointer">Clear search</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{hasResults}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; padding-bottom: 16px; border-bottom: 1px solid #C9CED5">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span style="font-family: 'Newsreader', Georgia, serif; font-size: 34px; line-height: 1.1">{{queryLabel}}</span>
+          <span style="font-size: 14px; color: #535C66">{{summary}}</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 16px">
+          <div role="group" aria-label="Countries" style="display: flex; gap: 8px">
+            <sc-for list="{{ctry}}" as="c" hint-placeholder-count="2">
+              <sc-if value="{{c.on}}" hint-placeholder-val="{{true}}">
+                <button type="button" aria-pressed="true" onClick="{{c.pick}}" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border: 1px solid #0A2F36; background: #0A2F36; color: #FFFFFF; font: 600 14px 'Inter', Arial, sans-serif; cursor: pointer"><span aria-hidden="true" style="width: 10px; height: 10px; background: {{c.color}}; outline: 1px solid #FFFFFF"></span>{{c.name}}</button>
+              </sc-if>
+              <sc-if value="{{c.off}}" hint-placeholder-val="{{false}}">
+                <button type="button" aria-pressed="false" onClick="{{c.pick}}" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border: 1px solid #B9C0C8; background: #FFFFFF; color: #14191F; font: 500 14px 'Inter', Arial, sans-serif; cursor: pointer"><span aria-hidden="true" style="width: 10px; height: 10px; background: {{c.color}}"></span>{{c.name}}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div role="group" aria-label="Sort" style="display: flex; border: 1px solid #0A2F36">
+            <sc-for list="{{sorts}}" as="s" hint-placeholder-count="2">
+              <sc-if value="{{s.on}}" hint-placeholder-val="{{false}}"><button type="button" aria-pressed="true" onClick="{{s.pick}}" style="height: 42px; padding: 0 16px; border: 0; background: #0A2F36; color: #FFFFFF; font: 600 13px 'Inter', Arial, sans-serif; cursor: pointer">{{s.name}}</button></sc-if>
+              <sc-if value="{{s.off}}" hint-placeholder-val="{{true}}"><button type="button" aria-pressed="false" onClick="{{s.pick}}" style="height: 42px; padding: 0 16px; border: 0; background: #FFFFFF; color: #0A2F36; font: 500 13px 'Inter', Arial, sans-serif; cursor: pointer">{{s.name}}</button></sc-if>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 24px">
+        <section style="background: #FFFFFF; border: 1px solid #D5DADF; padding: 26px 28px 20px; display: flex; flex-direction: column; gap: 18px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+            <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 24px; font-weight: 500; margin: 0">When it was written about</h2>
+            <span style="display: flex; gap: 14px; font-size: 12px; color: #535C66"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; background: #11825A"></span>Iran</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; background: #2B5BA6"></span>Israel</span></span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; align-items: end; height: 170px; border-bottom: 1px solid #8A929C">
+            <sc-for list="{{time}}" as="m" hint-placeholder-count="6">
+              <div style="display: flex; justify-content: center; align-items: flex-end; gap: 4px; height: 150px">
+                <sc-if value="{{m.showIr}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; width: 22px"><span style="font-size: 12px; color: #14191F">{{m.ni}}</span><span style="display: block; width: 22px; height: {{m.hi}}; background: #11825A; border-radius: 3px 3px 0 0"></span></div></sc-if>
+                <sc-if value="{{m.showIl}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; width: 22px"><span style="font-size: 12px; color: #14191F">{{m.nl}}</span><span style="display: block; width: 22px; height: {{m.hl}}; background: #2B5BA6; border-radius: 3px 3px 0 0"></span></div></sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-top: -10px">
+            <sc-for list="{{time}}" as="m" hint-placeholder-count="6"><span style="text-align: center; font-size: 12px; color: #535C66">{{m.label}}</span></sc-for>
+          </div>
+        </section>
+
+        <section style="background: #0A2F36; color: #FFFFFF; padding: 26px 28px 24px; display: flex; flex-direction: column; gap: 22px">
+          <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 24px; font-weight: 500; margin: 0">Who wrote about it</h2>
+          <sc-for list="{{spectrum}}" as="c" hint-placeholder-count="2">
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 13px">
+                <span style="display: flex; align-items: center; gap: 8px; font-weight: 600"><span aria-hidden="true" style="width: 10px; height: 10px; background: {{c.color}}; outline: 1px solid #FFFFFF"></span>{{c.name}}</span>
+                <span style="color: #A9C4C8">{{c.total}}</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid #2E7782">
+                <sc-for list="{{c.slots}}" as="s" hint-placeholder-count="5">
+                  <div style="padding: 8px 8px 0; border-left: 1px solid #1E4E57; display: flex; flex-direction: column; gap: 8px; min-width: 0">
+                    <span style="font-size: 10px; color: #8FB3B8; text-transform: uppercase; letter-spacing: 0.04em">{{s.label}}</span>
+                    <sc-for list="{{s.outlets}}" as="o" hint-placeholder-count="1">
+                      <div style="display: flex; flex-direction: column; gap: 4px">
+                        <sc-if value="{{o.hit}}" hint-placeholder-val="{{true}}">
+                          <span style="display: flex; justify-content: space-between; gap: 4px; font-size: 12px"><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{o.name}}</span><span style="font-weight: 600">{{o.count}}</span></span>
+                          <span style="display: block; height: 4px; background: #1E4E57"><span style="display: block; height: 4px; width: {{o.w}}; background: #7FD1C8"></span></span>
+                        </sc-if>
+                        <sc-if value="{{o.zero}}" hint-placeholder-val="{{false}}">
+                          <span style="display: flex; justify-content: space-between; gap: 4px; font-size: 12px; color: #6F9399"><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{o.name}}</span><span>0</span></span>
+                          <span style="display: block; height: 4px; background: #1E4E57"></span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8FB3B8"><span>← {{c.L}}</span><span>{{c.R}} →</span></div>
+            </div>
+          </sc-for>
+        </section>
+      </div>
+
+      <section style="display: flex; flex-direction: column">
+        <sc-for list="{{results}}" as="r" hint-placeholder-count="6">
+          <article style="display: flex; flex-wrap: wrap; gap: 10px 40px; padding: 22px 0; border-top: 1px solid #C9CED5">
+            <div style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+              <span style="display: flex; align-items: center; gap: 8px; font-weight: 600"><span aria-hidden="true" style="width: 10px; height: 10px; background: {{r.color}}"></span>{{r.outlet}}</span>
+              <span style="display: flex; align-items: center; gap: 6px; color: #535C66">
+                <span aria-hidden="true" style="display: flex; gap: 2px">
+                  <sc-for list="{{r.ticks}}" as="k" hint-placeholder-count="5">
+                    <sc-if value="{{k.on}}" hint-placeholder-val="{{false}}"><span style="display: block; width: 8px; height: 4px; background: #14191F"></span></sc-if>
+                    <sc-if value="{{k.off}}" hint-placeholder-val="{{true}}"><span style="display: block; width: 8px; height: 4px; background: #D5DADF"></span></sc-if>
+                  </sc-for>
+                </span>
+                {{r.leanLabel}}
+              </span>
+              <span style="color: #535C66">{{r.country}}, {{r.date}}</span>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+              <div lang="en" style="font-family: 'Newsreader', Georgia, serif; font-size: 23px; line-height: 1.28; text-wrap: pretty">
+                <sc-for list="{{r.parts}}" as="p" hint-placeholder-count="1"><sc-if value="{{p.hit}}" hint-placeholder-val="{{false}}"><mark style="background: #CDEFEA; color: inherit; padding: 0 2px; box-shadow: inset 0 -2px 0 #11825A">{{p.t}}</mark></sc-if><sc-if value="{{p.plain}}" hint-placeholder-val="{{true}}"><span>{{p.t}}</span></sc-if></sc-for>
+              </div>
+              <div lang="{{r.lang}}" dir="rtl" class="o-{{r.lang}}" style="font-size: 15px; color: #5E6772">{{r.orig}}</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 13px; margin-top: 2px">
+                <a href="Event-detail.dc.html" style="color: #535C66">Part of <span style="color: #0B6570; font-weight: 500">{{r.event}}</span></a>
+                <a href="#" style="font-weight: 500">Read original</a>
+              </div>
+            </div>
+          </article>
+        </sc-for>
+      </section>
+    </sc-if>
+  </main>
+
+  <footer style="background: #0A2F36; color: #A9C4C8">
+    <div style="max-width: 1344px; margin: 0 auto; padding: 32px 48px 40px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 24px; font-size: 14px; line-height: 1.6">
+      <p style="margin: 0; max-width: 680px">Selection is automated: up to three recent articles classified as political from each outlet’s RSS feed. Translations keep charged language as written, OsiPress doesn’t rank or score coverage, and machine translation may contain errors.</p>
+      <span style="display: flex; align-items: center; gap: 24px"><span aria-label="OsiPress" style="font-family: 'Newsreader', Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1; color: #FFFFFF; text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; display: flex; align-items: center"><span aria-hidden="true"><span style="color: #7FD1C8; font-weight: 300">[</span>os<span style="position: relative; display: inline-block">ı<span aria-hidden="true" style="position: absolute; left: 50%; top: 0.035em; transform: translateX(-50%); font-size: 0.62em; line-height: 1; font-weight: 500; color: #7FD1C8">”</span></span><span style="color: #7FD1C8; font-weight: 300">]</span>press</span></span><a href="#" style="color: #FFFFFF; text-decoration: underline">GitHub ↗</a></span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const q = st.q ?? "";
+    const sort = st.sort ?? "new";
+    const countries = st.countries ?? ["ir", "il"];
+    const IR = "#11825A", IL = "#2B5BA6";
+    const C = {
+      ir: { name: "Iran", color: IR, lang: "fa", L: "Reformist", R: "Hardline", labels: ["Reformist", "Reform-leaning", "Centrist", "Conservative", "Hardline"], outlets: [["Shargh", 1], ["Etemad", 1], ["Hamshahri", 3], ["Donya-e-Eqtesad", 3], ["Javan", 5], ["Kayhan", 5], ["Tasnim", 5], ["Fars", 5]] },
+      il: { name: "Israel", color: IL, lang: "he", L: "Left", R: "Right", labels: ["Left", "Centre-left", "Centre", "Centre-right", "Right"], outlets: [["Haaretz", 1], ["Yedioth Ahronoth", 3], ["Globes", 3], ["Maariv", 4], ["Israel Hayom", 5], ["Makor Rishon", 5]] }
+    };
+    const EV = {
+      h: "Iran declares the Strait of Hormuz closed, again", h2: "Tanker traffic halts in the Gulf", d: "IRGC naval drills near Hormuz",
+      i: "IAEA Board of Governors weighs a new resolution on Iran", i2: "IAEA inspectors and Iran",
+      b: "Pressure mounts on Beirut over Hezbollah disarmament", b2: "Lebanon ceasefire under strain",
+      o: "Oil slides below $60 a barrel", r: "Rial falls to a new low against the dollar"
+    };
+    const A = [
+      ["ir", "Tasnim", "2026-06-20", "h", "In response to the ceaseless violations of the ceasefire by the Zionist regime in southern Lebanon… the Strait of Hormuz will be closed to vessel traffic.", "در پاسخ به نقض مکرر آتش‌بس توسط رژیم صهیونیستی... تنگه هرمز به روی کشتی‌ها بسته خواهد شد"],
+      ["ir", "Kayhan", "2026-06-20", "h", "The Strait of Hormuz: Iran’s answer to aggression", "تنگه هرمز، پاسخ ایران به تجاوز"],
+      ["ir", "Shargh", "2026-06-20", "h", "Closing Hormuz: the cost the economy will pay", "بستن هرمز؛ هزینه‌ای که اقتصاد می‌پردازد"],
+      ["il", "Israel Hayom", "2026-06-20", "h", "IDF encircles dozens of Hezbollah terrorists in southern Lebanon, Iran threatens to block the Strait of Hormuz.", "צה״ל מכתר עשרות מחבלי חזבאללה בדרום לבנון, איראן מאיימת לחסום את מיצר הורמוז"],
+      ["il", "Haaretz", "2026-06-20", "h", "Iran declares the Strait of Hormuz closed; oil prices soar", "איראן הכריזה על סגירת מיצר הורמוז; מחירי הנפט מזנקים"],
+      ["il", "Yedioth Ahronoth", "2026-06-20", "h", "The Strait of Hormuz is closed: what it means for Israel", "מיצר הורמוז נסגר: מה זה אומר לישראל"],
+      ["ir", "Hamshahri", "2026-06-21", "h2", "Tanker traffic through Hormuz comes to a halt", "تردد نفتکش‌ها در هرمز متوقف شد"],
+      ["il", "Globes", "2026-06-21", "h2", "Shipping insurers pull back from the Gulf after the Hormuz closure", "חברות הביטוח הימי נסוגות מהמפרץ אחרי סגירת הורמוז"],
+      ["ir", "Shargh", "2026-07-05", "i2", "The inspectors’ return: a chance to ease tension with the Agency", "بازگشت بازرسان آژانس؛ فرصتی برای کاهش تنش"],
+      ["il", "Yedioth Ahronoth", "2026-07-05", "i2", "IAEA inspectors won’t be back in Iran any time soon", "פקחי סבא״א לא יחזרו לאיראן בקרוב"],
+      ["il", "Haaretz", "2026-07-28", "b2", "The Lebanon ceasefire is fraying as Hezbollah rearms", "הפסקת האש בלבנון מתערערת כשחיזבאללה מתחמש מחדש"],
+      ["ir", "Kayhan", "2026-09-09", "b2", "Hezbollah is stronger than ever", "حزب‌الله قوی‌تر از همیشه"],
+      ["ir", "Kayhan", "2026-09-14", "d", "IRGC naval exercise in the Strait of Hormuz", "رزمایش دریایی سپاه در تنگه هرمز"],
+      ["ir", "Fars", "2026-09-14", "d", "Navy shows its readiness to defend Hormuz", "نیروی دریایی آمادگی خود برای دفاع از هرمز را نشان داد"],
+      ["il", "Israel Hayom", "2026-09-14", "d", "Iran flexes its muscles in the Strait of Hormuz", "איראן מפגינה כוח במיצר הורמוז"],
+      ["ir", "Hamshahri", "2026-10-02", "r", "The dollar passes 120,000 tomans as the rial slides", "دلار از مرز ۱۲۰ هزار تومان گذشت"],
+      ["ir", "Shargh", "2026-11-18", "r", "The rial’s fall and an anxious market", "سقوط ریال و نگرانی بازار"],
+      ["il", "Globes", "2026-11-18", "r", "The Iranian rial plunges to a new low", "הריאל האיראני צונח לשפל חדש"],
+      ["ir", "Etemad", "2026-11-19", "i", "Before the resolution, let’s not lose the window for diplomacy", "پیش از قطعنامه، فرصت دیپلماسی را از دست ندهیم"],
+      ["ir", "Kayhan", "2026-11-19", "i", "Board of Governors resolution: Europe beats the drum of pressure again", "قطعنامه شورای حکام؛ اروپا باز هم بر طبل فشار می‌کوبد"],
+      ["ir", "Javan", "2026-11-19", "i", "Iran’s answer to a resolution is reduced cooperation with the Agency", "پاسخ ایران به قطعنامه، کاهش همکاری با آژانس است"],
+      ["il", "Haaretz", "2026-11-19", "i", "Israel presses Europe to condemn Iran, but Washington prefers to wait", "ישראל לוחצת על אירופה לגנות את איראן, אבל בוושינגטון מעדיפים לחכות"],
+      ["il", "Yedioth Ahronoth", "2026-11-19", "i", "The Board of Governors convenes: what happens if Iran responds with enrichment?", "מועצת הנגידים מתכנסת: מה יקרה אם איראן תגיב בהעשרה?"],
+      ["il", "Israel Hayom", "2026-11-19", "i", "Jerusalem passes new intelligence to Europe", "ירושלים מעבירה לאירופה מידע מודיעיני חדש"],
+      ["ir", "Shargh", "2026-11-19", "b", "Lebanon caught between American pressure and domestic considerations", "لبنان میان فشار آمریکا و ملاحظات داخلی"],
+      ["ir", "Tasnim", "2026-11-19", "b", "Hezbollah: the resistance’s weapons are not negotiable", "حزب‌الله: سلاح مقاومت قابل مذاکره نیست"],
+      ["il", "Haaretz", "2026-11-19", "b", "Lebanon’s government asks for more time to disarm Hezbollah", "ממשלת לבנון מבקשת עוד זמן לפירוק חיזבאללה"],
+      ["il", "Maariv", "2026-11-19", "b", "The IDF prepares for another round in the north", "צה״ל נערך לסבב נוסף בצפון"],
+      ["ir", "Donya-e-Eqtesad", "2026-11-19", "o", "Oil below $60: the 1406 budget under pressure", "نفت زیر ۶۰ دلار؛ بودجه ۱۴۰۶ زیر فشار"],
+      ["ir", "Fars", "2026-11-19", "o", "Sanctions have failed to halt Iran’s oil exports", "تحریم‌ها نتوانسته صادرات نفت ایران را متوقف کند"],
+      ["il", "Globes", "2026-11-19", "o", "The oil price plunges: what it means for Iran’s economy", "מחיר הנפט צונח: מה זה אומר על הכלכלה האיראנית"],
+      ["il", "Makor Rishon", "2026-11-19", "o", "Cheap oil weakens Tehran", "הנפט הזול מחליש את טהרן"]
+    ];
+    const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const fmt = (s) => Number(s.slice(8, 10)) + " " + MON[Number(s.slice(5, 7)) - 1] + " 2026";
+    const leanOf = (k, o) => (C[k].outlets.find((x) => x[0] === o) || [o, 3])[1];
+    const query = q.trim().toLowerCase();
+    const esc = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const hl = (text) => {
+      if (!query) return [{ t: text, hit: false, plain: true }];
+      return text.split(new RegExp("(" + esc + ")", "ig")).filter((p) => p !== "").map((p) => ({ t: p, hit: p.toLowerCase() === query, plain: p.toLowerCase() !== query }));
+    };
+    const matched = query ? A.filter((a) => countries.indexOf(a[0]) !== -1 && (a[4] + " " + a[5] + " " + a[1] + " " + EV[a[3]]).toLowerCase().indexOf(query) !== -1) : [];
+    matched.sort((x, y) => sort === "new" ? y[2].localeCompare(x[2]) : x[2].localeCompare(y[2]));
+    const results = matched.map((a) => {
+      const lean = leanOf(a[0], a[1]);
+      const c = C[a[0]];
+      return {
+        country: c.name, color: c.color, outlet: a[1], date: fmt(a[2]), lang: c.lang,
+        leanLabel: c.labels[lean - 1], ticks: [1, 2, 3, 4, 5].map((i) => ({ on: i === lean, off: i !== lean })),
+        parts: hl(a[4]), orig: a[5], event: EV[a[3]]
+      };
+    });
+    const months = ["06", "07", "08", "09", "10", "11"];
+    const mc = months.map((m) => ({
+      ir: matched.filter((a) => a[0] === "ir" && a[2].slice(5, 7) === m).length,
+      il: matched.filter((a) => a[0] === "il" && a[2].slice(5, 7) === m).length
+    }));
+    const mMax = Math.max(1, ...mc.map((x) => Math.max(x.ir, x.il)));
+    const time = months.map((m, i) => ({
+      label: MON[Number(m) - 1],
+      hi: Math.round(mc[i].ir / mMax * 110) + "px", hl: Math.round(mc[i].il / mMax * 110) + "px",
+      ni: mc[i].ir ? String(mc[i].ir) : "", nl: mc[i].il ? String(mc[i].il) : "",
+      showIr: countries.indexOf("ir") !== -1, showIl: countries.indexOf("il") !== -1
+    }));
+    const spectrum = ["ir", "il"].filter((k) => countries.indexOf(k) !== -1).map((k) => {
+      const c = C[k];
+      const counts = c.outlets.map((o) => ({ name: o[0], lean: o[1], n: matched.filter((a) => a[0] === k && a[1] === o[0]).length }));
+      const max = Math.max(1, ...counts.map((x) => x.n));
+      const tot = counts.reduce((s, x) => s + x.n, 0);
+      return {
+        name: c.name, color: c.color, L: c.L, R: c.R, total: tot + (tot === 1 ? " article" : " articles"),
+        slots: [1, 2, 3, 4, 5].map((i) => ({
+          label: c.labels[i - 1],
+          outlets: counts.filter((x) => x.lean === i).map((x) => ({
+            name: x.name, count: String(x.n), w: (x.n / max * 100).toFixed(0) + "%", hit: x.n > 0, zero: x.n === 0
+          }))
+        }))
+      };
+    });
+    const outletsHit = new Set(matched.map((a) => a[1])).size;
+    const first = matched.length ? matched.map((a) => a[2]).sort()[0] : "";
+    const last = matched.length ? matched.map((a) => a[2]).sort().slice(-1)[0] : "";
+    const setQ = (v) => () => this.setState({ q: v });
+    return {
+      q, results,
+      hasQuery: !!query, noQuery: !query,
+      hasResults: matched.length > 0, noResults: !!query && matched.length === 0,
+      summary: matched.length + (matched.length === 1 ? " article" : " articles") + " from " + outletsHit + (outletsHit === 1 ? " outlet" : " outlets") + (matched.length ? ", " + fmt(first) + " to " + fmt(last) : ""),
+      queryLabel: "“" + q.trim() + "”",
+      time, spectrum,
+      onQ: (e) => this.setState({ q: e.target.value }),
+      submit: (e) => { if (e && e.preventDefault) e.preventDefault(); },
+      clear: () => this.setState({ q: "" }),
+      suggestions: ["Hormuz", "IAEA", "Hezbollah", "rial", "ceasefire", "oil"].map((s) => ({ label: s, pick: setQ(s) })),
+      sorts: [["new", "Newest first"], ["old", "Oldest first"]].map((s) => ({ name: s[1], on: sort === s[0], off: sort !== s[0], pick: () => this.setState({ sort: s[0] }) })),
+      ctry: [["ir", "Iran", IR], ["il", "Israel", IL]].map((c) => {
+        const on = countries.indexOf(c[0]) !== -1;
+        return { name: c[1], color: c[2], on, off: !on, pick: () => { if (on) { if (countries.length > 1) this.setState({ countries: countries.filter((k) => k !== c[0]) }); } else this.setState({ countries: countries.concat([c[0]]) }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

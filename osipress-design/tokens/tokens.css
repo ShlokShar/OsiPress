@@ -1,0 +1,67 @@
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&family=Vazirmatn:wght@400;500&family=Noto+Sans+Hebrew:wght@400;500&display=swap");
+
+:root {
+  --osi-teal-900: #0A2F36;
+  --osi-teal-800: #0D3A42;
+  --osi-teal-line: #1E4E57;
+  --osi-teal-600: #2E7782;
+  --osi-teal-link: #0B6570;
+  --osi-teal-link-hover: #06444B;
+  --osi-mint: #7FD1C8;
+  --osi-mint-tint: #CDEFEA;
+  --osi-on-dark-muted: #C3D6D9;
+  --osi-on-dark-subtle: #A9C4C8;
+  --osi-on-dark-faint: #8FB3B8;
+
+  --osi-ink: #14191F;
+  --osi-ink-body: #2E353D;
+  --osi-ink-muted: #535C66;
+  --osi-ink-subtle: #6A737D;
+  --osi-ink-original: #5E6772;
+  --osi-ground: #EEF1F3;
+  --osi-surface: #FFFFFF;
+  --osi-rule: #D5DADF;
+  --osi-rule-strong: #C9CED5;
+  --osi-rule-soft: #E3E7EB;
+  --osi-rule-faint: #EDF0F2;
+  --osi-control-border: #B9C0C8;
+
+  --osi-country-ir: #1E7353;
+  --osi-country-ir-chart: #11825A;
+  --osi-country-il: #2B5BA6;
+  --osi-country-ru: #56616B;
+  --osi-country-ua: #B07D00;
+  --osi-country-tr: #B23B3B;
+  --osi-country-lb: #7B4FA2;
+  --osi-country-next: #2E7782;
+
+  --osi-font-display: "Newsreader", Georgia, serif;
+  --osi-font-ui: "Inter", Arial, sans-serif;
+  --osi-font-fa: "Vazirmatn", Tahoma, sans-serif;
+  --osi-font-ar: "Vazirmatn", Tahoma, sans-serif;
+  --osi-font-he: "Noto Sans Hebrew", Arial, sans-serif;
+  --osi-font-cyrillic: "Inter", Arial, sans-serif;
+
+  --osi-lh-fa: 1.7;
+  --osi-lh-he: 1.5;
+
+  --osi-container: 1344px;
+  --osi-gutter-desktop: 48px;
+  --osi-gutter-mobile: 20px;
+  --osi-header-h-desktop: 80px;
+  --osi-header-h-mobile: 64px;
+  --osi-tap: 44px;
+}
+
+body { margin: 0; background: var(--osi-ground); color: var(--osi-ink); font-family: var(--osi-font-ui); }
+a { color: var(--osi-teal-link); text-decoration: none; }
+a:hover { color: var(--osi-teal-link-hover); text-decoration: underline; }
+
+.osi-original[lang="fa"], .osi-original[lang="ar"] { font-family: var(--osi-font-fa); line-height: var(--osi-lh-fa); }
+.osi-original[lang="he"] { font-family: var(--osi-font-he); line-height: var(--osi-lh-he); }
+.osi-original[lang="ru"], .osi-original[lang="uk"], .osi-original[lang="tr"] { font-family: var(--osi-font-cyrillic); line-height: 1.45; }
+.osi-original { color: var(--osi-ink-original); unicode-bidi: isolate; text-align: start; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

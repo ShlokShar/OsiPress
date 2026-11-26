@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OsiPress — Archive (mobile)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&family=Vazirmatn:wght@400;500&family=Noto+Sans+Hebrew:wght@400;500&display=swap">
+<style>
+body{margin:0;background:#EEF1F3}
+a{color:#0B6570;text-decoration:none}a:hover{color:#06444B;text-decoration:underline}
+.o-fa,.o-ar{font-family:'Vazirmatn',Tahoma,sans-serif;line-height:1.7}
+.o-he{font-family:'Noto Sans Hebrew',Arial,sans-serif;line-height:1.5}
+.o-tr,.o-uk,.o-ru{font-family:'Inter',Arial,sans-serif;line-height:1.45}
+.n-fa,.n-ar{font-family:'Vazirmatn',sans-serif}
+.n-he{font-family:'Noto Sans Hebrew',sans-serif}
+.n-tr,.n-uk,.n-ru{font-family:'Inter',sans-serif}
+.hscroll{scrollbar-width:none}.hscroll::-webkit-scrollbar{display:none}
+input[type=search]::placeholder{color:#7E9EA3}
+input[type=search]:focus{outline:2px solid #7FD1C8;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 3400px; font-family: 'Inter', Arial, sans-serif; color: #14191F; background: #EEF1F3; overflow: hidden">
+  <header style="background: #0A2F36; color: #FFFFFF; border-bottom: 1px solid #1E4E57">
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 20px">
+      <a href="Homepage-mobile.dc.html" aria-label="OsiPress" style="font-family: 'Newsreader', Georgia, serif; font-size: 28px; font-weight: 400; line-height: 1; color: #FFFFFF; text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; display: flex; align-items: center"><span aria-hidden="true"><span style="color: #7FD1C8; font-weight: 300">[</span>os<span style="position: relative; display: inline-block">ı<span aria-hidden="true" style="position: absolute; left: 50%; top: 0.035em; transform: translateX(-50%); font-size: 0.62em; line-height: 1; font-weight: 500; color: #7FD1C8">”</span></span><span style="color: #7FD1C8; font-weight: 300">]</span>press</span></a>
+      <sc-if value="{{menuClosed}}" hint-placeholder-val="{{true}}">
+        <button type="button" aria-expanded="false" aria-label="Open menu" onClick="{{toggleMenu}}" style="width: 44px; height: 44px; border: 1px solid #2E7782; background: transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 0"><span style="display: block; width: 20px; height: 2px; background: #FFFFFF"></span><span style="display: block; width: 20px; height: 2px; background: #FFFFFF"></span><span style="display: block; width: 20px; height: 2px; background: #FFFFFF"></span></button>
+      </sc-if>
+      <sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+        <button type="button" aria-expanded="true" aria-label="Close menu" onClick="{{toggleMenu}}" style="width: 44px; height: 44px; border: 1px solid #7FD1C8; background: transparent; cursor: pointer; position: relative; padding: 0"><span style="position: absolute; left: 11px; top: 20px; width: 20px; height: 2px; background: #FFFFFF; transform: rotate(45deg)"></span><span style="position: absolute; left: 11px; top: 20px; width: 20px; height: 2px; background: #FFFFFF; transform: rotate(-45deg)"></span></button>
+      </sc-if>
+    </div>
+    <sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+      <nav aria-label="Site" style="display: flex; flex-direction: column; padding: 0 20px 20px; border-top: 1px solid #1E4E57"><a href="#" style="display: flex; align-items: center; height: 56px; border-bottom: 1px solid #1E4E57; font-family: 'Newsreader', Georgia, serif; font-size: 24px; color: #C3D6D9; text-decoration: none">About</a><a href="Today-mobile.dc.html" style="display: flex; align-items: center; height: 56px; border-bottom: 1px solid #1E4E57; font-family: 'Newsreader', Georgia, serif; font-size: 24px; color: #C3D6D9; text-decoration: none">Today</a><a href="Archive-mobile.dc.html" aria-current="page" style="display: flex; align-items: center; justify-content: space-between; height: 56px; border-bottom: 1px solid #1E4E57; font-family: 'Newsreader', Georgia, serif; font-size: 24px; color: #FFFFFF; text-decoration: none">Archive<span style="font-family: 'Inter', Arial, sans-serif; font-size: 12px; font-weight: 600; color: #7FD1C8">You are here</span></a><a href="Search-mobile.dc.html" style="display: flex; align-items: center; height: 56px; border-bottom: 1px solid #1E4E57; font-family: 'Newsreader', Georgia, serif; font-size: 24px; color: #C3D6D9; text-decoration: none">Search</a></nav>
+    </sc-if>
+  </header>
+  <section style="padding: 28px 20px 8px; display: flex; flex-direction: column; gap: 14px">
+    <h1 style="font-family: 'Newsreader', Georgia, serif; font-size: 42px; line-height: 1; font-weight: 400; letter-spacing: -0.02em; margin: 0">Archive</h1>
+    <p style="font-size: 16px; line-height: 1.6; color: #2E353D; margin: 0">Every edition since OsiPress began. Pick one country, or two to compare, then tap a day to read what ran.</p>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding-top: 6px">
+      <sc-for list="{{stats}}" as="s" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; gap: 2px; border-top: 1px solid #14191F; padding-top: 8px"><span style="font-family: 'Newsreader', Georgia, serif; font-size: 28px; line-height: 1">{{s.big}}</span><span style="font-size: 12px; color: #535C66">{{s.small}}</span></div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="padding: 16px 20px; display: flex; flex-direction: column; gap: 12px">
+    <div class="hscroll" style="display: flex; gap: 8px; overflow-x: auto; margin: 0 -20px; padding: 0 20px">
+      <sc-for list="{{ctry}}" as="c" hint-placeholder-count="4">
+        <sc-if value="{{c.on}}" hint-placeholder-val="{{true}}"><button type="button" aria-pressed="true" onClick="{{c.pick}}" style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border: 1px solid #0A2F36; background: #0A2F36; color: #FFFFFF; font: 600 14px 'Inter', Arial, sans-serif; cursor: pointer; white-space: nowrap"><span aria-hidden="true" style="width: 10px; height: 10px; background: {{c.color}}; outline: 1px solid #FFFFFF; flex: 0 0 auto"></span>{{c.name}}</button></sc-if>
+        <sc-if value="{{c.off}}" hint-placeholder-val="{{false}}"><button type="button" aria-pressed="false" onClick="{{c.pick}}" style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border: 1px solid #B9C0C8; background: #FFFFFF; color: #14191F; font: 500 14px 'Inter', Arial, sans-serif; cursor: pointer; white-space: nowrap"><span aria-hidden="true" style="width: 10px; height: 10px; background: {{c.color}}; flex: 0 0 auto"></span>{{c.name}}</button></sc-if>
+        <sc-if value="{{c.soon}}" hint-placeholder-val="{{false}}"><button type="button" disabled style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border: 1px dashed #B9C0C8; background: transparent; color: #6A737D; font: 500 14px 'Inter', Arial, sans-serif; white-space: nowrap">{{c.name}} <span style="font-size: 12px">next</span></button></sc-if>
+      </sc-for>
+    </div>
+    <div role="group" style="display: flex; border: 1px solid #0A2F36"><sc-for list="{{ranges}}" as="r" hint-placeholder-count="2"><sc-if value="{{r.on}}" hint-placeholder-val="{{false}}"><button type="button" aria-pressed="true" onClick="{{r.pick}}" style="flex: 1 1 0; height: 44px; padding: 0 10px; border: 0; background: #0A2F36; color: #FFFFFF; font: 600 14px 'Inter', Arial, sans-serif; cursor: pointer; white-space: nowrap">{{r.name}}</button></sc-if><sc-if value="{{r.off}}" hint-placeholder-val="{{true}}"><button type="button" aria-pressed="false" onClick="{{r.pick}}" style="flex: 1 1 0; height: 44px; padding: 0 10px; border: 0; background: #FFFFFF; color: #0A2F36; font: 500 14px 'Inter', Arial, sans-serif; cursor: pointer; white-space: nowrap">{{r.name}}</button></sc-if></sc-for></div>
+  </section>
+
+  <section aria-label="Articles per day" style="background: #FFFFFF; border-top: 1px solid #D5DADF; border-bottom: 1px solid #D5DADF; padding: 20px 16px 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 22px; font-weight: 500; margin: 0">Articles per day, {{topicName}}</h2>
+      <div style="display: flex; justify-content: space-between; font-size: 12px; color: #535C66"><span>{{rangeLabel}}</span><span style="display: flex; gap: 12px"><span style="display: flex; align-items: center; gap: 5px"><span style="width: 8px; height: 8px; background: #11825A"></span>Iran, above</span><span style="display: flex; align-items: center; gap: 5px"><span style="width: 8px; height: 8px; background: #2B5BA6"></span>Israel, below</span></span></div>
+    </div>
+    <div style="position: relative; padding-top: 14px">
+      <sc-for list="{{notes}}" as="n" hint-placeholder-count="0"><div aria-hidden="true" style="position: absolute; top: -4px; left: {{n.left}}; transform: translateX(-50%); font-size: 10px; font-weight: 600; white-space: nowrap; pointer-events: none">{{n.label}}</div></sc-for>
+      <div style="position: absolute; left: 0; right: 0; top: 111px; height: 1px; background: #8A929C; pointer-events: none"></div>
+      <div style="display: flex; align-items: stretch; height: 196px">
+        <sc-for list="{{chartDays}}" as="d" hint-placeholder-count="30">
+          <button type="button" aria-label="{{d.aria}}" onMouseEnter="{{d.hover}}" onFocus="{{d.hover}}" onClick="{{d.pick}}" style="flex: 1 1 0; min-width: 0; height: 196px; padding: 0; border: 0; background: {{d.bg}}; cursor: pointer; display: flex; flex-direction: column; align-items: center">
+            <span style="flex: 0 0 96px; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 0 1px; box-sizing: border-box"><span style="display: block; width: 100%; max-width: 12px; height: {{d.hi}}; background: {{d.ci}}; border-radius: 2px 2px 0 0"></span></span>
+            <span style="flex: 0 0 4px"></span>
+            <span style="flex: 0 0 96px; width: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 0 1px; box-sizing: border-box"><span style="display: block; width: 100%; max-width: 12px; height: {{d.hl}}; background: {{d.cl}}; border-radius: 0 0 2px 2px"></span></span>
+          </button>
+        </sc-for>
+      </div>
+      <div aria-hidden="true" style="position: relative; height: 24px; border-top: 1px solid #E3E7EB">
+        <sc-for list="{{ticks}}" as="t" hint-placeholder-count="5"><span style="position: absolute; top: 7px; left: {{t.left}}; transform: translateX(-50%); font-size: 11px; color: #535C66; white-space: nowrap">{{t.label}}</span></sc-for>
+      </div>
+    </div>
+    <sc-if value="{{hasTip}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="background: #0A2F36; color: #FFFFFF; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px">
+        <span style="display: flex; justify-content: space-between; font-size: 12px; color: #A9C4C8"><span>{{tip.date}}</span><span>Iran {{tip.ir}}, Israel {{tip.il}}</span></span>
+        <span style="font-family: 'Newsreader', Georgia, serif; font-size: 17px; line-height: 1.25">{{tip.top}}</span>
+        <span style="font-size: 12px; color: #A9C4C8">{{tip.more}}</span>
+      </div>
+    </sc-if>
+    <sc-if value="{{noTip}}" hint-placeholder-val="{{true}}"><span style="font-size: 12px; color: #6A737D">Tap a bar to see that day.</span></sc-if>
+  </section>
+
+  <section style="padding: 22px 20px 4px; display: flex; flex-direction: column; gap: 10px">
+    <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 22px; font-weight: 500; margin: 0">Topics</h2>
+    <div class="hscroll" style="display: flex; gap: 8px; overflow-x: auto; margin: 0 -20px; padding: 0 20px">
+      <sc-for list="{{topics}}" as="t" hint-placeholder-count="7">
+        <sc-if value="{{t.on}}" hint-placeholder-val="{{false}}"><button type="button" aria-pressed="true" onClick="{{t.pick}}" style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border: 1px solid #0A2F36; background: #0A2F36; color: #FFFFFF; font: 600 14px 'Inter', Arial, sans-serif; cursor: pointer; white-space: nowrap">{{t.name}}<span style="font-weight: 400; color: #C3CAD1">{{t.count}}</span></button></sc-if>
+        <sc-if value="{{t.off}}" hint-placeholder-val="{{true}}"><button type="button" aria-pressed="false" onClick="{{t.pick}}" style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border: 1px solid #B9C0C8; background: #FFFFFF; color: #14191F; font: 500 14px 'Inter', Arial, sans-serif; cursor: pointer; white-space: nowrap">{{t.name}}<span style="font-weight: 400; color: #6A737D">{{t.count}}</span></button></sc-if>
+      </sc-for>
+    </div>
+  </section>
+
+  <main style="padding: 18px 20px 28px; display: flex; flex-direction: column">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 12px">
+      <sc-if value="{{noSel}}" hint-placeholder-val="{{true}}"><h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 26px; font-weight: 500; margin: 0">Latest days</h2></sc-if>
+      <sc-if value="{{hasSel}}" hint-placeholder-val="{{false}}"><h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 24px; font-weight: 500; margin: 0">{{selLabel}}</h2></sc-if>
+      <sc-if value="{{hasSel}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{clearSel}}" style="min-height: 44px; border: 0; background: transparent; padding: 0; color: #0B6570; font: 500 14px 'Inter', Arial, sans-serif; cursor: pointer">Latest days</button></sc-if>
+    </div>
+    <sc-if value="{{hasTopic}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{clearTopic}}" style="align-self: flex-start; min-height: 40px; border: 0; background: transparent; padding: 0; color: #0B6570; font: 500 14px 'Inter', Arial, sans-serif; cursor: pointer">Clear topic: {{topicName}}</button></sc-if>
+    <sc-for list="{{listDays}}" as="d" hint-placeholder-count="3">
+      <div style="display: flex; flex-direction: column; border-top: 2px solid #14191F; padding: 14px 0 18px">
+        <div style="display: flex; align-items: baseline; gap: 10px">
+          <span style="font-family: 'Newsreader', Georgia, serif; font-size: 34px; line-height: 1">{{d.day}}</span>
+          <span style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em">{{d.mon}}</span>
+          <span style="margin-left: auto; font-size: 12px; color: #535C66">{{d.meta}}</span>
+        </div>
+        <sc-if value="{{d.empty}}" hint-placeholder-val="{{false}}"><span style="font-size: 14px; color: #6A737D; padding-top: 10px">Nothing on this topic that day.</span></sc-if>
+        <sc-for list="{{d.events}}" as="e" hint-placeholder-count="3">
+          <a href="Event-detail-mobile.dc.html" style="display: flex; flex-direction: column; gap: 8px; padding: 14px 0; border-bottom: 1px solid #D5DADF; color: #14191F; text-decoration: none">
+            <span style="font-size: 12px; color: #535C66">{{e.topic}}, {{e.edition}}</span>
+            <span style="font-family: 'Newsreader', Georgia, serif; font-size: 20px; line-height: 1.25">{{e.title}}</span>
+            <sc-for list="{{e.rows}}" as="r" hint-placeholder-count="2">
+              <span style="display: grid; grid-template-columns: 64px minmax(0, 1fr) 82px; align-items: center; gap: 10px; font-size: 12px">
+                <span style="display: flex; align-items: center; gap: 6px; font-weight: 600"><span aria-hidden="true" style="width: 8px; height: 8px; background: {{r.color}}"></span>{{r.name}}</span>
+                <span aria-hidden="true" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px"><sc-for list="{{r.cells}}" as="k" hint-placeholder-count="5"><sc-if value="{{k.on}}" hint-placeholder-val="{{false}}"><span style="display: block; height: 6px; background: #14191F"></span></sc-if><sc-if value="{{k.off}}" hint-placeholder-val="{{true}}"><span style="display: block; height: 6px; background: #E3E7EB"></span></sc-if></sc-for></span>
+                <span style="color: #535C66; text-align: right">{{r.count}}</span>
+              </span>
+            </sc-for>
+          </a>
+        </sc-for>
+      </div>
+    </sc-for>
+    <sc-if value="{{noSel}}" hint-placeholder-val="{{true}}"><button type="button" style="height: 48px; border: 1px solid #0A2F36; background: #FFFFFF; color: #0A2F36; font: 600 15px 'Inter', Arial, sans-serif; cursor: pointer; margin-top: 6px">Show earlier days</button></sc-if>
+  </main>
+
+  <section style="background: #0A2F36; color: #FFFFFF; padding: 24px 20px 20px; display: flex; flex-direction: column; gap: 4px">
+    <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 24px; font-weight: 500; margin: 0 0 4px">Most covered</h2>
+    <span style="font-size: 13px; color: #A9C4C8; margin-bottom: 8px">The events with the most articles in this range.</span>
+    <sc-for list="{{ranked}}" as="r" hint-placeholder-count="5">
+      <button type="button" onClick="{{r.pick}}" style="display: flex; gap: 14px; width: 100%; padding: 12px 0; border: 0; border-top: 1px solid #1E4E57; background: transparent; color: #FFFFFF; cursor: pointer; text-align: left; font-family: 'Inter', Arial, sans-serif">
+        <span style="font-family: 'Newsreader', Georgia, serif; font-size: 22px; line-height: 1; color: #7FD1C8; flex: 0 0 18px">{{r.n}}</span>
+        <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+          <span style="font-family: 'Newsreader', Georgia, serif; font-size: 17px; line-height: 1.25">{{r.title}}</span>
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 12px; color: #A9C4C8"><span style="flex: 1 1 auto; height: 4px; background: #1E4E57"><span style="display: block; height: 4px; width: {{r.w}}; background: #7FD1C8"></span></span>{{r.date}}, {{r.count}}</span>
+        </span>
+      </button>
+    </sc-for>
+  </section>
+  <footer style="background: #0A2F36; color: #A9C4C8; padding: 28px 20px 36px; display: flex; flex-direction: column; gap: 18px; font-size: 14px; line-height: 1.6">
+    <p style="margin: 0">Selection is automated: up to three recent articles classified as political from each outlet’s RSS feed. Translations keep charged language as written, OsiPress doesn’t rank or score coverage, and machine translation may contain errors.</p>
+    <div style="display: flex; align-items: center; justify-content: space-between"><span aria-label="OsiPress" style="font-family: 'Newsreader', Georgia, serif; font-size: 24px; font-weight: 400; line-height: 1; color: #FFFFFF; text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; display: flex; align-items: center"><span aria-hidden="true"><span style="color: #7FD1C8; font-weight: 300">[</span>os<span style="position: relative; display: inline-block">ı<span aria-hidden="true" style="position: absolute; left: 50%; top: 0.035em; transform: translateX(-50%); font-size: 0.62em; line-height: 1; font-weight: 500; color: #7FD1C8">”</span></span><span style="color: #7FD1C8; font-weight: 300">]</span>press</span></span><a href="#" style="color: #FFFFFF; text-decoration: underline">GitHub ↗</a></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":3400}}'>
+class Component extends DCLogic {
+  data() {
+    if (this._data) return this._data;
+    let seed = 20260601;
+    const rnd = () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const TOPICS = ["Nuclear programme", "Lebanon and Hezbollah", "Gaza", "Economy and energy", "Shipping and the Gulf", "Domestic politics", "Regional diplomacy"];
+    const POOL = [
+      [0, "IAEA inspectors return to Isfahan"], [0, "Tehran rejects a new European proposal on enrichment"], [0, "Israeli officials warn of renewed activity at Fordow"], [0, "Iran’s parliament debates curbing cooperation with the IAEA"],
+      [1, "Israeli strikes hit targets in southern Lebanon"], [1, "Lebanese army expands its deployment south of the Litani"], [1, "Beirut and Washington discuss the border mechanism"],
+      [2, "Ceasefire talks resume in Cairo"], [2, "Aid convoys stall at the Kerem Shalom crossing"], [2, "Dispute over the next phase of the Gaza truce"],
+      [3, "Rial falls to a new low against the dollar"], [3, "Bank of Israel holds interest rates"], [3, "Iran raises petrol prices"], [3, "Shekel strengthens after ratings outlook change"],
+      [4, "Iran seizes a tanker in the Gulf of Oman"], [4, "Houthi attack targets a ship in the Red Sea"], [4, "Naval drills disrupt traffic near Hormuz"],
+      [5, "Water rationing expands across Tehran"], [5, "Knesset clashes over the draft exemption bill"], [5, "Protests over power cuts in Iranian cities"], [5, "Coalition tensions deepen in Jerusalem"],
+      [6, "Iranian and Saudi foreign ministers meet in Riyadh"], [6, "US envoy visits Jerusalem"], [6, "Oman hosts indirect talks"]
+    ];
+    const FIXED = {
+      "2026-06-20": [[4, "Iran declares the Strait of Hormuz closed, again", 9, 9], [3, "Oil jumps as Gulf shipping stalls", 4, 3], [6, "US moves a carrier group into the Gulf", 3, 4]],
+      "2026-11-19": [[0, "IAEA Board of Governors weighs a new resolution on Iran", 4, 5], [1, "Pressure mounts on Beirut over Hezbollah disarmament", 3, 2], [3, "Oil slides below $60 a barrel", 2, 2]],
+      "2026-11-18": [[3, "Rial falls to a new low against the dollar", 4, 1], [5, "Knesset clashes over the draft exemption bill", 0, 4]],
+      "2026-11-17": [[1, "Israeli strikes hit targets in southern Lebanon", 3, 3], [5, "Water rationing expands across Tehran", 3, 0], [6, "Oman hosts indirect talks", 2, 2]]
+    };
+    const MON = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const WD = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const cov = (n) => { const c = [false, false, false, false, false]; const slots = [0, 2, 4]; for (let i = 0; i < Math.min(3, n); i++) c[slots[Math.floor(rnd() * 3)]] = true; return c; };
+    const days = [];
+    const start = Date.UTC(2026, 5, 1), end = Date.UTC(2026, 10, 19);
+    for (let t = start, i = 0; t <= end; t += 86400000, i++) {
+      const d = new Date(t);
+      const key = d.toISOString().slice(0, 10);
+      let evs = FIXED[key];
+      if (!evs) {
+        const k = 2 + Math.floor(rnd() * 3);
+        evs = [];
+        for (let j = 0; j < k; j++) {
+          const p = POOL[Math.floor(rnd() * POOL.length)];
+          if (evs.some((e) => e[1] === p[1])) continue;
+          const dom = p[0] === 5;
+          const ir = dom && rnd() < 0.5 ? 0 : 1 + Math.floor(rnd() * 3);
+          const il = dom && ir > 0 ? 0 : 1 + Math.floor(rnd() * 3);
+          evs.push([p[0], p[1], ir, il]);
+        }
+      }
+      days.push({
+        i, key, d: d.getUTCDate(), m: d.getUTCMonth(),
+        label: d.getUTCDate() + " " + MON[d.getUTCMonth()].slice(0, 3),
+        long: WD[d.getUTCDay()] + " " + d.getUTCDate() + " " + MON[d.getUTCMonth()],
+        events: evs.map((e, j) => ({ topic: e[0], title: e[1], ir: e[2], il: e[3], edition: j % 2 === 0 ? "Morning edition" : "Evening edition", irCov: cov(e[2]), ilCov: cov(e[3]) }))
+      });
+    }
+    this._data = { days, TOPICS, MON };
+    return this._data;
+  }
+  baseVals() {
+    const st = this.state || {};
+    const { days, TOPICS, MON } = this.data();
+    const range = st.range ?? "30 days";
+    const countries = st.countries ?? ["ir", "il"];
+    const topic = st.topic ?? -1;
+    const sel = st.sel ?? null;
+    const hv = st.hv ?? null;
+    const showIr = countries.indexOf("ir") !== -1, showIl = countries.indexOf("il") !== -1;
+    const n = range === "30 days" ? 30 : range === "90 days" ? 90 : days.length;
+    const view = days.slice(days.length - n);
+    const evOk = (e) => (topic === -1 || e.topic === topic) && ((showIr && e.ir > 0) || (showIl && e.il > 0));
+    const sums = view.map((d) => {
+      let ir = 0, il = 0;
+      d.events.forEach((e) => { if (topic === -1 || e.topic === topic) { ir += e.ir; il += e.il; } });
+      return { ir: showIr ? ir : 0, il: showIl ? il : 0 };
+    });
+    const maxV = Math.max(4, ...sums.map((s) => Math.max(s.ir, s.il)));
+    const H = 96;
+    const IR = "#11825A", IL = "#2B5BA6";
+    const chartDays = view.map((d, k) => {
+      const s = sums[k];
+      const dim = sel !== null && sel !== d.i;
+      return {
+        hi: Math.round((s.ir / maxV) * H) + "px", hl: Math.round((s.il / maxV) * H) + "px",
+        ci: dim ? "#A8D2C0" : IR, cl: dim ? "#B3C5E3" : IL,
+        bg: sel === d.i ? "#E3E9EE" : hv === d.i ? "#F0F3F5" : "transparent",
+        aria: d.long + ": Iran " + s.ir + ", Israel " + s.il + " articles",
+        hover: () => { if ((this.state || {}).hv !== d.i) this.setState({ hv: d.i }); },
+        pick: () => this.setState({ sel: (this.state || {}).sel === d.i ? null : d.i })
+      };
+    });
+    const ticks = [];
+    view.forEach((d, k) => { if (n <= 30 ? k % 7 === 0 : d.d === 1) ticks.push({ left: ((k + 0.5) / view.length * 100).toFixed(2) + "%", label: n <= 90 ? d.label : MON[d.m] }); });
+    const notes = [];
+    view.forEach((d, k) => { if (d.key === "2026-06-20" && (topic === -1 || topic === 4)) notes.push({ left: ((k + 0.5) / view.length * 100).toFixed(2) + "%", label: "Hormuz closure" }); });
+    let tip = null;
+    if (hv !== null) {
+      const k = view.findIndex((d) => d.i === hv);
+      if (k !== -1) {
+        const d = view[k], s = sums[k];
+        const evs = d.events.filter(evOk).sort((a, b) => (b.ir + b.il) - (a.ir + a.il));
+        const pct = (k + 0.5) / view.length * 100;
+        tip = { left: pct.toFixed(2) + "%", shift: pct > 75 ? "-100%" : pct < 25 ? "0%" : "-50%", date: d.long, ir: s.ir, il: s.il, showIr, showIl, top: evs.length ? evs[0].title : "No events for this filter", more: evs.length > 1 ? "and " + (evs.length - 1) + " more" : "" };
+      }
+    }
+    let totIr = 0, totIl = 0, totEv = 0;
+    const topicTotals = TOPICS.map(() => 0);
+    const evAll = [];
+    view.forEach((d) => d.events.forEach((e) => {
+      const ok = (showIr && e.ir > 0) || (showIl && e.il > 0);
+      if (!ok) return;
+      const a = (showIr ? e.ir : 0) + (showIl ? e.il : 0);
+      topicTotals[e.topic] += a;
+      if (topic === -1 || e.topic === topic) { totIr += showIr ? e.ir : 0; totIl += showIl ? e.il : 0; totEv++; evAll.push({ e, d, a }); }
+    }));
+    const tMax = Math.max(...topicTotals, 1);
+    const topics = TOPICS.map((t, i) => ({
+      name: t, count: topicTotals[i], w: (topicTotals[i] / tMax * 100).toFixed(1) + "%",
+      on: topic === i, off: topic !== i,
+      pick: () => this.setState({ topic: (this.state || {}).topic === i ? -1 : i, sel: null })
+    })).sort((a, b) => b.count - a.count);
+    const top = evAll.slice().sort((a, b) => b.a - a.a).slice(0, 5);
+    const topMax = top.length ? top[0].a : 1;
+    const ranked = top.map((x, i) => ({ n: String(i + 1), title: x.e.title, date: x.d.label, count: x.a + " articles", w: (x.a / topMax * 100).toFixed(1) + "%", pick: () => this.setState({ sel: x.d.i }) }));
+    const covCells = (c) => c.map((v) => ({ on: v, off: !v }));
+    const listDays = (sel !== null ? view.filter((d) => d.i === sel) : view.slice().reverse().slice(0, 4)).map((d) => {
+      const evs = d.events.filter(evOk);
+      const arts = evs.reduce((s, e) => s + (showIr ? e.ir : 0) + (showIl ? e.il : 0), 0);
+      return {
+        long: d.long, day: String(d.d), mon: MON[d.m].slice(0, 3),
+        meta: evs.length + (evs.length === 1 ? " event, " : " events, ") + arts + " articles",
+        empty: evs.length === 0, has: evs.length > 0,
+        events: evs.map((e) => ({
+          title: e.title, topic: TOPICS[e.topic], edition: e.edition,
+          rows: [
+            showIr ? { name: "Iran", color: IR, count: e.ir ? e.ir + " articles" : "Not covered", has: e.ir > 0, none: e.ir === 0, cells: covCells(e.irCov) } : null,
+            showIl ? { name: "Israel", color: IL, count: e.il ? e.il + " articles" : "Not covered", has: e.il > 0, none: e.il === 0, cells: covCells(e.ilCov) } : null
+          ].filter(Boolean)
+        }))
+      };
+    });
+    const ctry = [
+      { key: "ir", name: "Iran", color: IR, soon: false }, { key: "il", name: "Israel", color: IL, soon: false },
+      { key: "ru", name: "Russia", color: "#56616B", soon: true }, { key: "ua", name: "Ukraine", color: "#B07D00", soon: true }
+    ].map((c) => {
+      const on = countries.indexOf(c.key) !== -1;
+      return {
+        name: c.name, color: c.color, on: on && !c.soon, off: !on && !c.soon, soon: c.soon,
+        pick: () => {
+          if (on) { if (countries.length > 1) this.setState({ countries: countries.filter((k) => k !== c.key) }); }
+          else this.setState({ countries: countries.concat([c.key]).slice(-2) });
+        }
+      };
+    });
+    const ranges = ["30 days", "90 days", "All"].map((r) => ({ name: r === "All" ? "Since launch" : "Last " + r, on: r === range, off: r !== range, pick: () => this.setState({ range: r, sel: null, hv: null }) }));
+    const selDay = sel !== null ? days[sel] : null;
+    return {
+      chartDays, ticks, notes, tip, hasTip: !!tip, maxLabel: String(maxV), showIr, showIl,
+      stats: [
+        { big: String(totEv), small: "events" },
+        { big: String(totIr + totIl), small: "articles translated" },
+        { big: String(view.length * 2), small: "editions" }
+      ],
+      topics, ranked, listDays, ctry, ranges,
+      topicName: topic === -1 ? "All topics" : TOPICS[topic],
+      hasTopic: topic !== -1, clearTopic: () => this.setState({ topic: -1 }),
+      hasSel: !!selDay, noSel: !selDay, selLabel: selDay ? selDay.long : "",
+      clearSel: () => this.setState({ sel: null }),
+      leave: () => this.setState({ hv: null }),
+      rangeLabel: view[0].label + " to " + view[view.length - 1].label + " 2026"
+    };
+  }
+
+  menuVals(v) {
+    const st = this.state || {};
+    v.menuOpen = !!st.menu;
+    v.menuClosed = !st.menu;
+    v.toggleMenu = () => this.setState({ menu: !(this.state || {}).menu });
+    return v;
+  }
+
+  renderVals() {
+    const v = this.baseVals();
+    v.noTip = !v.hasTip;
+    return this.menuVals(v);
+  }
+}
+
+</script>
+</body>
+</html>

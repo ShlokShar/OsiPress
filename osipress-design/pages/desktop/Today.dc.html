@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OsiPress — Spectrum, revised</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&family=Vazirmatn:wght@400;500&family=Noto+Sans+Hebrew:wght@400;500&display=swap">
+<style>
+body{margin:0;background:#EEF1F3}
+a{color:#0B6570;text-decoration:none}a:hover{color:#06444B;text-decoration:underline}
+.o-fa,.o-ar{font-family:'Vazirmatn',Tahoma,sans-serif;line-height:1.75}
+.o-he{font-family:'Noto Sans Hebrew',Arial,sans-serif;line-height:1.5}
+.o-tr,.o-uk,.o-ru{font-family:'Inter',Arial,sans-serif;line-height:1.45}
+.n-fa,.n-ar{font-family:'Vazirmatn',sans-serif}
+.n-he{font-family:'Noto Sans Hebrew',sans-serif}
+.n-tr,.n-uk,.n-ru{font-family:'Inter',sans-serif}
+</style>
+</helmet>
+<div style="font-family: 'Inter', Arial, sans-serif; color: #14191F; background: #EEF1F3; min-height: 100%">
+  <header style="background: #0A2F36; color: #FFFFFF; border-bottom: 1px solid #1E4E57">
+    <div style="max-width: 1344px; margin: 0 auto; padding: 0 48px; display: flex; align-items: stretch; justify-content: space-between; flex-wrap: wrap; gap: 16px; min-height: 80px">
+      <a href="Homepage.dc.html" aria-label="OsiPress" style="font-family: 'Newsreader', Georgia, serif; font-size: 34px; font-weight: 400; line-height: 1; color: #FFFFFF; text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; display: flex; align-items: center"><span aria-hidden="true"><span style="color: #7FD1C8; font-weight: 300">[</span>os<span style="position: relative; display: inline-block">ı<span aria-hidden="true" style="position: absolute; left: 50%; top: 0.035em; transform: translateX(-50%); font-size: 0.62em; line-height: 1; font-weight: 500; color: #7FD1C8">”</span></span><span style="color: #7FD1C8; font-weight: 300">]</span>press</span></a>
+      <nav aria-label="Site" style="display: flex; gap: 32px; font-size: 14px">
+        <a href="#" style="color: #C3D6D9; display: flex; align-items: center; border-bottom: 3px solid transparent; padding-top: 3px">About</a>
+        <a href="Today.dc.html" aria-current="page" style="color: #FFFFFF; font-weight: 600; display: flex; align-items: center; border-bottom: 3px solid #7FD1C8; padding-top: 3px">Today</a>
+        <a href="Archive.dc.html" style="color: #C3D6D9; display: flex; align-items: center; border-bottom: 3px solid transparent; padding-top: 3px">Archive</a>
+        <a href="Search.dc.html" style="color: #C3D6D9; display: flex; align-items: center; border-bottom: 3px solid transparent; padding-top: 3px">Search</a>
+      </nav>
+    </div>
+  </header>
+
+  <main style="max-width: 1344px; margin: 0 auto; padding: 40px 48px 72px; display: flex; flex-direction: column; gap: 44px">
+    <article style="background: #FFFFFF; border: 1px solid #D5DADF; padding: 40px 40px 12px; display: flex; flex-direction: column">
+      <h1 style="font-family: 'Newsreader', Georgia, serif; font-size: 54px; line-height: 1.03; font-weight: 500; letter-spacing: -0.02em; margin: 0 0 12px; max-width: 1000px; text-wrap: balance">{{lead.title}}</h1>
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: center; font-size: 14px; color: #535C66; margin-bottom: 30px">
+        <span>{{lead.meta}}</span>
+        <span style="display: flex; gap: 16px; flex-wrap: wrap">
+          <sc-for list="{{lead.countries}}" as="c" hint-placeholder-count="2">
+            <span style="display: flex; align-items: center; gap: 6px; color: #14191F"><span aria-hidden="true" style="display: inline-block; width: 10px; height: 10px; background: {{c.color}}"></span>{{c.name}}</span>
+          </sc-for>
+        </span>
+        <a href="{{lead.href}}" style="margin-left: auto; font-size: 15px; font-weight: 600">{{lead.viewAll}}</a>
+      </div>
+
+      <sc-for list="{{lead.countries}}" as="c" hint-placeholder-count="2">
+        <section style="display: flex; flex-wrap: wrap; gap: 28px; padding: 0 0 26px">
+          <div style="flex: 0 0 160px; display: flex; flex-direction: column; gap: 4px; border-top: 3px solid {{c.color}}; padding-top: 14px">
+            <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 26px; font-weight: 500; margin: 0">{{c.name}}</h2>
+            <span lang="{{c.nl}}" dir="{{c.dir}}" class="n-{{c.nl}}" style="font-size: 15px; color: #6A737D; align-self: flex-start">{{c.native}}</span>
+            <span style="font-size: 12px; color: #535C66; margin-top: 8px">{{c.countLabel}}</span>
+          </div>
+          <div style="flex: 999 1 760px; min-width: 0; overflow-x: auto; border-top: 1px solid #14191F; padding-top: 12px">
+            <div style="min-width: 880px; display: flex; flex-direction: column; gap: 10px">
+              <div aria-hidden="true" style="display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #535C66">
+                <span>← {{c.L}}</span>
+                <span style="flex: 1; height: 1px; background: #A3ABB4"></span>
+                <span>{{c.R}} →</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr))">
+                <sc-for list="{{c.bins}}" as="b" hint-placeholder-count="5">
+                  <div style="border-left: 1px solid #E3E7EB; padding: 0 16px; display: flex; flex-direction: column; gap: 20px; min-height: 96px">
+                    <div style="font-size: 11px; color: #6A737D">{{b.label}}</div>
+                    <sc-if value="{{b.empty}}" hint-placeholder-val="{{false}}">
+                      <div style="font-size: 12px; color: #A3ABB4">No coverage</div>
+                    </sc-if>
+                    <sc-for list="{{b.items}}" as="a" hint-placeholder-count="1">
+                      <div style="display: flex; flex-direction: column; gap: 8px">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12px">
+                          <span style="font-weight: 600">{{a.outlet}}</span>
+                          <span style="color: #6A737D">{{a.time}}</span>
+                        </div>
+                        <div lang="en" style="font-family: 'Newsreader', Georgia, serif; font-size: 20px; line-height: 1.25; font-weight: 500; text-wrap: pretty">{{a.en}}</div>
+                        <sc-if value="{{a.hasSe}}" hint-placeholder-val="{{false}}">
+                          <div lang="en" style="font-family: 'Newsreader', Georgia, serif; font-size: 15px; line-height: 1.4; color: #535C66">{{a.se}}</div>
+                        </sc-if>
+                        <sc-if value="{{a.showOrig}}" hint-placeholder-val="{{true}}">
+                          <div lang="{{a.lang}}" dir="{{a.dir}}" class="o-{{a.lang}}" style="font-size: 14px; color: #5E6772; padding-top: 8px; border-top: 1px solid #EDF0F2">{{a.h}}</div>
+                        </sc-if>
+                        <div style="display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 500">
+                          <a href="#">Read in {{a.outletNative}}</a>
+                          <sc-if value="{{a.hasMore}}" hint-placeholder-val="{{false}}"><a href="{{lead.href}}" style="color: #535C66">{{a.moreLabel}}</a></sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </section>
+      </sc-for>
+    </article>
+
+    <sc-for list="{{events}}" as="e" hint-placeholder-count="2">
+      <article style="display: flex; flex-direction: column">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 16px">
+          <h2 style="font-family: 'Newsreader', Georgia, serif; font-size: 34px; line-height: 1.1; font-weight: 500; letter-spacing: -0.01em; margin: 0">{{e.title}}</h2>
+          <span style="display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap; font-size: 13px; color: #535C66">{{e.meta}}<a href="{{e.href}}" style="font-size: 14px; font-weight: 600">{{e.viewAll}}</a></span>
+        </div>
+        <sc-for list="{{e.countries}}" as="c" hint-placeholder-count="2">
+          <section style="display: flex; flex-wrap: wrap; gap: 28px; padding-bottom: 16px">
+            <div style="flex: 0 0 160px; display: flex; align-items: baseline; gap: 10px; border-top: 3px solid {{c.color}}; padding-top: 10px">
+              <h3 style="font-size: 15px; font-weight: 600; margin: 0">{{c.name}}</h3>
+              <span style="font-size: 12px; color: #6A737D">{{c.L}} to {{c.R}}</span>
+            </div>
+            <div style="flex: 999 1 760px; min-width: 0; overflow-x: auto; border-top: 1px solid #B9C0C8; padding-top: 10px">
+              <div style="min-width: 880px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr))">
+                <sc-for list="{{c.bins}}" as="b" hint-placeholder-count="5">
+                  <div style="padding: 0 16px; border-left: 1px solid #D5DADF; display: flex; flex-direction: column; gap: 12px">
+                    <div style="font-size: 11px; color: #6A737D">{{b.label}}</div>
+                    <sc-for list="{{b.items}}" as="a" hint-placeholder-count="1">
+                      <div style="display: flex; flex-direction: column; gap: 6px">
+                        <span style="display: flex; justify-content: space-between; gap: 8px; font-size: 12px"><span style="font-weight: 600">{{a.outlet}}</span><sc-if value="{{a.hasMore}}" hint-placeholder-val="{{false}}"><a href="{{e.href}}" style="color: #535C66">{{a.moreLabel}}</a></sc-if></span>
+                        <a href="#" lang="en" style="font-family: 'Newsreader', Georgia, serif; font-size: 17px; line-height: 1.3; color: #14191F">{{a.en}}</a>
+                        <sc-if value="{{a.showOrig}}" hint-placeholder-val="{{true}}">
+                          <div lang="{{a.lang}}" dir="{{a.dir}}" class="o-{{a.lang}}" style="font-size: 13px; color: #5E6772">{{a.h}}</div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </section>
+        </sc-for>
+      </article>
+    </sc-for>
+  </main>
+
+  <footer style="background: #0D3A42; color: #C3D6D9">
+    <div style="max-width: 1344px; margin: 0 auto; padding: 24px 48px 40px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; line-height: 1.5">
+      <span>Translations are machine-generated and cross-checked by two models.</span>
+      <span>Each country is placed on its own political axis, so positions are not comparable across countries. <a href="#" style="color: #FFFFFF; text-decoration: underline">How we classify outlets</a></span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"countries":{"editor":"enum","options":["2","3","4","5","6"],"default":"4","section":"Preview"},"originals":{"editor":"boolean","default":true,"section":"Preview"},"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  osi(n, showOrig) {
+    const AX = {
+      ir: { color: "#1E7353", name: "Iran", native: "ایران", nl: "fa", dir: "rtl", L: "Reformist", R: "Hardline", labels: ["Reformist", "Reform-leaning", "Centrist", "Conservative", "Hardline"] },
+      il: { color: "#2B5BA6", name: "Israel", native: "ישראל", nl: "he", dir: "rtl", L: "Left", R: "Right", labels: ["Left", "Centre-left", "Centre", "Centre-right", "Right"] },
+      ru: { color: "#56616B", name: "Russia", native: "Россия", nl: "ru", dir: "ltr", L: "Independent", R: "Pro-Kremlin", labels: ["Independent, in exile", "Leans independent", "Establishment", "Leans pro-Kremlin", "Pro-Kremlin"] },
+      ua: { color: "#B07D00", name: "Ukraine", native: "Україна", nl: "uk", dir: "ltr", L: "Government-critical", R: "Pro-government", labels: ["Government-critical", "Leans critical", "Independent", "Leans pro-government", "Pro-government"] },
+      tr: { color: "#B23B3B", name: "Türkiye", native: "Türkiye", nl: "tr", dir: "ltr", L: "Opposition", R: "Pro-government", labels: ["Opposition", "Opposition-leaning", "Independent", "Government-leaning", "Pro-government"] },
+      lb: { color: "#7B4FA2", name: "Lebanon", native: "لبنان", nl: "ar", dir: "rtl", L: "Anti-Hezbollah", R: "Pro-Hezbollah", labels: ["Anti-Hezbollah", "Leans anti-Hezbollah", "Non-aligned", "Leans pro-Hezbollah", "Pro-Hezbollah"] }
+    };
+    const TZ = { Tehran: 210, Jerusalem: 120, Moscow: 180, Kyiv: 120, Istanbul: 180, Beirut: 120 };
+    const EV = [
+      {
+        title: "IAEA Board of Governors weighs a new resolution on Iran",
+        by: {
+          ir: [
+            { o: "Etemad", on: "اعتماد", lean: 1, t: "06:40 Tehran", h: "پیش از قطعنامه، فرصت دیپلماسی را از دست ندهیم", en: "Before the resolution, let’s not lose the window for diplomacy", s: "کارشناسان: همکاری فنی با آژانس تنها راه جلوگیری از ارجاع پرونده به شورای امنیت است", se: "Experts: technical cooperation with the Agency is the only way to keep the file from being referred to the Security Council" },
+            { o: "Kayhan", on: "کیهان", lean: 5, t: "06:10 Tehran", h: "قطعنامه شورای حکام؛ اروپا باز هم بر طبل فشار می‌کوبد", en: "Board of Governors resolution: Europe beats the drum of pressure again", s: "تروئیکای اروپایی مجری سیاست‌های آمریکا و رژیم صهیونیستی در وین", se: "The European troika is carrying out the policies of America and the Zionist regime in Vienna" },
+            { o: "Kayhan", on: "کیهان", lean: 5, t: "02:30 Tehran", h: "سکوت آژانس در برابر تهدیدهای اسرائیل", en: "The Agency’s silence in the face of Israel’s threats" },
+            { o: "Javan", on: "جوان", lean: 5, t: "07:05 Tehran", h: "پاسخ ایران به قطعنامه، کاهش همکاری با آژانس است", en: "Iran’s answer to a resolution is reduced cooperation with the Agency", s: "نماینده مجلس: هر اقدام خصمانه با واکنش متقابل روبه‌رو می‌شود", se: "MP: any hostile action will be met with a reciprocal response" }
+          ],
+          il: [
+            { o: "Haaretz", on: "הארץ", lean: 1, t: "05:55 Jerusalem", h: "ישראל לוחצת על אירופה לגנות את איראן, אבל בוושינגטון מעדיפים לחכות", en: "Israel presses Europe to condemn Iran, but Washington prefers to wait", s: "גורמים מדיניים: הממשל האמריקאי חושש שהחלטה חריפה תדחוף את טהרן להאיץ את ההעשרה", se: "Diplomatic sources: the US administration fears a harsh resolution will push Tehran to accelerate enrichment" },
+            { o: "Haaretz", on: "הארץ", lean: 1, t: "01:20 Jerusalem", h: "הדיפלומטים בווינה: הרוב להחלטה מובטח", en: "Diplomats in Vienna: a majority for the resolution is assured" },
+            { o: "Yedioth Ahronoth", on: "ידיעות אחרונות", lean: 3, t: "06:20 Jerusalem", h: "מועצת הנגידים מתכנסת: מה יקרה אם איראן תגיב בהעשרה?", en: "The Board of Governors convenes: what happens if Iran responds with enrichment?", s: "כל התרחישים: מהחלטת גינוי ועד חזרה למועצת הביטחון", se: "Every scenario, from a censure resolution to a return to the Security Council" },
+            { o: "Israel Hayom", on: "ישראל היום", lean: 5, t: "06:00 Jerusalem", h: "הזדמנות אחרונה לעצור את הגרעין האיראני", en: "A last chance to stop the Iranian nuclear programme", s: "בכיר ישראלי: ״אם אירופה תהסס, ישראל תשקול את צעדיה״", se: "Senior Israeli official: “If Europe hesitates, Israel will weigh its steps”" },
+            { o: "Israel Hayom", on: "ישראל היום", lean: 5, t: "11:40 Jerusalem", h: "ירושלים מעבירה לאירופה מידע מודיעיני חדש", en: "Jerusalem passes new intelligence to Europe" }
+          ],
+          ru: [
+            { o: "Novaya Gazeta Europe", on: "Новая газета Европа", lean: 1, t: "08:40 Moscow", h: "Тегеран на грани новой изоляции", en: "Tehran on the brink of new isolation" },
+            { o: "Kommersant", on: "Коммерсантъ", lean: 3, t: "07:30 Moscow", h: "Совет управляющих МАГАТЭ снова разделился по Ирану", en: "The IAEA Board of Governors is split over Iran again" },
+            { o: "RIA Novosti", on: "РИА Новости", lean: 5, t: "07:55 Moscow", h: "МАГАТЭ готовит новую резолюцию против Ирана по инициативе Запада", en: "The IAEA prepares a new resolution against Iran at the West’s initiative" },
+            { o: "RIA Novosti", on: "РИА Новости", lean: 5, t: "05:10 Moscow", h: "Москва выступает против давления на Тегеран в МАГАТЭ", en: "Moscow opposes pressure on Tehran at the IAEA" }
+          ],
+          ua: [
+            { o: "Ukrainska Pravda", on: "Українська правда", lean: 2, t: "08:20 Kyiv", h: "МАГАТЕ розгляне нову резолюцію щодо Ірану", en: "The IAEA will consider a new resolution on Iran" },
+            { o: "Ukrinform", on: "Укрінформ", lean: 5, t: "09:05 Kyiv", h: "Україна підтримує посилення контролю МАГАТЕ над іранською ядерною програмою", en: "Ukraine backs tighter IAEA oversight of Iran’s nuclear programme" },
+            { o: "Ukrinform", on: "Укрінформ", lean: 5, t: "", h: "Київ закликає посилити санкції проти Ірану за постачання дронів Росії", en: "Kyiv calls for tougher sanctions on Iran over drone deliveries to Russia" }
+          ],
+          tr: [
+            { o: "Cumhuriyet", on: "Cumhuriyet", lean: 1, t: "07:30 Istanbul", h: "UAEA'da İran gerilimi: Bölge yeni bir krize mi sürükleniyor?", en: "Iran tension at the IAEA: is the region drifting into a new crisis?" },
+            { o: "Sabah", on: "Sabah", lean: 5, t: "07:15 Istanbul", h: "Avrupa üçlüsü İran'a karşı harekete geçti", en: "The European trio moves against Iran" }
+          ],
+          lb: [
+            { o: "An-Nahar", on: "النهار", lean: 1, t: "07:00 Beirut", h: "طهران أمام مجلس المحافظين: عزلة تتّسع", en: "Tehran before the Board of Governors: a widening isolation" },
+            { o: "Al-Akhbar", on: "الأخبار", lean: 5, t: "06:45 Beirut", h: "الوكالة الذرية تمهّد لجولة ضغط جديدة على طهران", en: "The atomic agency paves the way for a new round of pressure on Tehran" }
+          ]
+        }
+      },
+      {
+        title: "Pressure mounts on Beirut over Hezbollah disarmament",
+        by: {
+          ir: [
+            { o: "Shargh", on: "شرق", lean: 1, t: "06:30 Tehran", h: "لبنان میان فشار آمریکا و ملاحظات داخلی", en: "Lebanon caught between American pressure and domestic considerations" },
+            { o: "Tasnim", on: "تسنیم", lean: 5, t: "09:12 Tehran", h: "حزب‌الله: سلاح مقاومت قابل مذاکره نیست", en: "Hezbollah: the resistance’s weapons are not negotiable" },
+            { o: "Tasnim", on: "تسنیم", lean: 5, t: "13:40 Tehran", h: "تحرکات نظامی رژیم صهیونیستی در مرز لبنان", en: "Zionist regime military movements on the Lebanese border" }
+          ],
+          il: [
+            { o: "Haaretz", on: "הארץ", lean: 1, t: "08:40 Jerusalem", h: "ממשלת לבנון מבקשת עוד זמן לפירוק חיזבאללה", en: "Lebanon’s government asks for more time to disarm Hezbollah" },
+            { o: "Maariv", on: "מעריב", lean: 4, t: "07:50 Jerusalem", h: "צה״ל נערך לסבב נוסף בצפון", en: "The IDF prepares for another round in the north" }
+          ]
+        }
+      },
+      {
+        title: "Oil slides below $60 a barrel",
+        by: {
+          ir: [
+            { o: "Donya-e-Eqtesad", on: "دنیای اقتصاد", lean: 3, t: "06:50 Tehran", h: "نفت زیر ۶۰ دلار؛ بودجه ۱۴۰۶ زیر فشار", en: "Oil below $60: the 1406 budget under pressure" },
+            { o: "Fars", on: "فارس", lean: 5, t: "10:05 Tehran", h: "تحریم‌ها نتوانسته صادرات نفت ایران را متوقف کند", en: "Sanctions have failed to halt Iran’s oil exports" }
+          ],
+          il: [
+            { o: "Globes", on: "גלובס", lean: 3, t: "09:30 Jerusalem", h: "מחיר הנפט צונח: מה זה אומר על הכלכלה האיראנית", en: "The oil price plunges: what it means for Iran’s economy" },
+            { o: "Makor Rishon", on: "מקור ראשון", lean: 5, t: "08:15 Jerusalem", h: "הנפט הזול מחליש את טהרן", en: "Cheap oil weakens Tehran" }
+          ]
+        }
+      }
+    ];
+    const plural = (k, w) => k + " " + w + (k === 1 ? "" : "s");
+    const utc = (t) => {
+      const m = /^(\d\d):(\d\d) (\w+)$/.exec(t || "");
+      return m ? Number(m[1]) * 60 + Number(m[2]) - (TZ[m[3]] || 0) : null;
+    };
+    const newer = (a, b) => (b.u === null ? -1 : 0) - (a.u === null ? -1 : 0) || (b.u === null ? 0 : b.u) - (a.u === null ? 0 : a.u) || a.i - b.i;
+    const article = (a, i, ax) => ({
+      i, outlet: a.o, outletNative: a.on, u: utc(a.t), time: a.t || "Time not published", h: a.h, en: a.en,
+      s: a.s || "", se: a.se || "", hasSe: !!a.se, showOrig,
+      lang: ax.nl, dir: ax.dir, lean: a.lean, leanLabel: ax.labels[a.lean - 1],
+      ticks: [1, 2, 3, 4, 5].map((k) => ({ on: k === a.lean, off: k !== a.lean }))
+    });
+    const country = (ev, k) => {
+      const ax = AX[k];
+      const all = ev.by[k].map((a, i) => article(a, i, ax));
+      const names = [];
+      all.forEach((a) => { if (names.indexOf(a.outlet) === -1) names.push(a.outlet); });
+      const outlets = names.map((nm) => {
+        const list = all.filter((a) => a.outlet === nm).sort(newer).map((a, j, arr) => Object.assign({}, a, { latest: j === 0 && arr.length > 1 }));
+        const top = list[0];
+        return {
+          name: nm, native: top.outletNative, lang: ax.nl, dir: ax.dir, lean: top.lean, leanLabel: top.leanLabel, ticks: top.ticks,
+          count: list.length, countLabel: plural(list.length, "article"), articles: list,
+          pick: Object.assign({}, top, { more: list.length - 1, hasMore: list.length > 1, moreLabel: "+" + (list.length - 1) + " earlier" })
+        };
+      }).sort((a, b) => a.lean - b.lean || a.name.localeCompare(b.name));
+      const picks = outlets.map((o) => o.pick);
+      const bins = [1, 2, 3, 4, 5].map((i) => {
+        const items = picks.filter((a) => a.lean === i);
+        return { items, empty: items.length === 0, has: items.length > 0, label: ax.labels[i - 1] };
+      });
+      return {
+        key: k, color: ax.color, name: ax.name, native: ax.native, nl: ax.nl, dir: ax.dir, L: ax.L, R: ax.R,
+        articles: picks, outlets, bins, count: all.length, outletCount: outlets.length,
+        countLabel: plural(all.length, "article") + ", " + plural(outlets.length, "outlet"),
+        cov: bins.map((b) => ({ on: b.has, off: b.empty })),
+        anchor: "#country-" + k, id: "country-" + k
+      };
+    };
+    const build = (ev, keys, href) => {
+      const countries = keys.filter((k) => ev.by[k]).map((k) => country(ev, k));
+      const total = countries.reduce((s, c) => s + c.count, 0);
+      const outlets = countries.reduce((s, c) => s + c.outletCount, 0);
+      return {
+        title: ev.title, countries, total, href,
+        meta: plural(total, "article") + " from " + plural(outlets, "outlet") + " in " + plural(countries.length, "country").replace("countrys", "countries"),
+        viewAll: "View all " + plural(total, "article") + " →"
+      };
+    };
+    const leadKeys = ["ir", "il", "ru", "ua", "tr", "lb"].slice(0, Math.max(2, Math.min(6, n)));
+    return {
+      lead: build(EV[0], leadKeys, "Event-detail.dc.html"),
+      events: [build(EV[1], ["ir", "il"], "#"), build(EV[2], ["ir", "il"], "#")]
+    };
+  }
+
+  renderVals() {
+    return this.osi(parseInt(this.props.countries ?? "2", 10), this.props.originals ?? true);
+  }
+}
+</script>
+</body>
+</html>
