@@ -39,6 +39,14 @@ class AIService:
         )
         self.model = model
         self.translation_model = translation_model
+        self.input_tokens = 0
+        self.output_tokens = 0
+
+    def record_usage(self, response) -> None:
+        usage = getattr(response, "usage", None)
+        if usage:
+            self.input_tokens += getattr(usage, "input_tokens", 0) or 0
+            self.output_tokens += getattr(usage, "output_tokens", 0) or 0
 
 
     def classify(self, headline: str) -> bool:
@@ -51,7 +59,7 @@ class AIService:
         """
 
         if not headline:
-            return False
+            raise ValueError("Cannot classify an empty headline")
 
         response = self.client.responses.parse(
             model=self.model,
@@ -59,9 +67,10 @@ class AIService:
             input=f"Headline: {headline}",
             text_format=HeadlineClassifier
         )
+        self.record_usage(response)
         parsed = response.output_parsed
         if not parsed:
-            return False
+            raise ValueError("No parsed classification")
 
         return parsed.political
 
@@ -84,6 +93,7 @@ class AIService:
             input=f"Headline: {headline}",
             text_format=TranslatedHeadline
         )
+        self.record_usage(response)
 
         parsed = response.output_parsed
         if not parsed:
@@ -116,6 +126,7 @@ class AIService:
             input=f"Headline:\n{headline}\n\nArticle:\n{text}",
             text_format=Parsed
         )
+        self.record_usage(response)
 
         parsed = response.output_parsed
         if not parsed:
@@ -146,6 +157,7 @@ class AIService:
                     input=json.dumps({"article_fact": fact, "candidates": candidates}),
                     text_format=EventJudge,
                 )
+                self.record_usage(response)
                 parsed = response.output_parsed
                 if parsed:
                     return parsed.event_id
@@ -163,6 +175,7 @@ class AIService:
                     input=json.dumps({"facts": facts, "topics": topics}),
                     text_format=EventTitle,
                 )
+                self.record_usage(response)
                 parsed = response.output_parsed
                 if parsed:
                     return parsed

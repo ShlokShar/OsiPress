@@ -1,5 +1,6 @@
 
 import json
+import heapq
 import os
 import time
 from datetime import (
@@ -7,6 +8,7 @@ from datetime import (
     timezone
 )
 from pathlib import Path
+from types import SimpleNamespace
 from typing import (
     Optional,
     TypedDict,
@@ -15,6 +17,7 @@ from typing import (
 import feedparser
 import requests
 from feedparser.util import FeedParserDict
+from sqlalchemy import func, tuple_
 
 from cron.ai.service import AIService
 from cron.events.cluster import EventClusterer, ReplayArticle
@@ -29,16 +32,31 @@ from cron.util.log import add_log
 from cron.util.translation import (
     translate_references
 )
-from cron.util.url import normalize_article_url
+from cron.util.url import normalize_article_url, normalize_item_guid
 from shared.database import SessionLocal
 from shared.models import (
     Articles,
+    ArticleAppearances,
+    ArticleEvents,
     Countries,
+    OutletRunLog,
+    PendingItem,
     Sources,
+    add_outlet_token_usage,
     add_canonical_article,
     complete_ingestion_run,
     fail_ingestion_run,
     find_article_by_url,
+    complete_pending_item,
+    get_seen_items,
+    get_pending_items,
+    get_feed_pending,
+    queue_item,
+    mark_pending_political,
+    mark_item_seen,
+    save_outlet_run_log,
+    stage_appearance,
+    stage_pending_item,
     start_ingestion_run,
 )
 from shared.search_service import SearchService
@@ -67,7 +85,7 @@ ArticleInfo = tuple[
 ]
 
 
-MAX_ARTICLES = 3
+MAX_ITEMS_PER_OUTLET_PER_RUN = int(os.getenv("MAX_ITEMS_PER_OUTLET_PER_RUN", "25"))
 SOURCES_PATH = Path(__file__).resolve().parent / "sources.json"
 FEED_TIMEOUT = (5, 20)
 FEED_ATTEMPTS = 2
@@ -242,14 +260,24 @@ def validate_feed(
 
     if not feed.entries:
         add_log(f"{country} / {source_name}: feed returned no articles")
-        return None
     return feed
+
+
+def item_published_at(entry: FeedParserDict) -> Optional[datetime]:
+    published = getattr(entry, "published_parsed", None)
+    if not published:
+        return None
+    try:
+        return datetime(*published[:6], tzinfo=timezone.utc)
+    except (TypeError, ValueError, OverflowError):
+        return None
 
 
 def get_article_info(
     entry: FeedParserDict,
     ai_service: AIService,
     vector_service: SearchService,
+    already_classified: bool = False,
 ) -> Optional[ArticleInfo]:
     """
     Retrieves all the information needed to create an article instance,
@@ -264,14 +292,13 @@ def get_article_info(
     headline = "Unknown headline"
     try:
         headline = entry.title
-        relevant = ai_service.classify(headline)
+        relevant = already_classified or ai_service.classify(headline)
         link = entry.link
 
         if not is_safe_article_url(link):
             return None
         if not relevant:
             return None
-
         article_content = get_article_content(link)
         if article_content == "empty article.":
             return None
@@ -314,10 +341,7 @@ def get_article_info(
             )
             vector = None
 
-        published = getattr(entry, "published_parsed", None)
-        published_at = None
-        if published:
-            published_at = datetime(*published[:6], tzinfo=timezone.utc)
+        published_at = item_published_at(entry)
 
         return (
             headline,
@@ -362,7 +386,7 @@ def cluster_new_article(
     clusterer: EventClusterer,
     article: Articles,
     country: str,
-) -> None:
+) -> bool:
     try:
         fact = (article.neutral_fact or {}).get("fact")
         vectors = clusterer.vectors.article_vectors([article.id])
@@ -372,7 +396,7 @@ def cluster_new_article(
                 f"event clustering skipped article {article.id}: "
                 f"missing fact vector"
             )
-            return
+            return False
         clusterer.process(ReplayArticle(
             id=article.id,
             source_id=article.source_id,
@@ -382,193 +406,260 @@ def cluster_new_article(
             observed_at=article.published_at or article.captured_at,
         ))
         clusterer.session.commit()
+        return True
     except Exception as exception:
         clusterer.session.rollback()
         add_log(
             f"event clustering failed for article {article.id} "
             f"({type(exception).__name__}): {exception}"
         )
+        return False
+
+
+def pending_cluster_articles(run_id: int):
+    observed = func.coalesce(Articles.published_at, Articles.captured_at)
+    ordering = (observed, Articles.id, PendingItem.outlet_id, PendingItem.guid)
+    cursor = None
+    while True:
+        with SessionLocal() as session:
+            query = (
+                session.query(PendingItem, Articles, Countries.name)
+                .join(Articles, Articles.id == PendingItem.article_id)
+                .join(Sources, Sources.id == PendingItem.outlet_id)
+                .join(Countries, Countries.id == Sources.country_id)
+                .join(ArticleAppearances, (ArticleAppearances.run_id == PendingItem.run_id) &
+                      (ArticleAppearances.source_id == PendingItem.outlet_id) &
+                      (ArticleAppearances.article_id == PendingItem.article_id))
+                .filter(PendingItem.run_id == run_id)
+            )
+            if cursor is not None:
+                query = query.filter(tuple_(*ordering) > tuple_(*cursor))
+            batch = query.order_by(*ordering).limit(25).all()
+        if not batch:
+            return
+        pending, article, _ = batch[-1]
+        cursor = (article.published_at or article.captured_at, article.id,
+                  pending.outlet_id, pending.guid)
+        yield from batch
 
 
 def main() -> None:
+    if MAX_ITEMS_PER_OUTLET_PER_RUN < 1:
+        raise ValueError("MAX_ITEMS_PER_OUTLET_PER_RUN must be positive")
+
     ai_service, vector_service, run_time, data = setup()
     run_id = start_ingestion_run(run_time)
-    appearances: list[tuple[int, int, int]] = []
-    new_articles: list[tuple[Articles, str]] = []
     configured_sources = sum(len(sources) for sources in data.values())
     successful_sources = 0
     event_clusterer = setup_event_clusterer(ai_service, run_id)
-    published = False
+    completed = False
 
     try:
         for country, sources in data.items():
             country_object = get_country(country)
             if not country_object:
                 continue
-
             for source, config in sources.items():
-                source_result = get_source(
-                    country_object,
-                    country,
-                    source,
-                    config,
-                )
+                source_result = get_source(country_object, country, source, config)
                 if not source_result:
                     continue
-
                 source_object, source_name, url = source_result
-                feed = validate_feed(url, country, source_name)
-                if not feed:
-                    continue
-
-                selected_articles = 0
-                selected_urls: set[str] = set()
-
-                for entry in feed.entries:
-                    if selected_articles >= MAX_ARTICLES:
-                        break
-
-                    headline = getattr(entry, "title", "Unknown headline")
-                    link = getattr(entry, "link", "")
-                    try:
-                        normalized_url = normalize_article_url(link)
-                    except ValueError as exception:
-                        add_log(
-                            f"{country} / {source_name} / {headline}: "
-                            f"invalid URL ({exception})"
-                        )
-                        continue
-
-                    if normalized_url in selected_urls:
-                        continue
-
-                    try:
-                        article = find_article_by_url(normalized_url, link)
-                    except Exception as exception:
-                        add_log(
-                            f"{country} / {source_name} / {headline}: URL "
-                            f"cache lookup failed "
-                            f"({type(exception).__name__}): {exception}"
-                        )
-                        continue
-
-                    if article is None:
-                        article_info = get_article_info(
-                            entry,
-                            ai_service,
-                            vector_service,
-                        )
-                        if not article_info:
-                            continue
-
-                        (
-                            headline,
-                            translated_headline,
-                            link,
-                            summary,
-                            references,
-                            translated,
-                            tags,
-                            vector,
-                            published_at,
-                            neutral_fact,
-                        ) = article_info
-
-                        article = Articles(
-                            source_id=source_object.id,
-                            headline=headline,
-                            translated_headline=translated_headline,
-                            link=link,
-                            summary=summary,
-                            references_original=references,
-                            references_translated=translated,
-                            tags=tags,
-                            embedding=vector,
-                            published_at=published_at,
-                            neutral_fact=neutral_fact,
-                            captured_at=run_time,
-                        )
-
+                log = OutletRunLog(
+                    run_id=run_id, outlet_id=source_object.id, feed_size=0,
+                    new_items=0, political=0, processed=0, skipped_by_cap=0,
+                    gap=False, cheap_pass_calls=0, full_pass_calls=0,
+                    input_tokens=0, output_tokens=0,
+                )
+                input_start = ai_service.input_tokens + vector_service.input_tokens
+                output_start = ai_service.output_tokens
+                try:
+                    feed = validate_feed(url, country, source_name)
+                    entries = feed.entries if feed is not None else []
+                    if entries:
+                        successful_sources += 1
+                    log.feed_size = len(entries)
+                    items = []
+                    for entry in entries:
                         try:
-                            article = add_canonical_article(
-                                article,
-                                normalized_url,
-                            )
-                        except Exception as exception:
-                            add_log(
-                                f"{country} / {source_name} / {headline}: "
-                                f"save failed ({type(exception).__name__}): "
-                                f"{exception}"
-                            )
-                            continue
-
-                        # Postgres is the source of truth, so a failed upsert
-                        # leaves the article available for a later repair.
-                        try:
-                            upsert_article(article, vector_service)
-                        except Exception as exception:
-                            add_log(
-                                f"{country} / {source_name} / {headline}: "
-                                f"Qdrant upsert failed "
-                                f"({type(exception).__name__}): {exception}"
-                            )
-
-                        if event_clusterer:
-                            new_articles.append((article, country))
-
-                    appearances.append((
+                            link = getattr(entry, "link", "")
+                            guid = normalize_item_guid(getattr(entry, "id", ""), link)
+                            normalized = normalize_article_url(link)
+                            items.append((entry, guid, normalized, item_published_at(entry)))
+                        except (ValueError, TypeError, AttributeError) as exception:
+                            add_log(f"{country} / {source_name}: invalid feed item ({exception})")
+                    seen, has_history = get_seen_items(
                         source_object.id,
-                        article.id,
-                        selected_articles,
-                    ))
-                    selected_urls.add(normalized_url)
-                    selected_articles += 1
-
-                if selected_articles == 0:
-                    add_log(
-                        f"{country} / {source_name}: selected no articles; "
-                        f"source will be omitted from this edition"
+                        list({key for _, guid, link, _ in items for key in (guid, link)}),
                     )
-                else:
-                    successful_sources += 1
-
-                if selected_articles < MAX_ARTICLES:
-                    add_log(
-                        f"{country} / {source_name}: selected "
-                        f"{selected_articles}/{MAX_ARTICLES} articles"
+                    log.gap = feed is not None and has_history and not any(
+                        guid in seen or link in seen for _, guid, link, _ in items
                     )
+                    if log.gap:
+                        add_log(f"WARNING: {country} / {source_name}: no known feed items; possible ingestion gap")
+                    for entry, guid, normalized, published_at in items:
+                        if guid not in seen and normalized not in seen:
+                            try:
+                                queue_item(source_object.id, guid, run_id, run_time,
+                                           getattr(entry, 'link', ''),
+                                           getattr(entry, 'title', '') or '', published_at)
+                            except Exception as exception:
+                                add_log(f"{country} / {source_name}: could not queue item "
+                                        f"({type(exception).__name__}): {exception}")
+                    feed_guids = {guid for _, guid, _, _ in items}
+                    feed_pending = get_feed_pending(source_object.id, feed_guids)
+                    def queued_items():
+                        for pending in get_pending_items(source_object.id, feed_guids):
+                            entry = SimpleNamespace(
+                                link=pending.link, title=pending.headline,
+                                published_parsed=(pending.published_at.utctimetuple()
+                                                  if pending.published_at else None),
+                            )
+                            yield (entry, pending.guid, normalize_article_url(pending.link),
+                                   pending.published_at, pending)
+                    minimum = datetime.min.replace(tzinfo=timezone.utc)
+                    items.sort(key=lambda item: item[3] or minimum, reverse=True)
+                    feed_items = ((entry, guid, normalized, published_at, feed_pending.get(guid))
+                                  for entry, guid, normalized, published_at in items)
+                    ordered_items = heapq.merge(feed_items, queued_items(),
+                                                key=lambda item: item[3] or minimum,
+                                                reverse=True)
+                    position = 0
+                    accepted = 0
+                    keys = set()
+                    for entry, guid, normalized, published_at, pending in ordered_items:
+                        if guid in feed_guids:
+                            if guid in keys:
+                                continue
+                            keys.add(guid)
+                        try:
+                            link = getattr(entry, "link", "")
+                            article = None
+                            if pending is not None and pending.article_id is not None:
+                                with SessionLocal() as session:
+                                    article = session.get(Articles, pending.article_id)
+                            known = pending is None and (guid in seen or normalized in seen)
+                            if article is None:
+                                article = find_article_by_url(normalized, link)
+                            if not known and guid in feed_guids:
+                                log.new_items += 1
+                            if known:
+                                if guid not in seen:
+                                    mark_item_seen(source_object.id, guid, run_time)
+                                    seen.add(guid)
+                                if article and stage_appearance(run_id, source_object.id, article.id, position):
+                                    position += 1
+                                continue
+
+                            retrying = pending is not None and pending.political
+                            if not retrying and article is not None:
+                                with SessionLocal() as session:
+                                    retrying = (
+                                        session.query(PendingItem.article_id)
+                                        .filter_by(article_id=article.id).first() is not None
+                                    )
+
+                            if article and not retrying and (pending is None or pending.article_id is None):
+                                if pending is None:
+                                    mark_item_seen(source_object.id, guid, run_time)
+                                else:
+                                    complete_pending_item(source_object.id, guid)
+                                seen.add(guid)
+                                if stage_appearance(run_id, source_object.id, article.id, position):
+                                    position += 1
+                                continue
+
+                            if pending is None:
+                                queue_item(source_object.id, guid, run_id, run_time, link,
+                                           getattr(entry, 'title', '') or '', published_at)
+                            if not retrying:
+                                log.cheap_pass_calls += 1
+                                if not ai_service.classify(getattr(entry, "title", "")):
+                                    complete_pending_item(source_object.id, guid)
+                                    seen.add(guid)
+                                    continue
+                                mark_pending_political(source_object.id, guid)
+                            elif pending is None:
+                                mark_pending_political(source_object.id, guid)
+                            log.political += 1
+                            if accepted >= MAX_ITEMS_PER_OUTLET_PER_RUN:
+                                log.skipped_by_cap += 1
+                                continue
+                            accepted += 1
+                            if article is None:
+                                log.full_pass_calls += 1
+                                info = get_article_info(entry, ai_service, vector_service, already_classified=True)
+                                if not info:
+                                    continue
+                                (headline, translated_headline, link, summary, references,
+                                 translated, tags, vector, published_at, neutral_fact) = info
+                                article = Articles(
+                                    source_id=source_object.id, headline=headline,
+                                    translated_headline=translated_headline, link=link,
+                                    summary=summary, references_original=references,
+                                    references_translated=translated, tags=tags,
+                                    embedding=vector, published_at=published_at,
+                                    neutral_fact=neutral_fact, captured_at=run_time,
+                                )
+                                article = add_canonical_article(
+                                    article, normalized,
+                                    pending={"outlet_id": source_object.id, "guid": guid,
+                                             "run_id": run_id, "first_seen": run_time},
+                                )
+                            stage_pending_item(source_object.id, guid, article.id, run_id, run_time)
+                            upsert_article(article, vector_service)
+                            if stage_appearance(run_id, source_object.id, article.id, position):
+                                position += 1
+                                if not entries:
+                                    successful_sources += 1
+                            if not EVENT_CLUSTERING_ENABLED:
+                                complete_pending_item(source_object.id, guid)
+                            log.processed += 1
+                        except Exception as exception:
+                            add_log(f"{country} / {source_name}: item failed ({type(exception).__name__}): {exception}")
+                    if log.skipped_by_cap:
+                        add_log(f"{country} / {source_name}: cap hit; {log.skipped_by_cap} political items deferred")
+                except Exception as exception:
+                    add_log(f"{country} / {source_name}: feed failed ({type(exception).__name__}): {exception}")
+                finally:
+                    log.input_tokens = ai_service.input_tokens + vector_service.input_tokens - input_start
+                    log.output_tokens = ai_service.output_tokens - output_start
+                    try:
+                        if save_outlet_run_log(log):
+                            add_log(f"WARNING: {country} / {source_name}: cap hit for three consecutive runs")
+                    except Exception as exception:
+                        add_log(f"{country} / {source_name}: run log failed ({type(exception).__name__}): {exception}")
 
         if configured_sources == 0 or successful_sources == 0:
-            raise RuntimeError(
-                "Ingestion run has no articles: "
-                f"{successful_sources}/{configured_sources} sources "
-                "contributed articles"
-            )
-
-        if successful_sources != configured_sources:
-            add_log(
-                f"Publishing partial edition: {successful_sources}/"
-                f"{configured_sources} sources contributed articles"
-            )
-
-        complete_ingestion_run(run_id, appearances)
-        published = True
+            raise RuntimeError("Ingestion run has no successfully fetched feeds")
+        complete_ingestion_run(run_id, [])
+        completed = True
     except Exception:
         fail_ingestion_run(run_id)
         raise
     finally:
-        if event_clusterer and published:
+        if event_clusterer:
             try:
-                for article, country in new_articles:
-                    cluster_new_article(event_clusterer, article, country)
+                if completed:
+                    for pending, article, country in pending_cluster_articles(run_id):
+                        with SessionLocal() as session:
+                            already_clustered = session.get(ArticleEvents, article.id) is not None
+                        input_start = ai_service.input_tokens
+                        output_start = ai_service.output_tokens
+                        clustered = already_clustered or cluster_new_article(event_clusterer, article, country)
+                        add_outlet_token_usage(run_id, pending.outlet_id,
+                                               ai_service.input_tokens - input_start,
+                                               ai_service.output_tokens - output_start)
+                        if clustered:
+                            complete_pending_item(pending.outlet_id, pending.guid)
+                input_start = ai_service.input_tokens
+                output_start = ai_service.output_tokens
                 event_clusterer.finalize()
                 event_clusterer.session.commit()
+                add_log(f"event finalization tokens: input={ai_service.input_tokens - input_start}, "
+                        f"output={ai_service.output_tokens - output_start}")
             except Exception as exception:
                 event_clusterer.session.rollback()
-                add_log(
-                    f"event clustering failed to finalize "
-                    f"({type(exception).__name__}): {exception}"
-                )
+                add_log(f"event clustering failed to finalize ({type(exception).__name__}): {exception}")
         if event_clusterer:
             event_clusterer.session.close()
 

@@ -37,6 +37,7 @@ class SearchService:
     def __init__(self, model: str = "text-embedding-3-small"):
         self.client = OpenAI()
         self.model = model
+        self.input_tokens = 0
         self._qdrant = None
         self._sparse_model = None
 
@@ -160,6 +161,10 @@ class SearchService:
             input=text,
             model=self.model,
         )
+
+        usage = getattr(response, "usage", None)
+        if usage:
+            self.input_tokens += getattr(usage, "prompt_tokens", 0) or 0
 
         return response.data[0].embedding
 

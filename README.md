@@ -70,12 +70,19 @@ The script runs twice a day. It:
 6. saves each URL once as a canonical article
 7. publishes a daily appearance for that article in an atomic ingestion run
 
-Canonical articles are reused when a URL appears in a later feed, avoiding all
-repeat AI, translation, extraction, and embedding work. A broken individual
-article does not stop its source from trying later feed entries. If a configured
-source contributes no articles, however, the whole run stays unpublished and
-the site continues showing the latest successful run. Article URLs and
+Feed GUIDs identify items already seen by each outlet; existing article URLs
+are also reused. New political items are processed newest first, up to
+`MAX_ITEMS_PER_OUTLET_PER_RUN` (default 25). Items above the cap remain eligible
+for the next run. Pending items retain their feed details until processed or
+classified as non-political, including when they disappear from the feed.
+Failures are logged and do not stop other items or feeds. An
+empty run does not replace the latest published edition. Article URLs and
 redirects are checked before they are downloaded.
+
+The `outlet_run_log` table records feed counts and OpenAI token usage for each
+outlet and run. `cheap_pass_calls` counts headline classification attempts;
+`full_pass_calls` counts article-processing attempts. Event finalization usage
+is logged separately because it can combine articles from multiple outlets.
 
 The Flask application reads the latest successful atomic run from the database.
 `/today` displays the most recent articles, while `/archive` lets the user view

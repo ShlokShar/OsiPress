@@ -14,6 +14,15 @@ TRACKING_QUERY_PARAMETERS = {
 }
 
 
+def normalize_item_guid(guid: str, link: str = "") -> str:
+    value = guid if guid and guid.strip() else (link or "").strip()
+    if not value:
+        raise ValueError("Feed item has no GUID or link")
+    if urlsplit(value.strip()).scheme.lower() in {"http", "https"}:
+        return normalize_article_url(value.strip())
+    return value
+
+
 def normalize_article_url(url: str) -> str:
     """Return a stable URL key without fragments or common tracking data."""
 

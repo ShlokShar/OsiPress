@@ -33,6 +33,7 @@ from sqlalchemy.orm import (
     Mapped,
     mapped_column
 )
+from sqlalchemy.dialects.postgresql import insert
 
 from shared.database import (
     Base,
@@ -259,6 +260,164 @@ class ArticleAppearances(Base):
     )
 
 
+class SeenItems(Base):
+    __tablename__ = 'seen_items'
+
+    outlet_id: Mapped[int] = mapped_column(ForeignKey('sources.id'), primary_key=True)
+    guid: Mapped[str] = mapped_column(Text, primary_key=True)
+    first_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class OutletRunLog(Base):
+    __tablename__ = 'outlet_run_log'
+
+    run_id: Mapped[int] = mapped_column(ForeignKey('ingestion_runs.id'), primary_key=True)
+    outlet_id: Mapped[int] = mapped_column(ForeignKey('sources.id'), primary_key=True)
+    feed_size: Mapped[int] = mapped_column(Integer, default=0)
+    new_items: Mapped[int] = mapped_column(Integer, default=0)
+    political: Mapped[int] = mapped_column(Integer, default=0)
+    processed: Mapped[int] = mapped_column(Integer, default=0)
+    skipped_by_cap: Mapped[int] = mapped_column(Integer, default=0)
+    gap: Mapped[bool] = mapped_column(default=False)
+    cheap_pass_calls: Mapped[int] = mapped_column(Integer, default=0)
+    full_pass_calls: Mapped[int] = mapped_column(Integer, default=0)
+    input_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    output_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
+
+class PendingItem(Base):
+    __tablename__ = 'pending_items'
+
+    outlet_id: Mapped[int] = mapped_column(ForeignKey('sources.id'), primary_key=True)
+    guid: Mapped[str] = mapped_column(Text, primary_key=True)
+    article_id: Mapped[Optional[int]] = mapped_column(ForeignKey('articles.id'))
+    run_id: Mapped[int] = mapped_column(ForeignKey('ingestion_runs.id'))
+    first_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    link: Mapped[str] = mapped_column(Text)
+    headline: Mapped[str] = mapped_column(Text)
+    published_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    political: Mapped[bool] = mapped_column(default=False, server_default=text('false'))
+
+
+def get_seen_items(outlet_id: int, guids: list[str]) -> tuple[set[str], bool]:
+    with SessionLocal() as session:
+        matched, count = session.query(
+            func.array_agg(SeenItems.guid).filter(SeenItems.guid.in_(guids)),
+            func.count(),
+        ).filter(
+            SeenItems.outlet_id == outlet_id,
+        ).one()
+        return set(matched or []), count > 0
+
+
+def get_feed_pending(outlet_id: int, guids: set[str]):
+    with SessionLocal() as session:
+        return {item.guid: item for item in session.query(PendingItem).filter(
+            PendingItem.outlet_id == outlet_id, PendingItem.guid.in_(guids)
+        ).all()}
+
+
+def get_pending_items(outlet_id: int, excluded_guids: set[str]):
+    minimum = datetime.min.replace(tzinfo=timezone.utc)
+    published = func.coalesce(PendingItem.published_at, minimum)
+    cursor = None
+    while True:
+        with SessionLocal() as session:
+            query = session.query(PendingItem).filter(
+                PendingItem.outlet_id == outlet_id,
+                PendingItem.guid.notin_(excluded_guids),
+            )
+            if cursor is not None:
+                last_time, last_guid = cursor
+                query = query.filter((published < last_time) |
+                                     ((published == last_time) & (PendingItem.guid > last_guid)))
+            batch = query.order_by(published.desc(), PendingItem.guid).limit(100).all()
+        if not batch:
+            return
+        last = batch[-1]
+        cursor = (last.published_at or minimum, last.guid)
+        yield from batch
+
+
+def queue_item(outlet_id, guid, run_id, first_seen, link, headline, published_at):
+    with SessionLocal() as session:
+        session.execute(insert(PendingItem).values(
+            outlet_id=outlet_id, guid=guid, run_id=run_id, first_seen=first_seen,
+            link=link, headline=headline, published_at=published_at, political=False,
+        ).on_conflict_do_nothing())
+        session.commit()
+
+
+def mark_pending_political(outlet_id, guid):
+    with SessionLocal() as session:
+        pending = session.get(PendingItem, (outlet_id, guid))
+        pending.political = True
+        session.commit()
+
+
+def mark_item_seen(outlet_id: int, guid: str, first_seen: datetime) -> None:
+    with SessionLocal() as session:
+        session.execute(
+            insert(SeenItems).values(outlet_id=outlet_id, guid=guid, first_seen=first_seen)
+            .on_conflict_do_nothing()
+        )
+        session.commit()
+
+
+def stage_pending_item(outlet_id: int, guid: str, article_id: int, run_id: int, first_seen: datetime) -> None:
+    with SessionLocal() as session:
+        pending = session.get(PendingItem, (outlet_id, guid))
+        pending.run_id = run_id
+        pending.article_id = article_id
+        session.commit()
+
+
+def stage_appearance(run_id: int, outlet_id: int, article_id: int, position: int) -> bool:
+    with SessionLocal() as session:
+        result = session.execute(
+            insert(ArticleAppearances).values(run_id=run_id, source_id=outlet_id,
+                                              article_id=article_id, position=position)
+            .on_conflict_do_nothing()
+        )
+        session.commit()
+        return result.rowcount > 0
+
+
+def complete_pending_item(outlet_id: int, guid: str) -> None:
+    with SessionLocal() as session:
+        pending = session.get(PendingItem, (outlet_id, guid))
+        if pending:
+            session.execute(insert(SeenItems).values(outlet_id=outlet_id, guid=guid,
+                                                    first_seen=pending.first_seen)
+                            .on_conflict_do_nothing())
+            session.delete(pending)
+            session.commit()
+
+
+def save_outlet_run_log(log: OutletRunLog) -> bool:
+    with SessionLocal() as session:
+        session.add(log)
+        session.flush()
+        recent = (
+            session.query(OutletRunLog.skipped_by_cap)
+            .join(IngestionRuns, IngestionRuns.id == OutletRunLog.run_id)
+            .filter(OutletRunLog.outlet_id == log.outlet_id)
+            .order_by(IngestionRuns.started_at.desc(), IngestionRuns.id.desc())
+            .limit(3).all()
+        )
+        session.commit()
+        return len(recent) == 3 and all(count > 0 for (count,) in recent)
+
+
+def add_outlet_token_usage(run_id: int, outlet_id: int, input_tokens: int, output_tokens: int) -> None:
+    with SessionLocal() as session:
+        log = session.get(OutletRunLog, (run_id, outlet_id))
+        if log:
+            log.input_tokens = (log.input_tokens or 0) + input_tokens
+            log.output_tokens = (log.output_tokens or 0) + output_tokens
+            session.commit()
+
+
 class Topics(Base):
     __tablename__ = 'topics'
 
@@ -367,7 +526,7 @@ def find_article_by_url(
         return article
 
 
-def add_canonical_article(article: Articles, normalized_url: str) -> Articles:
+def add_canonical_article(article: Articles, normalized_url: str, pending: Optional[dict] = None) -> Articles:
     """Save a processed article and claim its normalized URL atomically."""
 
     url_hash = hashlib.sha256(normalized_url.encode("utf-8")).hexdigest()
@@ -380,6 +539,10 @@ def add_canonical_article(article: Articles, normalized_url: str) -> Articles:
                 url=normalized_url,
                 article_id=article.id,
             ))
+            if pending is not None:
+                queued = session.get(PendingItem, (pending['outlet_id'], pending['guid']))
+                queued.article_id = article.id
+                queued.run_id = pending['run_id']
             session.commit()
         except IntegrityError:
             # Another ingestion worker may have claimed this normalized URL
@@ -416,8 +579,8 @@ def start_ingestion_run(started_at: datetime) -> int:
 def complete_ingestion_run(
     run_id: int,
     appearances: list[tuple[int, int, int]],
-) -> None:
-    """Publish all run appearances and the success marker in one commit."""
+) -> bool:
+    """Publish a nonempty run, keeping empty runs out of the edition history."""
 
     with SessionLocal() as session:
         run = session.get(IngestionRuns, run_id)
@@ -432,9 +595,12 @@ def complete_ingestion_run(
                 position=position,
             ))
 
-        run.status = 'succeeded'
+        session.flush()
+        has_appearances = session.query(ArticleAppearances.run_id).filter_by(run_id=run_id).first() is not None
+        run.status = 'succeeded' if has_appearances else 'no_updates'
         run.completed_at = datetime.now(timezone.utc)
         session.commit()
+        return has_appearances
 
 
 def fail_ingestion_run(run_id: int) -> None:

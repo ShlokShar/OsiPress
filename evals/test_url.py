@@ -1,6 +1,15 @@
 import unittest
 
 from cron.util.url import normalize_article_url
+from cron.util.url import normalize_item_guid
+
+
+def test_item_guid_preserves_opaque_identifiers():
+    assert normalize_item_guid(' urn:example:Item?ref=1#part ') == ' urn:example:Item?ref=1#part '
+
+
+def test_item_guid_normalizes_urls_and_falls_back_to_link():
+    assert normalize_item_guid('', 'HTTPS://Example.COM/news?id=12&utm_source=feed#top') == 'https://example.com/news?id=12'
 
 
 class ArticleURLNormalizationTests(unittest.TestCase):
