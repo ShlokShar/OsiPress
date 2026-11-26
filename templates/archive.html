@@ -1,78 +1,157 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>OsiPress &middot; Archive</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Vazirmatn:wght@400;500;600&display=optional" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/osipress.css') }}">
-        <link rel="icon"href="{{ url_for('static', filename='img/favicon.ico') }}">
-    </head>
-    <body>
-        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-            <symbol id="mk" viewBox="0 0 200 160">
-                <g transform="translate(100,80) scale(.9) translate(-100,-80)">
-                    <path d="M68 20 36 20 36 140 68 140" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M132 20 164 20 164 140 132 140" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path transform="translate(88,72) scale(.62)" d="M0,-16A16,16 0 1,0 0,16C-1.5,27 -7,35.5 -15,41L-11,45.5C3,37 14.5,23 16,2A16,16 0 0,0 0,-16Z" fill="currentColor"/>
-                    <path transform="translate(115,72) scale(.62)" d="M0,-16A16,16 0 1,0 0,16C-1.5,27 -7,35.5 -15,41L-11,45.5C3,37 14.5,23 16,2A16,16 0 0,0 0,-16Z" fill="currentColor"/>
-                </g>
-            </symbol>
-        </svg>
-        <div class="wrap">
-            <nav class="top">
-                <a href="/" class="brand">
-                    <svg viewBox="0 0 200 160">
-                        <use href="#mk"></use>
-                    </svg>
-                    <span class="name">OsiPress</span>
-                </a>
-                <div class="navlinks"><a href="/about">About</a><a href="/today">Top stories</a><a href="/">All today</a><a href="/archive"
-                    class="active">Archive</a><a href="/search">Search</a></div>
-            </nav>
-            <div class="toolbar">
-                <div class="toolbar-row">
-                    <div class="picker picker--countries">
-                        <span class="lbl">Countries</span>
-                        <span class="help"><span class="q" tabindex="0" aria-label="Pick one country, or two to compare">?</span><span class="tip" role="tooltip">Pick one country, or two to compare</span></span>
-                        <div class="chips" id="chips" role="group" aria-label="Pick one or two countries to compare"></div>
-                    </div>
-                </div>
-                <div class="toolbar-row toolbar-row--sub">
-                    <div class="picker" id="topics-picker">
-                        <span class="lbl">Topics</span>
-                        <div class="dropdown">
-                            <button type="button" class="dd-toggle" id="topics-toggle" aria-haspopup="true" aria-expanded="false">
-                            <span class="dd-value" id="topics-count">All</span>
-                            <span class="dd-caret" aria-hidden="true">&#9656;</span>
-                            </button>
-                            <div class="dd-panel" id="topics-panel" role="menu" aria-label="Filter articles by topic" hidden></div>
-                        </div>
-                    </div>
-                    <div class="date-toolbar">
-                        <label class="date-pick"><span class="date-lbl" id="date-label">&mdash;</span><input type="date" id="date-input" class="date-input" min="{{ min_date if min_date else '2026-07-09' }}" value="{{ date if date else '' }}"></label>
-                    </div>
-                </div>
-            </div>
-            <main>
-                <div id="board" data-mode="compare"></div>
-                <p id="empty" class="empty" hidden>No articles captured for this edition.</p>
-            </main>
-            <footer>
-                <p>Selection is automated: up to three recent articles classified as political from each outlet's RSS feed appear here. Translations preserve charged language. OsiPress does not rank or score the coverage; summaries are AI-generated and may contain errors.</p>
-                <div class="foot-right">
-                    <span class="fm">
-                        <svg viewBox="0 0 200 160">
-                            <use href="#mk"></use>
-                        </svg>
-                        <span>OsiPress</span>
-                    </span>
-                    <a class="gh" href="https://github.com/ShlokShar/Osipress" target="_blank" rel="noopener">GitHub &#8599;</a>
-                </div>
-            </footer>
+{% extends 'base.html' %}
+{% import 'macros/osi.html' as osi %}
+{% block title %}OsiPress &middot; Archive{% endblock %}
+
+{% block page %}
+<main class="osi-main osi-main--archive">
+    <div class="osi-toolbar">
+        <div class="osi-page-head">
+            <h1>Archive</h1>
         </div>
-        <script type="application/json" id="osipress-data">{{ data | tojson }}</script><script src="{{ url_for('static', filename='js/osipress.js') }}"></script><script src="{{ url_for('static', filename='js/archive.js') }}"></script>
-    </body>
-</html>
+    </div>
+
+    <section class="osi-filters">
+        <div class="osi-filter">
+            <span class="osi-filter-label">Countries</span>
+            <span class="osi-picker-hint">Pick one country, or two to compare</span>
+            <div class="osi-picker osi-hscroll">
+                {% for button in picker.buttons %}{{ osi.country_button(button, 'country') }}{% endfor %}
+            </div>
+        </div>
+        <div class="osi-filter">
+            <span class="osi-filter-label">Range</span>
+            {{ osi.switch(range_switch, 'Range', 'range') }}
+        </div>
+        <form class="osi-filter osi-daterange" method="get" action="{{ url_for('archive') }}">
+            <span class="osi-filter-label">Dates</span>
+            <div class="osi-daterange-row">
+                <label class="osi-vh" for="from">From</label>
+                <input id="from" type="date" name="from" value="{{ range_from }}" min="{{ min_date }}" max="{{ max_date }}">
+                <span class="osi-daterange-to">to</span>
+                <label class="osi-vh" for="to">To</label>
+                <input id="to" type="date" name="to" value="{{ range_to }}" min="{{ min_date }}" max="{{ max_date }}">
+                <input type="hidden" name="countries" value="{{ countries_param }}">
+                {% if topic %}<input type="hidden" name="topic" value="{{ topic }}">{% endif %}
+                <button type="submit">Apply</button>
+                {% if custom_range %}<a class="osi-clear" href="{{ url_for('archive', countries=countries_param, topic=topic) }}">Clear</a>{% endif %}
+            </div>
+        </form>
+    </section>
+
+    <section class="osi-chart-section">
+        <div class="osi-stats">
+            {% for stat in archive.stats %}
+            <div class="osi-stat"><span class="osi-stat-big">{{ stat.big }}</span><span class="osi-stat-small">{{ stat.small }}</span></div>
+            {% endfor %}
+        </div>
+
+        <div class="osi-chart" data-chart>
+            <div class="osi-chart-scale" aria-hidden="true"><span>{{ archive.ceiling }}</span><span>0</span><span>{{ archive.ceiling }}</span></div>
+            <div class="osi-chart-plot">
+                {% for spike in archive.spikes %}
+                <span class="osi-chart-spike" style="left: {{ spike.left }}%; transform: translateX({{ spike.shift }})" aria-hidden="true">{{ spike.label }}</span>
+                {% endfor %}
+                {% for day in archive.chart %}
+                <button type="button" class="osi-chart-day{% if day.selected %} is-selected{% endif %}{% if day.dim %} is-dim{% endif %}"
+                        data-action="day" data-value="{{ day.iso }}"
+                        data-long="{{ day.long }}" data-top="{{ day.top }}" data-more="{{ day.more }}"
+                        data-counts="{% for bar in day.bars %}{{ bar.key }}:{{ bar.count }}{% if not loop.last %},{% endif %}{% endfor %}"
+                        aria-label="{{ day.aria }}">
+                    <span class="osi-chart-half osi-chart-half--up">
+                        {% if day.bars %}<span class="osi-chart-bar" style="height: {{ day.bars[0].height }}px; background: {{ day.bars[0].colour }}"></span>{% endif %}
+                    </span>
+                    <span class="osi-chart-mid"></span>
+                    <span class="osi-chart-half osi-chart-half--down">
+                        {% if day.bars|length > 1 %}<span class="osi-chart-bar" style="height: {{ day.bars[1].height }}px; background: {{ day.bars[1].colour }}"></span>{% endif %}
+                    </span>
+                </button>
+                {% endfor %}
+            </div>
+            <div class="osi-chart-ticks" aria-hidden="true">
+                {% for tick in archive.ticks %}<span style="left: {{ tick.left }}%">{{ tick.label }}</span>{% endfor %}
+            </div>
+            <div class="osi-chart-tip" data-chart-tip hidden>
+                <div class="osi-chart-tip-date" data-tip-date></div>
+                <div class="osi-chart-tip-counts" data-tip-counts></div>
+                <div class="osi-chart-tip-top" data-tip-top></div>
+            </div>
+        </div>
+
+        {% if archive.selected_day %}
+        <p class="osi-chart-selected">Showing {{ archive.selected_label }}. <a href="{{ url_for('archive_edition', day=archive.selected_day) }}">Read this edition</a> &middot; <a href="{{ url_for('archive', countries=countries_param, range=range_key, topic=topic, **date_args) }}">Clear day</a></p>
+        {% endif %}
+    </section>
+
+    <div class="osi-archive-grid">
+        <section class="osi-topics">
+            <h2>Topics</h2>
+            {% for item in archive.topics %}
+            <button type="button" class="osi-topic{% if item.on %} is-on{% endif %}" data-action="topic" data-value="{{ item.name }}" aria-pressed="{{ 'true' if item.on else 'false' }}">
+                <span class="osi-topic-name">{{ item.name }}</span>
+                <span class="osi-topic-bar" aria-hidden="true"><span style="width: {{ item.width }}%"></span></span>
+                <span class="osi-topic-count">{{ item.count }}</span>
+            </button>
+            {% endfor %}
+            {% if archive.has_topic %}
+            <a class="osi-clear" href="{{ url_for('archive', countries=countries_param, range=range_key, day=archive.selected_day, **date_args) }}">Clear topic filter</a>
+            {% endif %}
+        </section>
+
+        <section class="osi-ranked">
+            <h2>Most covered</h2>
+            {% for item in archive.ranked %}
+            <a class="osi-rank" href="{{ item.href }}">
+                <span class="osi-rank-number">{{ item.number }}</span>
+                <span class="osi-rank-main">
+                    <span class="osi-rank-title">{{ item.title }}</span>
+                    <span class="osi-rank-bar" aria-hidden="true"><span style="width: {{ item.width }}%"></span></span>
+                </span>
+                <span class="osi-rank-meta">{{ item.date }}<br>{{ item.count }}</span>
+            </a>
+            {% endfor %}
+        </section>
+    </div>
+
+    <section class="osi-latest">
+        <h2>{{ 'Selected day' if archive.selected_day else 'Latest days' }}</h2>
+        {% for day in archive.list_days %}
+        <div class="osi-day">
+            <div class="osi-day-rail">
+                <span class="osi-day-number">{{ day.day }}</span>
+                <span class="osi-day-month">{{ day.month }}</span>
+                <span class="osi-day-meta">{{ day.meta }}</span>
+                <a href="{{ url_for('archive_edition', day=day.iso) }}">Read edition</a>
+            </div>
+            <div class="osi-day-events">
+                {% if day.empty %}
+                <p class="osi-bin-empty">No events for this filter.</p>
+                {% endif %}
+                {% for event in day.events %}
+                <article class="osi-day-event">
+                    <div class="osi-day-event-head">
+                        <a class="osi-day-event-title" href="{{ event.href }}">{{ event.title }}</a>
+                        {% if event.topic %}<span class="osi-day-event-meta">{{ event.topic }}</span>{% endif %}
+                    </div>
+                    {% for row in event.rows %}
+                    <div class="osi-strip">
+                        <span class="osi-strip-name"><span class="osi-swatch" aria-hidden="true" style="background: {{ row.colour }}"></span>{{ row.name }}</span>
+                        {{ osi.coverage(row.cells, row.colour) }}
+                        <span class="osi-strip-count{% if not row.has %} osi-strip-count--none{% endif %}">{{ row.count }}</span>
+                    </div>
+                    {% endfor %}
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        {% if not archive.list_days %}
+        <p class="osi-bin-empty">No days match these filters.</p>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controls.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+{% endblock %}

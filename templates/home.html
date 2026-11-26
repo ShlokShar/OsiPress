@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% import 'macros/osi.html' as osi %}
+{% block title %}OsiPress &middot; Read the news as it was written{% endblock %}
+
+{% block page %}
+<section class="osi-hero">
+    <div class="osi-hero-inner">
+        <div class="osi-hero-copy">
+            <h1>You&rsquo;ve never read an Iranian newspaper.</h1>
+            <p>Probably not an Israeli one either. Most of what you know about the Iran&ndash;Israel war reached you through outlets in your own country, written in your language for readers like you. OsiPress, the <em>Open Source Info Press</em>, translates what foreign newspapers publish for their own readers each day and sets it beside the original, so you can read the story the way it was told there.</p>
+            <div class="osi-hero-actions">
+                <a class="osi-button" href="{{ url_for('today') }}">Read today&rsquo;s articles &rarr;</a>
+                <a class="osi-hero-secondary" href="{{ url_for('archive') }}">or start from the archive</a>
+            </div>
+
+            {% if globe %}
+            <div class="osi-globe-list">
+                {% for event in globe %}
+                <button type="button" class="osi-globe-item" aria-pressed="{{ 'true' if loop.first else 'false' }}" data-event="{{ loop.index0 }}">
+                    <span class="osi-globe-number">{{ event.number }}</span>{{ event.title }}
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="osi-globe-side">
+            <div class="osi-globe-frame">
+            <svg class="osi-globe" width="620" height="620" viewBox="0 0 620 620" role="img"
+                 aria-label="Globe highlighting the countries that covered today&rsquo;s stories" data-globe>
+                <circle cx="310" cy="310" r="304" fill="#0D3A42"></circle>
+            </svg>
+
+            {% if globe %}
+            <div class="osi-globe-card" data-globe-card>
+                {% for event in globe %}
+                <div class="osi-globe-card-face" data-face="{{ loop.index0 }}"{% if not loop.first %} hidden{% endif %}>
+                    <a class="osi-globe-card-title" href="{{ event.href }}">{{ event.title }}</a>
+                    <div class="osi-globe-card-lines">
+                        {% for line in event.headlines %}
+                        <div class="osi-globe-card-line">
+                            <span class="osi-globe-card-outlet"><span class="osi-swatch" aria-hidden="true" style="background: {{ line.colour }}"></span>{{ line.outlet }}</span>
+                            <span>{{ line.english }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+
+</section>
+
+{% if ticker %}
+<section class="osi-ticker-band" aria-label="Headlines in their original languages">
+    <div class="osi-ticker">
+        {% for pass_index in [0, 1] %}
+        {% for item in ticker %}
+        <div class="osi-ticker-item"{% if pass_index %} aria-hidden="true"{% endif %}>
+            <span class="osi-original" lang="{{ item.lang }}" dir="{{ item.dir }}">{{ item.original }}</span>
+            <span class="osi-ticker-en"><span class="osi-ticker-outlet">{{ item.outlet }}</span> {{ item.english }}</span>
+        </div>
+        {% endfor %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<main class="osi-main osi-main--home">
+    <section class="osi-explorer" id="spectrum">
+        <div class="osi-explorer-head">
+            <div class="osi-explorer-copy">
+                <h2>Every country, read across its own politics.</h2>
+                <p>For each country we follow outlets that run the length of its political spectrum, from reformist to hardline in Iran and from left to right in Israel. Those scales mean different things in different places, so each country gets its own axis, and every outlet is shown where its readers would place it.</p>
+            </div>
+            <div class="osi-explorer-tabs" role="tablist" aria-label="Country">
+                {% for tab in explorer.tabs %}
+                <a role="tab" aria-selected="{{ 'true' if tab.on else 'false' }}"
+                   href="{{ url_for('home', spectrum=tab.key) }}#spectrum"
+                   data-tab="{{ tab.key }}"
+                   class="osi-explorer-tab{% if not tab.live %} osi-explorer-tab--soon{% endif %}">
+                    <span class="osi-swatch" aria-hidden="true" style="background: {{ tab.colour }}"></span>{{ tab.name }}{% if tab.note %}<span class="osi-explorer-note">{{ tab.note }}</span>{% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% for panel in explorer.panels %}
+        <div class="osi-explorer-panel" data-panel="{{ panel.key }}"{% if not panel.on %} hidden{% endif %}>
+            <div class="osi-explorer-panel-head">
+                <span class="osi-explorer-country">{{ panel.name }} {{ osi.native(panel.native, panel) }}</span>
+            </div>
+
+            {% if panel.outlets %}
+            <div class="osi-axis-track">
+                <div class="osi-axis-rule" aria-hidden="true"></div>
+                {% for outlet in panel.outlets %}
+                <div class="osi-axis-outlet{% if outlet.above %} osi-axis-outlet--above{% endif %}" style="left: {{ outlet.offset }}%">
+                    <span class="osi-axis-name">{{ outlet.name }}</span>
+                    <span class="osi-axis-stem" aria-hidden="true"></span>
+                    <button type="button" aria-pressed="{{ 'true' if loop.first else 'false' }}" aria-label="{{ outlet.name }}" data-outlet="{{ loop.index0 }}"><span aria-hidden="true"></span></button>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="osi-axis-ends"><span>&larr; {{ panel.left_label }}</span><span>{{ panel.right_label }} &rarr;</span></div>
+
+            <div class="osi-explorer-cards">
+                {% for outlet in panel.outlets %}
+                <div class="osi-explorer-card" data-outlet-card="{{ loop.index0 }}"{% if not loop.first %} hidden{% endif %}>
+                    <div class="osi-explorer-card-head">
+                        <span class="osi-explorer-card-name">{{ outlet.name }}</span>
+                        <span class="osi-original" lang="{{ panel.lang }}" dir="{{ panel.dir }}">{{ outlet.native }}</span>
+                        <span class="osi-explorer-card-position"><span class="osi-swatch" aria-hidden="true" style="background: {{ panel.colour }}"></span>{{ outlet.position_label }} on {{ panel.name }}&rsquo;s spectrum</span>
+                    </div>
+                    <div class="osi-explorer-card-body">
+                        {% if outlet.has_today %}
+                        <span class="osi-explorer-card-kicker">Ran today</span>
+                        <span class="osi-explorer-card-en">{{ outlet.english }}</span>
+                        <span class="osi-original" lang="{{ panel.lang }}" dir="{{ panel.dir }}">{{ outlet.original }}</span>
+                        {% else %}
+                        <span class="osi-explorer-card-kicker">Nothing collected today</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="osi-explorer-hint">{{ panel.name }} is not live yet, so there are no outlets to place on its axis.</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="application/json" id="osi-globe-data">{{ globe_data | tojson }}</script>
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="{{ url_for('static', filename='js/globe.js') }}"></script>
+<script src="{{ url_for('static', filename='js/explorer.js') }}"></script>
+{% endblock %}

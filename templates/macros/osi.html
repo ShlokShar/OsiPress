@@ -1,0 +1,185 @@
+{# Shared components. Each one mirrors a block in osipress-design/pages. #}
+
+{% macro ticks(items) %}
+<span class="osi-ticks" aria-hidden="true">{% for tick in items %}<span{% if tick.on %} class="on"{% endif %}></span>{% endfor %}</span>
+{%- endmacro %}
+
+{% macro position(article) %}
+<span class="osi-position">{{ ticks(article.ticks) }}{{ article.position_label }}</span>
+{%- endmacro %}
+
+{% macro coverage(items, colour) %}
+<span class="osi-coverage" aria-hidden="true">{% for slot in items %}<span{% if slot.on %} style="background: {{ colour }}"{% endif %}></span>{% endfor %}</span>
+{%- endmacro %}
+
+{% macro native(text, country) %}
+<span class="osi-native" lang="{{ country.lang }}" dir="{{ country.dir }}">{{ text }}</span>
+{%- endmacro %}
+
+{% macro country_button(button, action='') %}
+<button type="button" class="osi-country-button{% if button.soon %} osi-country-button--soon{% endif %}"
+        aria-pressed="{{ 'true' if button.on else 'false' }}"
+        data-country="{{ button.key }}"{% if action %} data-action="{{ action }}"{% endif %}
+        {% if button.disabled %}disabled{% endif %}>
+    <span class="osi-swatch" aria-hidden="true" style="background: {{ button.colour }}"></span>{{ button.name }}{% if button.soon %} &middot; Coming next{% endif %}
+</button>
+{%- endmacro %}
+
+{% macro switch(options, label, action='') %}
+<div class="osi-switch" role="group" aria-label="{{ label }}">
+    {% for option in options %}
+    <button type="button" aria-pressed="{{ 'true' if option.on else 'false' }}"
+            data-value="{{ option.value }}"{% if action %} data-action="{{ action }}"{% endif %}>{{ option.name }}</button>
+    {% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro original(article) %}
+{% if article.original and article.original != article.english %}
+<div class="osi-original" lang="{{ article.lang }}" dir="{{ article.dir }}">{{ article.original }}</div>
+{% endif %}
+{%- endmacro %}
+
+{#  The article block. `event_href` points the "+N earlier" link at the event
+    page; `show_position` adds the five-tick marker used in compare columns. #}
+{% macro article_block(article, event_href='', show_position=false, show_subhead=true, headline_tag='div', show_time=true) %}
+<div class="osi-article">
+    <div class="osi-article-meta">
+        <span class="osi-outlet-name">{{ article.outlet }}{% if show_position %} {{ position(article) }}{% endif %}</span>
+        {% if show_time %}<span class="osi-article-time">{{ article.time }}</span>{% endif %}
+        {% if article.latest_run %}<span class="osi-shown-flag">Latest edition</span>{% endif %}
+    </div>
+    {% if headline_tag == 'a' %}
+    <a class="osi-headline" lang="en" href="{{ article.link }}" target="_blank" rel="noopener">{{ article.english }}</a>
+    {% else %}
+    <div class="osi-headline" lang="en">{{ article.english }}</div>
+    {% endif %}
+    {% if show_subhead and article.has_sub %}
+    <div class="osi-subhead" lang="en">{{ article.sub_english }}</div>
+    {% endif %}
+    {{ original(article) }}
+    <div class="osi-article-links">
+        <a href="{{ article.link }}" target="_blank" rel="noopener">Read in {{ article.outlet_native }}</a>
+        {% if article.has_more and event_href %}<a class="osi-more-link" href="{{ event_href }}">{{ article.more_label }}</a>{% endif %}
+    </div>
+</div>
+{%- endmacro %}
+
+{#  One country's row on the Spectrum view: its axis and five position bins. #}
+{% macro spectrum_row(country, event_href='', heading='h2', show_time=true) %}
+<section class="osi-spectrum-row">
+    <div class="osi-spectrum-label" style="border-top-color: {{ country.colour }}">
+        <{{ heading }}>{{ country.name }}</{{ heading }}>
+        {{ native(country.native, country) }}
+        <span class="osi-spectrum-count">{{ country.count_label }}</span>
+        <div class="osi-rail-coverage osi-only-mobile">
+            {{ coverage(country.coverage, country.colour) }}
+            <div class="osi-compare-axis">
+                <span>{{ country.left_label }}</span><span>{{ country.right_label }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="osi-spectrum-track">
+        <div class="osi-spectrum-inner">
+            <div class="osi-axis" aria-hidden="true">
+                <span>&larr; {{ country.left_label }}</span>
+                <span class="osi-axis-line"></span>
+                <span>{{ country.right_label }} &rarr;</span>
+            </div>
+            <div class="osi-bins">
+                {% for bin in country.bins %}
+                <div class="osi-bin{% if bin.empty %} osi-bin--empty{% endif %}">
+                    <div class="osi-bin-label">{{ bin.label }}</div>
+                    {% if bin.empty %}<div class="osi-bin-empty">No coverage</div>{% endif %}
+                    {% for article in bin['items'] %}
+                    {{ article_block(article, event_href, show_time=show_time) }}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{%- endmacro %}
+
+{#  One country as a compare column: coverage bar, then articles along the
+    axis. Columns are never aligned position to position across countries. #}
+{% macro compare_column(country, event_href='', heading='h2', show_time=true) %}
+<section class="osi-compare-column" style="border-top-color: {{ country.colour }}">
+    <div>
+        <div class="osi-compare-head">
+            <{{ heading }}>{{ country.name }}</{{ heading }}>
+            {{ native(country.native, country) }}
+        </div>
+        <span class="osi-spectrum-count">{{ country.count_label }}</span>
+    </div>
+    <div>
+        {{ coverage(country.coverage, country.colour) }}
+        <div class="osi-compare-axis">
+            <span>{{ country.left_label }}</span><span>{{ country.right_label }}</span>
+        </div>
+    </div>
+    {% for article in country.articles %}
+    {{ article_block(article, event_href, show_position=true, show_time=show_time) }}
+    {% endfor %}
+</section>
+{%- endmacro %}
+
+{#  An event in the regular (non-featured) Today style. #}
+{% macro event_block(event, card=false) %}
+<article class="osi-event{% if card %} osi-event--card{% endif %}">
+    <div class="osi-event-head">
+        <h2>{{ event.title }}</h2>
+        <span class="osi-event-meta">{{ event.meta }}<a class="osi-view-all" href="{{ event.href }}">{{ event.view_all }}</a></span>
+    </div>
+    {% for country in event.countries %}
+    {{ spectrum_row(country, event.href, 'h3') }}
+    {% endfor %}
+</article>
+{%- endmacro %}
+
+{% macro country_legend(countries) %}
+<span class="osi-lead-countries">
+    {% for country in countries %}
+    <span><span class="osi-swatch" aria-hidden="true" style="background: {{ country.colour }}"></span>{{ country.name }}</span>
+    {% endfor %}
+</span>
+{%- endmacro %}
+
+{#  An outlet and every article it filed on an event, newest first. #}
+{% macro outlet_block(outlet, show_native=true) %}
+<div class="osi-outlet">
+    <div class="osi-outlet-head">
+        <h3>{{ outlet.name }}</h3>
+        {% if show_native %}<span class="osi-native osi-outlet-native" lang="{{ outlet.lang }}" dir="{{ outlet.dir }}">{{ outlet.native }}</span>{% endif %}
+        <span class="osi-position">{{ ticks(outlet.ticks) }}{{ outlet.position_label }}</span>
+        <span class="osi-outlet-count">{{ outlet.count_label }}</span>
+    </div>
+    {% for article in outlet.articles %}
+    <div class="osi-outlet-article">
+        <div class="osi-article-meta">
+            <span class="osi-article-time">{{ article.time }}</span>
+        </div>
+        <div class="osi-headline osi-headline--compact" lang="en">{{ article.english }}</div>
+        {% if article.has_sub %}<div class="osi-subhead" lang="en">{{ article.sub_english }}</div>{% endif %}
+        {{ original(article) }}
+        <a class="osi-read-link" href="{{ article.link }}" target="_blank" rel="noopener">Read in {{ article.outlet_native }}</a>
+    </div>
+    {% endfor %}
+</div>
+{%- endmacro %}
+
+{#  The country rail: identity, counts and the coverage bar over its axis. #}
+{% macro country_rail(country, heading='h2', wide=false) %}
+<div class="osi-rail{% if wide %} osi-rail--wide{% endif %}" style="border-top-color: {{ country.colour }}">
+    <{{ heading }}>{{ country.name }}</{{ heading }}>
+    {{ native(country.native, country) }}
+    <span class="osi-spectrum-count">{{ country.count_label }}</span>
+    <div class="osi-rail-coverage">
+        {{ coverage(country.coverage, '#14191F') }}
+        <div class="osi-compare-axis">
+            <span>{{ country.left_label }}</span><span>{{ country.right_label }}</span>
+        </div>
+    </div>
+</div>
+{%- endmacro %}

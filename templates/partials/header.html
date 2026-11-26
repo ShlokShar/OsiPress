@@ -1,0 +1,26 @@
+{% set nav_items = [
+    ('about', 'About', url_for('about')),
+    ('today', 'Today', url_for('today')),
+    ('archive', 'Archive', url_for('archive')),
+    ('search', 'Search', url_for('search')),
+] %}
+<header class="osi-header">
+    <div class="osi-header-inner">
+        <a class="osi-wordmark" href="{{ url_for('home') }}" aria-label="OsiPress">
+            <img src="{{ url_for('static', filename='brand/wordmark-on-dark.svg') }}" alt="OsiPress">
+        </a>
+        <nav class="osi-nav" aria-label="Site">
+            {% for key, label, href in nav_items %}
+            <a href="{{ href }}"{% if nav_current == key %} aria-current="page"{% endif %}>{{ label }}</a>
+            {% endfor %}
+        </nav>
+        <button class="osi-menu-button" type="button" aria-expanded="false" aria-controls="osi-mobile-nav" aria-label="Open menu" data-menu-button>
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <nav class="osi-mobile-nav" id="osi-mobile-nav" aria-label="Site" data-open="false">
+        {% for key, label, href in nav_items %}
+        <a href="{{ href }}"{% if nav_current == key %} aria-current="page"{% endif %}>{{ label }}{% if nav_current == key %}<span>You are here</span>{% endif %}</a>
+        {% endfor %}
+    </nav>
+</header>

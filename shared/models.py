@@ -463,7 +463,7 @@ def _get_run_headlines(
             IngestionRuns.started_at >= start,
             IngestionRuns.started_at < end,
         )
-        .order_by(IngestionRuns.started_at.desc())
+        .order_by(IngestionRuns.started_at.desc(), IngestionRuns.id.desc())
         .limit(1)
         .scalar()
     )
@@ -721,3 +721,573 @@ def get_sources_by_ids(source_ids: list[int]) -> dict[int, dict[str, str]]:
         }
         for source_id, source_name, political_leaning, country_name in results
     }
+
+
+def _event_members(session, event_ids: list[int], before: Optional[datetime] = None) -> defaultdict[int, list[dict]]:
+    """Return every article in each event, newest first, with its outlet."""
+
+    members: defaultdict[int, list[dict]] = defaultdict(list)
+    if not event_ids:
+        return members
+
+    query = (
+        session.query(
+            ArticleEvents.event_id,
+            Articles,
+            Sources,
+            Countries.name,
+        )
+        .join(Articles, Articles.id == ArticleEvents.article_id)
+        .join(Sources, Sources.id == Articles.source_id)
+        .join(Countries, Countries.id == Sources.country_id)
+        .filter(ArticleEvents.event_id.in_(event_ids))
+    )
+    if before is not None:
+        query = query.filter(
+            ArticleEvents.joined_at < before,
+            Articles.captured_at < before,
+        )
+    rows = (
+        query
+        .order_by(
+            ArticleEvents.event_id,
+            func.coalesce(
+                Articles.published_at, Articles.captured_at
+            ).desc().nullslast(),
+        )
+        .all()
+    )
+
+    for event_id, article, source, country_name in rows:
+        members[event_id].append({
+            "article_id": article.id,
+            "country": country_name,
+            "outlet": source.name,
+            "outlet_id": source.id,
+            "leaning": source.political_leaning,
+            "headline": article.headline,
+            "translated_headline": article.translated_headline,
+            "summary": article.summary,
+            "references_original": list(article.references_original or []),
+            "references_translated": list(article.references_translated or []),
+            "link": article.link,
+            "published_at": article.published_at,
+            "captured_at": article.captured_at,
+        })
+
+    return members
+
+
+def _event_payload(event: Events, topics: dict[int, str], members: list[dict]):
+    return {
+        "id": event.id,
+        "title": event.title or "Coverage event",
+        "topic": topics.get(event.topic_id),
+        "status": event.status,
+        "first_published_at": event.first_published_at,
+        "first_seen": event.first_seen,
+        "last_seen": event.last_seen,
+        "article_count": event.article_count,
+        "outlet_count": event.outlet_count,
+        "articles": members,
+    }
+
+
+def get_events_for_day(
+    target_date: Optional[date] = None,
+    fallback_days: int = 3,
+) -> tuple[Optional[date], list[dict]]:
+    """Return one day's visible events with all of their coverage.
+
+    Unlike `get_visible_events`, which keeps a rolling 24-hour window for the
+    old Top stories page, this is anchored to a calendar day so the Today and
+    Archive pages agree on what "today" holds. Days with no published edition
+    fall back up to `fallback_days` earlier, the same way `all_today` does.
+    """
+
+    if target_date is None:
+        target_date = datetime.now(timezone.utc).date()
+
+    with SessionLocal() as session:
+        topics = {topic.id: topic.name for topic in session.query(Topics).all()}
+
+        for offset in range(fallback_days + 1):
+            day = target_date - timedelta(days=offset)
+            start = datetime.combine(
+                day, datetime.min.time(), tzinfo=timezone.utc
+            )
+            end = start + timedelta(days=1)
+
+            events = (
+                session.query(Events)
+                .join(ArticleEvents, ArticleEvents.event_id == Events.id)
+                .join(ArticleAppearances, ArticleAppearances.article_id == ArticleEvents.article_id)
+                .join(IngestionRuns, IngestionRuns.id == ArticleAppearances.run_id)
+                .filter(
+                    Events.status == "visible",
+                    IngestionRuns.status == "succeeded",
+                    IngestionRuns.started_at >= start,
+                    IngestionRuns.started_at < end,
+                )
+                .distinct()
+                .order_by(Events.last_seen.desc())
+                .all()
+            )
+            if not events:
+                continue
+
+            members = _event_members(session, [event.id for event in events], before=end)
+            latest_run_id = (
+                session.query(IngestionRuns.id)
+                .filter(IngestionRuns.status == "succeeded",
+                        IngestionRuns.started_at >= start,
+                        IngestionRuns.started_at < end)
+                .order_by(IngestionRuns.started_at.desc())
+                .limit(1).scalar()
+            )
+            latest_articles = {
+                article_id for (article_id,) in session.query(ArticleAppearances.article_id)
+                .filter(ArticleAppearances.run_id == latest_run_id).all()
+            }
+            for rows in members.values():
+                for row in rows:
+                    row["latest_run"] = row["article_id"] in latest_articles
+            payloads = [
+                _event_payload(event, topics, members[event.id])
+                for event in events
+                if len({row["country"] for row in members[event.id]}) >= 2
+            ]
+            if payloads:
+                return day, payloads
+
+    return None, []
+
+
+def get_event_by_id(event_id: int) -> Optional[dict]:
+    """Return one visible event with all of its coverage."""
+
+    with SessionLocal() as session:
+        event = (
+            session.query(Events)
+            .filter(Events.id == event_id, Events.status == "visible")
+            .first()
+        )
+        if not event:
+            return None
+
+        topics = {topic.id: topic.name for topic in session.query(Topics).all()}
+        members = _event_members(session, [event.id])
+        if not members[event.id]:
+            return None
+
+        return _event_payload(event, topics, members[event.id])
+
+
+def _observed_at():
+    """The column the archive counts by: publication time, else capture."""
+
+    return func.coalesce(Articles.published_at, Articles.captured_at)
+
+
+def get_archive_daily_counts(
+    start: date,
+    end: date,
+) -> dict[tuple[str, str], int]:
+    """Return article counts keyed by (ISO day, country name)."""
+
+    window_start = datetime.combine(
+        start, datetime.min.time(), tzinfo=timezone.utc
+    )
+    window_end = datetime.combine(
+        end + timedelta(days=1), datetime.min.time(), tzinfo=timezone.utc
+    )
+    with SessionLocal() as session:
+        run_day = func.date(func.timezone("UTC", IngestionRuns.started_at))
+        latest_runs = (
+            session.query(
+                IngestionRuns.id.label("id"),
+                run_day.label("day"),
+                func.row_number().over(
+                    partition_by=run_day,
+                    order_by=(IngestionRuns.started_at.desc(), IngestionRuns.id.desc()),
+                ).label("rank"),
+            )
+            .filter(IngestionRuns.status == "succeeded",
+                    IngestionRuns.started_at >= window_start,
+                    IngestionRuns.started_at < window_end)
+            .subquery()
+        )
+        rows = (
+            session.query(
+                latest_runs.c.day,
+                Countries.name,
+                func.count(ArticleAppearances.article_id),
+            )
+            .select_from(latest_runs)
+            .join(ArticleAppearances, ArticleAppearances.run_id == latest_runs.c.id)
+            .join(Sources, Sources.id == ArticleAppearances.source_id)
+            .join(Countries, Countries.id == Sources.country_id)
+            .filter(latest_runs.c.rank == 1)
+            .group_by(latest_runs.c.day, Countries.name)
+            .all()
+        )
+        first_run = session.query(func.min(IngestionRuns.started_at)).scalar()
+        legacy_end = min(window_end, first_run.astimezone(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)) if first_run else window_end
+        if legacy_end > window_start:
+            captured_day = func.date(func.timezone("UTC", Articles.captured_at))
+            latest = (
+                session.query(Articles.source_id.label("source_id"), captured_day.label("day"),
+                              func.max(Articles.captured_at).label("captured_at"))
+                .filter(Articles.captured_at >= window_start, Articles.captured_at < legacy_end)
+                .group_by(Articles.source_id, captured_day)
+                .subquery()
+            )
+            rows += (
+                session.query(latest.c.day, Countries.name, func.count(Articles.id))
+                .select_from(latest)
+                .join(Articles, (Articles.source_id == latest.c.source_id) &
+                      (Articles.captured_at == latest.c.captured_at))
+                .join(Sources, Sources.id == Articles.source_id)
+                .join(Countries, Countries.id == Sources.country_id)
+                .group_by(latest.c.day, Countries.name).all()
+            )
+
+    return {
+        (day.isoformat() if hasattr(day, "isoformat") else str(day), country):
+            count
+        for day, country, count in rows
+    }
+
+
+def get_archive_events(start: date, end: date) -> list[dict]:
+    """Return visible event coverage for each UTC day in the range."""
+
+    grouped = {}
+    with SessionLocal() as session:
+        first_run = session.query(func.min(IngestionRuns.started_at)).scalar()
+        window_start = datetime.combine(start, datetime.min.time(), tzinfo=timezone.utc)
+        window_end = datetime.combine(end + timedelta(days=1), datetime.min.time(), tzinfo=timezone.utc)
+        legacy_end = (first_run.astimezone(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+                      if first_run else window_end)
+
+        def consume(query):
+            for day, event_id, title, topic, article_id, outlet, leaning, country in query.yield_per(100):
+                item = grouped.setdefault((day, event_id), {
+                    "id": event_id, "title": title or "Coverage event",
+                    "topic": topic, "day": day, "articles": {},
+                })
+                item["articles"][article_id] = {
+                    "article_id": article_id, "country": country,
+                    "outlet": outlet, "leaning": leaning,
+                }
+
+        batch_start = window_start
+        while batch_start < window_end:
+            batch_end = min(batch_start + timedelta(days=30), window_end)
+            run_day = func.date(func.timezone("UTC", IngestionRuns.started_at))
+            if batch_end > legacy_end:
+                query = (
+                    session.query(run_day, Events.id, Events.title, Topics.name,
+                                  Articles.id, Sources.name, Sources.political_leaning, Countries.name)
+                    .select_from(IngestionRuns)
+                    .join(ArticleAppearances, ArticleAppearances.run_id == IngestionRuns.id)
+                    .join(Articles, Articles.id == ArticleAppearances.article_id)
+                    .join(ArticleEvents, ArticleEvents.article_id == Articles.id)
+                    .join(Events, Events.id == ArticleEvents.event_id)
+                    .join(Sources, Sources.id == Articles.source_id)
+                    .join(Countries, Countries.id == Sources.country_id)
+                    .outerjoin(Topics, Topics.id == Events.topic_id)
+                    .filter(Events.status == "visible", IngestionRuns.status == "succeeded",
+                            IngestionRuns.started_at >= max(batch_start, legacy_end),
+                            IngestionRuns.started_at < batch_end)
+                )
+                consume(query)
+            if batch_start < legacy_end:
+                captured_day = func.date(func.timezone("UTC", Articles.captured_at))
+                latest = (
+                    session.query(Articles.source_id.label("source_id"), captured_day.label("day"),
+                                  func.max(Articles.captured_at).label("captured_at"))
+                    .filter(Articles.captured_at >= batch_start,
+                            Articles.captured_at < min(batch_end, legacy_end))
+                    .group_by(Articles.source_id, captured_day).subquery()
+                )
+                query = (
+                    session.query(latest.c.day, Events.id, Events.title, Topics.name,
+                                  Articles.id, Sources.name, Sources.political_leaning, Countries.name)
+                    .select_from(latest)
+                    .join(Articles, (Articles.source_id == latest.c.source_id) &
+                          (Articles.captured_at == latest.c.captured_at))
+                    .join(ArticleEvents, ArticleEvents.article_id == Articles.id)
+                    .join(Events, Events.id == ArticleEvents.event_id)
+                    .join(Sources, Sources.id == Articles.source_id)
+                    .join(Countries, Countries.id == Sources.country_id)
+                    .outerjoin(Topics, Topics.id == Events.topic_id)
+                    .filter(Events.status == "visible")
+                )
+                consume(query)
+            batch_start = batch_end
+
+    output = []
+    for item in grouped.values():
+        item["articles"] = list(item["articles"].values())
+        by_country = defaultdict(list)
+        for row in item["articles"]:
+            by_country[row["country"]].append(row)
+        item["by_country"] = dict(by_country)
+        output.append(item)
+    return output
+
+
+def get_edition_count(start: date, end: date) -> int:
+    """Return how many ingestion runs published successfully in a window."""
+
+    window_start = datetime.combine(
+        start, datetime.min.time(), tzinfo=timezone.utc
+    )
+    window_end = datetime.combine(
+        end + timedelta(days=1), datetime.min.time(), tzinfo=timezone.utc
+    )
+
+    with SessionLocal() as session:
+        return (
+            session.query(func.count(IngestionRuns.id))
+            .filter(
+                IngestionRuns.status == "succeeded",
+                IngestionRuns.started_at >= window_start,
+                IngestionRuns.started_at < window_end,
+            )
+            .scalar()
+        ) or 0
+
+
+def find_articles(query: str, limit: int = 500) -> list[dict]:
+    """Return every article matching a query, newest first.
+
+    This is the Search page's own query, not the hybrid relevance path in
+    `shared.search_service`. The page needs exact totals, a date range and
+    per-outlet counts including outlets with no match, which a top-k ranking
+    cannot provide, and it has to match the original-language headline, the
+    outlet name and the event title as well as the translation.
+    """
+
+    needle = (query or "").strip()
+    if not needle:
+        return []
+
+    pattern = f"%{needle}%"
+    observed = _observed_at()
+    with SessionLocal() as session:
+        rows = (
+            session.query(
+                Articles,
+                Sources,
+                Countries.name,
+                Events.title,
+            )
+            .join(Sources, Sources.id == Articles.source_id)
+            .join(Countries, Countries.id == Sources.country_id)
+            .outerjoin(ArticleEvents, ArticleEvents.article_id == Articles.id)
+            .outerjoin(Events, Events.id == ArticleEvents.event_id)
+            .filter(
+                Articles.translated_headline.ilike(pattern)
+                | Articles.headline.ilike(pattern)
+                | Sources.name.ilike(pattern)
+                | Events.title.ilike(pattern)
+            )
+            .order_by(observed.desc().nullslast(), Articles.id.desc())
+            .limit(limit)
+            .all()
+        )
+
+    return [
+        {
+            "article_id": article.id,
+            "country": country_name,
+            "outlet": source.name,
+            "outlet_id": source.id,
+            "leaning": source.political_leaning,
+            "headline": article.headline,
+            "translated_headline": article.translated_headline,
+            "link": article.link,
+            "published_at": article.published_at,
+            "captured_at": article.captured_at,
+            "event_title": event_title,
+        }
+        for article, source, country_name, event_title in rows
+    ]
+
+
+def get_outlets_by_country() -> defaultdict[str, list[dict]]:
+    """Return every outlet grouped by its country's English name."""
+
+    with SessionLocal() as session:
+        rows = (
+            session.query(Countries.name, Sources)
+            .join(Sources, Sources.country_id == Countries.id)
+            .order_by(Countries.name, Sources.name)
+            .all()
+        )
+
+    output: defaultdict[str, list[dict]] = defaultdict(list)
+    for country_name, source in rows:
+        output[country_name].append({
+            "id": source.id,
+            "outlet": source.name,
+            "leaning": source.political_leaning,
+            "link": source.link,
+        })
+    return output
+
+
+def get_latest_headline_by_outlet(
+    target_date: Optional[date] = None,
+    fallback_days: int = 3,
+) -> dict[int, dict]:
+    """Return each outlet's newest article on the most recent covered day."""
+
+    if target_date is None:
+        target_date = datetime.now(timezone.utc).date()
+
+    with SessionLocal() as session:
+        for offset in range(fallback_days + 1):
+            day = target_date - timedelta(days=offset)
+            start = datetime.combine(
+                day, datetime.min.time(), tzinfo=timezone.utc
+            )
+            end = start + timedelta(days=1)
+
+            rows = _get_run_headlines(session, start, end)
+            if rows is None:
+                rows = (
+                    session.query(Countries.name, Sources.name, Sources.political_leaning, Articles)
+                    .join(Sources, Sources.country_id == Countries.id)
+                    .join(Articles, Articles.source_id == Sources.id)
+                    .filter(Articles.captured_at >= start, Articles.captured_at < end)
+                    .order_by(Articles.captured_at.desc())
+                    .all()
+                )
+            if not rows:
+                continue
+
+            newest: dict[int, dict] = {}
+            for country_name, source_name, leaning, article in rows:
+                if article.source_id in newest:
+                    continue
+                newest[article.source_id] = {
+                    "article_id": article.id,
+                    "country": country_name,
+                    "outlet": source_name,
+                    "outlet_id": article.source_id,
+                    "leaning": leaning,
+                    "headline": article.headline,
+                    "translated_headline": article.translated_headline,
+                    "link": article.link,
+                    "published_at": article.published_at,
+                    "captured_at": article.captured_at,
+                }
+            if newest:
+                return newest
+
+    return {}
+
+
+def get_day_articles(
+    target_date: Optional[date] = None,
+    fallback_days: int = 3,
+) -> tuple[Optional[date], list[dict]]:
+    """Return every article observed on a day, newest first.
+
+    This feeds the All today view, which lists each outlet's coverage without
+    grouping it into events.
+    """
+
+    if target_date is None:
+        target_date = datetime.now(timezone.utc).date()
+
+    with SessionLocal() as session:
+        for offset in range(fallback_days + 1):
+            day = target_date - timedelta(days=offset)
+            start = datetime.combine(
+                day, datetime.min.time(), tzinfo=timezone.utc
+            )
+            end = start + timedelta(days=1)
+
+            rows = _get_run_headlines(session, start, end)
+            if rows is None:
+                rows = (
+                    session.query(Countries.name, Sources.name, Sources.political_leaning, Articles)
+                    .join(Sources, Sources.country_id == Countries.id)
+                    .join(Articles, Articles.source_id == Sources.id)
+                    .filter(Articles.captured_at >= start, Articles.captured_at < end)
+                    .order_by(Articles.captured_at.desc())
+                    .all()
+                )
+            if not rows:
+                continue
+
+            return day, [
+                {
+                    "article_id": article.id,
+                    "country": country_name,
+                    "outlet": source_name,
+                    "outlet_id": article.source_id,
+                    "leaning": leaning,
+                    "headline": article.headline,
+                    "translated_headline": article.translated_headline,
+                    "summary": article.summary,
+                    "references_original": list(
+                        article.references_original or []
+                    ),
+                    "references_translated": list(
+                        article.references_translated or []
+                    ),
+                    "link": article.link,
+                    "published_at": article.published_at,
+                    "captured_at": article.captured_at,
+                }
+                for country_name, source_name, leaning, article in rows
+            ]
+
+    return None, []
+
+
+def get_latest_run(target_date: Optional[date] = None) -> Optional[dict]:
+    """Return the newest successful ingestion run on a day."""
+
+    if target_date is None:
+        target_date = datetime.now(timezone.utc).date()
+
+    end = datetime.combine(
+        target_date + timedelta(days=1), datetime.min.time(),
+        tzinfo=timezone.utc,
+    )
+    start = end - timedelta(days=1)
+
+    with SessionLocal() as session:
+        run = (
+            session.query(IngestionRuns)
+            .filter(
+                IngestionRuns.status == "succeeded",
+                IngestionRuns.started_at >= start,
+                IngestionRuns.started_at < end,
+            )
+            .order_by(IngestionRuns.started_at.desc())
+            .first()
+        )
+        if not run:
+            return None
+        return {
+            "id": run.id,
+            "started_at": run.started_at,
+            "completed_at": run.completed_at,
+        }
+
+
+def get_topic_names() -> list[str]:
+    """Return every topic name, for the search page's suggestions."""
+
+    with SessionLocal() as session:
+        return [
+            name for (name,) in
+            session.query(Topics.name).order_by(Topics.name).all()
+        ]

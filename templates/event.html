@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% import 'macros/osi.html' as osi %}
+{% block title %}OsiPress &middot; {{ event.title }}{% endblock %}
+
+{% block page %}
+<main class="osi-main osi-main--event">
+    <a class="osi-back" href="{{ url_for('today', countries=countries_param) }}">&larr; Today</a>
+
+    <div class="osi-event-header">
+        <h1>{{ event.title }}</h1>
+        <div class="osi-event-header-meta">{{ event.meta }}. {{ event.grouping_note }}</div>
+        <div class="osi-event-header-controls">
+            {{ osi.switch(view_switch, 'View', 'view') }}
+            {% if view == 'compare' %}
+            <div class="osi-picker osi-hscroll">
+                <span class="osi-picker-hint">{{ picker.hint }}</span>
+                {% for button in picker.buttons %}{{ osi.country_button(button, 'country') }}{% endfor %}
+            </div>
+            {% else %}
+            <nav class="osi-jump" aria-label="Countries in this event">
+                {% for item in event.jump %}
+                <a href="#{{ item.key and 'country-' ~ item.key }}">
+                    <span class="osi-swatch" aria-hidden="true" style="background: {{ item.colour }}"></span>{{ item.name }}<span class="osi-jump-count">{{ item.count }}</span>
+                </a>
+                {% endfor %}
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if view == 'compare' %}
+    <div class="osi-compare osi-compare--event">
+        {% for country in columns %}
+        <section class="osi-compare-column" style="border-top-color: {{ country.colour }}">
+            <div class="osi-compare-head">
+                <h2>{{ country.name }}</h2>
+                {{ osi.native(country.native, country) }}
+            </div>
+            <span class="osi-spectrum-count">{{ country.count_label }}</span>
+            <div class="osi-rail-coverage">
+                {{ osi.coverage(country.coverage, '#14191F') }}
+                <div class="osi-compare-axis"><span>{{ country.left_label }}</span><span>{{ country.right_label }}</span></div>
+            </div>
+            {% for outlet in country.outlets %}{{ osi.outlet_block(outlet, false) }}{% endfor %}
+        </section>
+        {% endfor %}
+    </div>
+    {% for item in missing %}<p class="osi-no-coverage">{{ item.text }}</p>{% endfor %}
+
+    {% else %}
+
+    <div class="osi-coverage-table">
+        <h2>Coverage at a glance</h2>
+        {% for country in event.countries %}
+        <a class="osi-coverage-row" href="#country-{{ country.key }}">
+            <span class="osi-coverage-row-name"><span class="osi-swatch" aria-hidden="true" style="background: {{ country.colour }}"></span>{{ country.name }}</span>
+            {{ osi.coverage(country.coverage, country.colour) }}
+            <span class="osi-coverage-row-count">{{ country.count_label }}</span>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="osi-country-sections">
+        {% for country in event.countries %}
+        <section class="osi-country-section" id="country-{{ country.key }}">
+            {{ osi.country_rail(country, 'h2', true) }}
+            <div class="osi-outlets">
+                {% for outlet in country.outlets %}{{ osi.outlet_block(outlet) }}{% endfor %}
+            </div>
+        </section>
+        {% endfor %}
+    </div>
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controls.js') }}"></script>
+{% endblock %}

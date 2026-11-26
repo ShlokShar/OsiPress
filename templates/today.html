@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% import 'macros/osi.html' as osi %}
+{% block title %}OsiPress &middot; Today{% endblock %}
+
+{% block page %}
+<main class="osi-main">
+    <div class="osi-toolbar">
+        <div class="osi-page-head">
+            <h1>Today</h1>
+            <span class="osi-page-sub">{{ day_line }}</span>
+        </div>
+        <div class="osi-toolbar-controls">
+            {{ osi.switch(story_switch, 'Page', 'stories') }}
+            <button type="button" class="osi-text-button" data-action="originals" aria-pressed="false">Hide originals</button>
+        </div>
+    </div>
+
+    {% if stories == 'top' and not lead and not events %}
+    <section class="osi-empty">
+        <h2>Today&rsquo;s edition is still forming.</h2>
+        <p>OsiPress publishes an event once the same development has been covered by more than one outlet. Nothing has cleared that bar yet today.</p>
+        <a class="osi-button" href="{{ url_for('today', view=view, countries=countries_param, stories='all') }}">Read all of today&rsquo;s articles</a>
+    </section>
+    {% endif %}
+
+    {% if stories == 'all' %}
+    {% for country in all_today %}
+    <article class="osi-event">
+        <h2>{{ country.name }}</h2>
+        {% for outlet in country.outlets %}{{ osi.outlet_block(outlet) }}{% endfor %}
+    </article>
+    {% endfor %}
+    {% if not all_today %}
+    <section class="osi-empty">
+        <h2>No articles captured for this edition.</h2>
+        <p>The ingestion run for this day published nothing. The archive keeps the last edition that did.</p>
+    </section>
+    {% endif %}
+
+    {% else %}
+
+    {% if lead or events %}
+    <div class="osi-views">
+        {{ osi.switch(view_switch, 'View', 'view') }}
+        {% if view == 'compare' %}
+        <div class="osi-picker osi-hscroll">
+            <span class="osi-picker-hint">{{ picker.hint }}</span>
+            {% for button in picker.buttons %}{{ osi.country_button(button, 'country') }}{% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if lead %}
+    <article class="osi-lead">
+        <h2 class="osi-lead-title">{{ lead.title }}</h2>
+        <div class="osi-lead-meta">
+            {{ osi.country_legend(lead.countries) }}
+            <a class="osi-view-all" href="{{ lead.href }}">{{ lead.view_all }}</a>
+        </div>
+
+        {% if view == 'compare' %}
+        <div class="osi-compare">
+            {% for country in lead_columns %}{{ osi.compare_column(country, lead.href, 'h3', show_time=false) }}{% endfor %}
+        </div>
+        {% for item in lead_missing %}<p class="osi-no-coverage">{{ item.text }}</p>{% endfor %}
+        {% else %}
+        {% for country in lead.countries %}{{ osi.spectrum_row(country, lead.href, 'h3', show_time=false) }}{% endfor %}
+        {% endif %}
+    </article>
+    {% endif %}
+
+    {% for event in events %}
+    <article class="osi-event">
+        <div class="osi-event-head">
+            <h2>{{ event.title }}</h2>
+            <span class="osi-event-meta">
+                <a href="{{ event.href }}?view=compare&amp;countries={{ countries_param }}">Compare countries</a>
+                <a class="osi-view-all" href="{{ event.href }}">{{ event.view_all }}</a>
+            </span>
+        </div>
+        {% if view == 'compare' %}
+        <div class="osi-compare">
+            {% for country in event.countries if country.key in countries %}{{ osi.compare_column(country, event.href, 'h3', show_time=false) }}{% endfor %}
+        </div>
+        {% for key in countries if key not in event.country_keys %}<p class="osi-no-coverage">No coverage from {{ picker.buttons | selectattr('key', 'equalto', key) | map(attribute='name') | first }} for this event.</p>{% endfor %}
+        {% else %}
+        {% for country in event.countries %}{{ osi.spectrum_row(country, event.href, 'h3', show_time=false) }}{% endfor %}
+        {% endif %}
+    </article>
+    {% endfor %}
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controls.js') }}"></script>
+{% endblock %}

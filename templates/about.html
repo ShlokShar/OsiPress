@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% import 'macros/osi.html' as osi %}
+{% block title %}OsiPress &middot; About{% endblock %}
+
+{% block page %}
+<main class="osi-main osi-main--about">
+    <div class="osi-page-head">
+        <h1>About OsiPress</h1>
+        <span class="osi-page-sub">What it collects, how it translates it, and how outlets are placed.</span>
+    </div>
+
+    <section class="osi-prose">
+        <p class="osi-lede">OsiPress, the <em>Open Source Info Press</em>, translates what foreign newspapers publish for their own readers each day and sets it beside the original, so you can read the story the way it was told there.</p>
+        <p>Most of what you know about the Iran&ndash;Israel war reached you through outlets in your own country, written in your language for readers like you. OsiPress does the reading you couldn&rsquo;t do alone, in the original languages with every source linked, and leaves the conclusions to you.</p>
+    </section>
+
+    <section class="osi-prose" id="how">
+        <h2>How a day is collected</h2>
+        <p>Twice a day, at 06:00 and 18:00 UTC, OsiPress reads each outlet&rsquo;s RSS feed and takes up to three recent articles classified as political. Each one is translated, and the original headline is kept alongside the English. An edition becomes visible only when its run finishes, so a half-collected day is never published.</p>
+        <p>Articles that describe the same development are grouped into an event. An event appears on Today once more than one outlet has covered it, and the Today page ranks events by how broadly they were covered: the most countries first, then the most outlets, then the newest article.</p>
+    </section>
+
+    <section class="osi-prose" id="methodology">
+        <h2>How we classify outlets</h2>
+        <p>Each country has its own political axis with five positions, because the scales mean different things in different places. Iran&rsquo;s runs from reformist to hardline; Israel&rsquo;s from left to right. An outlet is shown where its own readers would place it, and <strong>positions are never comparable across countries</strong> &mdash; which is why compare columns are not aligned position to position.</p>
+        <p>A coverage bar shows which of a country&rsquo;s five positions covered a story, not how much or how favourably. OsiPress does not rank or score the coverage. The &ldquo;Most covered&rdquo; list in the archive counts articles in the chosen range; it is a measure of volume, not of importance.</p>
+
+        <div class="osi-outlet-table">
+            {% for country in countries %}
+            <div class="osi-outlet-column">
+                <div class="osi-facet-head">
+                    <span class="osi-facet-name"><span class="osi-swatch" aria-hidden="true" style="background: {{ country.colour }}"></span>{{ country.name }} {{ osi.native(country.native, country) }}</span>
+                    <span class="osi-facet-total">{{ country.left_label }} &rarr; {{ country.right_label }}</span>
+                </div>
+                {% for outlet in country.outlets %}
+                <div class="osi-outlet-row">
+                    <span class="osi-outlet-row-name">{{ outlet.name }}</span>
+                    <span class="osi-native" lang="{{ country.lang }}" dir="{{ country.dir }}">{{ outlet.native }}</span>
+                    <span class="osi-position">{{ osi.ticks(outlet.ticks) }}{{ outlet.position_label }}</span>
+                </div>
+                {% else %}
+                <p class="osi-bin-empty">Not live yet.</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="osi-prose" id="limits">
+        <h2>What to keep in mind</h2>
+        <ul>
+            <li>Translations are machine-generated and may contain errors. Every original is one click away, and charged language is preserved rather than softened.</li>
+            <li>Selection is automated. An outlet missing from a day means nothing political cleared its feed in that run, not that it stayed silent.</li>
+            <li>Publication times are shown in each outlet&rsquo;s own local time. Where a feed publishes no time, the article is marked &ldquo;Time not published&rdquo; and sorted after dated ones.</li>
+        </ul>
+        <p><a href="https://github.com/ShlokShar/Osipress" target="_blank" rel="noopener">OsiPress is open source &#8599;</a></p>
+    </section>
+</main>
+{% endblock %}
