@@ -6,7 +6,9 @@
 ] %}
 <header class="osi-header">
     <div class="osi-header-inner">
-        <a class="osi-wordmark" href="{{ url_for('home') }}" aria-label="OsiPress">
+        {# home=1 means "I meant the homepage", so returning visitors are not
+           redirected to today's edition. #}
+        <a class="osi-wordmark" href="{{ url_for('home', home=1) }}" aria-label="OsiPress">
             <img src="{{ url_for('static', filename='brand/wordmark-on-dark.svg') }}" alt="OsiPress">
         </a>
         <nav class="osi-nav" aria-label="Site">

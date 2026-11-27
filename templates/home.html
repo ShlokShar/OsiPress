@@ -78,7 +78,9 @@
             <div class="osi-explorer-tabs" role="tablist" aria-label="Country">
                 {% for tab in explorer.tabs %}
                 <a role="tab" aria-selected="{{ 'true' if tab.on else 'false' }}"
-                   href="{{ url_for('home', spectrum=tab.key) }}#spectrum"
+                   {# home=1 keeps a returning visitor on the homepage when
+                      explorer.js is unavailable and this link navigates. #}
+                   href="{{ url_for('home', spectrum=tab.key, home=1) }}#spectrum"
                    data-tab="{{ tab.key }}"
                    class="osi-explorer-tab{% if not tab.live %} osi-explorer-tab--soon{% endif %}">
                     <span class="osi-swatch" aria-hidden="true" style="background: {{ tab.colour }}"></span>{{ tab.name }}{% if tab.note %}<span class="osi-explorer-note">{{ tab.note }}</span>{% endif %}

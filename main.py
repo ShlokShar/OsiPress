@@ -50,6 +50,31 @@ app = flask.Flask(__name__)
 def footer_context():
     return {"current_year": datetime.now(timezone.utc).year}
 
+
+@app.after_request
+def remember_visit(response):
+    """Mark the browser as a returning visitor once it has read any page.
+
+    Set on every HTML page rather than only the homepage, so someone who
+    arrives on /today from a search result and later types the bare domain
+    also lands on today's edition rather than the homepage.
+    """
+
+    if (
+        response.status_code == 200
+        and response.mimetype == "text/html"
+        and not flask.request.cookies.get(VISITED_COOKIE)
+    ):
+        response.set_cookie(
+            VISITED_COOKIE,
+            "1",
+            max_age=VISITED_MAX_AGE,
+            samesite="Lax",
+            httponly=True,
+            secure=flask.request.is_secure,
+        )
+    return response
+
 MAX_FALLBACK_DAYS = 3
 ARCHIVE_MIN_DATE = date(2026, 7, 9)
 MAX_COMPARE_COUNTRIES = 3
@@ -69,6 +94,13 @@ EVENT_VIEW_OPTIONS = (
     ("spectrum", "All countries"),
     ("compare", "Compare countries"),
 )
+
+# Returning visitors who ask for "/" are sent to today's edition. Links that
+# mean the homepage itself carry HOME_PARAM so they are never redirected: the
+# header wordmark and the homepage's own spectrum tabs.
+VISITED_COOKIE = "visited"
+VISITED_MAX_AGE = 60 * 60 * 24 * 365
+HOME_PARAM = "home"
 
 
 def _picked_countries() -> list[str]:
@@ -101,6 +133,15 @@ def _one_of(name: str, options: tuple, default: str) -> str:
 
 @app.route("/")
 def home():
+    # A 302, never a permanent redirect: whether "/" redirects depends on a
+    # cookie, and a cached 301 would send new visitors past the homepage
+    # forever.
+    if (
+        HOME_PARAM not in flask.request.args
+        and flask.request.cookies.get(VISITED_COOKIE)
+    ):
+        return flask.redirect(flask.url_for("today"))
+
     _, events = get_events_for_day(fallback_days=MAX_FALLBACK_DAYS)
     globe = globe_events(today_view(events)["all_events"])
 
