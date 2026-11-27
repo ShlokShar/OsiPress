@@ -8,6 +8,19 @@
     window.location.search = params.toString();
   }
 
+  /* Collapse or expand every country and outlet block on the page, and put
+     the button into the opposite state. */
+  function setCollapsed(collapsed) {
+    document.querySelectorAll('details.osi-collapse').forEach(function (block) {
+      block.open = !collapsed;
+    });
+    const button = document.querySelector('[data-action="collapse"]');
+    if (button) {
+      button.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+      button.textContent = collapsed ? 'Expand all' : 'Collapse all';
+    }
+  }
+
   function currentCountries(params) {
     const raw = params.get('countries');
     return raw ? raw.split(',').filter(Boolean) : Array.from(
@@ -31,6 +44,17 @@
         window.localStorage.setItem('osi-no-originals', hidden ? '1' : '0');
       } catch (error) {
         /* Private browsing: the switch still works for this page view. */
+      }
+      return;
+    }
+
+    if (action === 'collapse') {
+      const collapsed = target.getAttribute('aria-pressed') !== 'true';
+      setCollapsed(collapsed);
+      try {
+        window.localStorage.setItem('osi-collapsed', collapsed ? '1' : '0');
+      } catch (error) {
+        /* Private browsing: the button still works for this page view. */
       }
       return;
     }
@@ -80,5 +104,14 @@
     }
   } catch (error) {
     /* No stored preference is available; originals stay visible. */
+  }
+
+  try {
+    if (window.localStorage.getItem('osi-collapsed') === '1'
+        && document.querySelector('[data-action="collapse"]')) {
+      setCollapsed(true);
+    }
+  } catch (error) {
+    /* No stored preference is available; blocks stay expanded. */
   }
 })();

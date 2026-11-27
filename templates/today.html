@@ -11,6 +11,9 @@
         </div>
         <div class="osi-toolbar-controls">
             {{ osi.switch(story_switch, 'Page', 'stories') }}
+            {% if stories == 'all' and all_today %}
+            <button type="button" class="osi-text-button" data-action="collapse" aria-pressed="false">Collapse all</button>
+            {% endif %}
             <button type="button" class="osi-text-button" data-action="originals" aria-pressed="false">Hide originals</button>
         </div>
     </div>
@@ -25,10 +28,13 @@
 
     {% if stories == 'all' %}
     {% for country in all_today %}
-    <article class="osi-event">
-        <h2>{{ country.name }}</h2>
-        {% for outlet in country.outlets %}{{ osi.outlet_block(outlet) }}{% endfor %}
-    </article>
+    <details class="osi-collapse osi-country" id="{{ country.anchor }}" open>
+        <summary class="osi-collapse-head osi-country-head">
+            <h2>{{ country.name }}</h2>
+            <span class="osi-country-count">{{ country.count_label }}</span>
+        </summary>
+        {% for outlet in country.outlets %}{{ osi.outlet_block(outlet, true, true) }}{% endfor %}
+    </details>
     {% endfor %}
     {% if not all_today %}
     <section class="osi-empty">

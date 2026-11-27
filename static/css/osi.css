@@ -1676,6 +1676,55 @@ a.osi-globe-card-title:hover { color: var(--osi-teal-link-hover); }
   }
 }
 
+/* Collapsible country and outlet blocks (today, all stories) ----------- */
+
+/* summary defaults to display:list-item, which would drop the flex row the
+   outlet head relies on, so the disclosure marker is drawn here instead. */
+.osi-collapse-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+.osi-collapse-head::-webkit-details-marker { display: none; }
+.osi-collapse-head::before {
+  content: "";
+  flex: none;
+  width: 0;
+  height: 0;
+  border-left: 5px solid var(--osi-control-border);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 120ms ease;
+}
+details[open] > .osi-collapse-head::before { transform: rotate(90deg); }
+.osi-collapse-head:hover h2,
+.osi-collapse-head:hover h3 { color: var(--osi-teal-link); }
+/* The marker sits light at rest; hovering the row brings it forward so it
+   still reads as the control. */
+.osi-collapse-head:hover::before { border-left-color: var(--osi-ink-muted); }
+
+.osi-country { display: flex; flex-direction: column; }
+/* The first outlet block already contributes 20px of top padding, so the
+   heading needs very little of its own. */
+.osi-country-head { margin-bottom: 4px; }
+.osi-country-head h2 {
+  font-family: var(--osi-font-display);
+  font-size: 21px;
+  line-height: 1.12;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.osi-country-count { margin-left: auto; font-size: 13px; color: var(--osi-ink-muted); }
+
+@media (max-width: 768px) {
+  /* The design asks for 44px hit targets, and a summary is the control. */
+  .osi-collapse-head { min-height: var(--osi-tap); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

@@ -215,10 +215,10 @@ def country_block(key: str, rows: Iterable[dict]) -> dict:
         "coverage": [{"on": slot["has"], "off": slot["empty"]} for slot in bins],
         "count": len(rows),
         "outlet_count": len(outlets),
-        "count_label": (
-            f"{plural(len(rows), 'article')}, "
-            f"{plural(len(outlets), 'outlet')}"
-        ),
+        # Article count only: the outlets are listed directly beneath this
+        # label everywhere it renders, so naming them twice reads as noise.
+        # outlet_count stays available for anything that wants the number.
+        "count_label": plural(len(rows), "article"),
         "anchor": f"country-{key}",
     }
 

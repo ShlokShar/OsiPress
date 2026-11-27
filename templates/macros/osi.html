@@ -146,27 +146,44 @@
 </span>
 {%- endmacro %}
 
-{#  An outlet and every article it filed on an event, newest first. #}
-{% macro outlet_block(outlet, show_native=true) %}
-<div class="osi-outlet">
-    <div class="osi-outlet-head">
-        <h3>{{ outlet.name }}</h3>
-        {% if show_native %}<span class="osi-native osi-outlet-native" lang="{{ outlet.lang }}" dir="{{ outlet.dir }}">{{ outlet.native }}</span>{% endif %}
-        <span class="osi-position">{{ ticks(outlet.ticks) }}{{ outlet.position_label }}</span>
-        <span class="osi-outlet-count">{{ outlet.count_label }}</span>
+{#  The identity line shared by the plain and collapsible outlet blocks. #}
+{% macro outlet_meta(outlet, show_native=true) %}
+<h3>{{ outlet.name }}</h3>
+{% if show_native %}<span class="osi-native osi-outlet-native" lang="{{ outlet.lang }}" dir="{{ outlet.dir }}">{{ outlet.native }}</span>{% endif %}
+<span class="osi-position">{{ ticks(outlet.ticks) }}{{ outlet.position_label }}</span>
+<span class="osi-outlet-count">{{ outlet.count_label }}</span>
+{%- endmacro %}
+
+{#  Every article an outlet filed, newest first. #}
+{% macro outlet_articles(outlet) %}
+{% for article in outlet.articles %}
+<div class="osi-outlet-article">
+    <div class="osi-article-meta">
+        <span class="osi-article-time">{{ article.time }}</span>
     </div>
-    {% for article in outlet.articles %}
-    <div class="osi-outlet-article">
-        <div class="osi-article-meta">
-            <span class="osi-article-time">{{ article.time }}</span>
-        </div>
-        <div class="osi-headline osi-headline--compact" lang="en">{{ article.english }}</div>
-        {% if article.has_sub %}<div class="osi-subhead" lang="en">{{ article.sub_english }}</div>{% endif %}
-        {{ original(article) }}
-        <a class="osi-read-link" href="{{ article.link }}" target="_blank" rel="noopener">Read in {{ article.outlet_native }}</a>
-    </div>
-    {% endfor %}
+    <div class="osi-headline osi-headline--compact" lang="en">{{ article.english }}</div>
+    {% if article.has_sub %}<div class="osi-subhead" lang="en">{{ article.sub_english }}</div>{% endif %}
+    {{ original(article) }}
+    <a class="osi-read-link" href="{{ article.link }}" target="_blank" rel="noopener">Read in {{ article.outlet_native }}</a>
 </div>
+{% endfor %}
+{%- endmacro %}
+
+{#  An outlet and every article it filed on an event, newest first.
+    collapsible=true renders it as a <details> so a long day can be folded
+    away; it stays open on load. #}
+{% macro outlet_block(outlet, show_native=true, collapsible=false) %}
+{% if collapsible %}
+<details class="osi-outlet osi-collapse" open>
+    <summary class="osi-outlet-head osi-collapse-head">{{ outlet_meta(outlet, show_native) }}</summary>
+    {{ outlet_articles(outlet) }}
+</details>
+{% else %}
+<div class="osi-outlet">
+    <div class="osi-outlet-head">{{ outlet_meta(outlet, show_native) }}</div>
+    {{ outlet_articles(outlet) }}
+</div>
+{% endif %}
 {%- endmacro %}
 
 {#  The country rail: identity, counts and the coverage bar over its axis. #}
